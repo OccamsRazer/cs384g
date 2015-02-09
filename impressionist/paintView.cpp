@@ -45,7 +45,7 @@ void PaintView::draw()
 {
 	#ifndef MESA
 	// To avoid flicker on some machines.
-  //	glDrawBuffer(GL_FRONT_AND_BACK);
+  	// glDrawBuffer(GL_FRONT_AND_BACK);
 	#endif // !MESA
 
 	if(!valid())
@@ -195,6 +195,7 @@ int PaintView::handle(int event)
 
 void PaintView::refresh()
 {
+	glClear( GL_COLOR_BUFFER_BIT );
 	redraw();
 }
 
@@ -224,7 +225,8 @@ void PaintView::SaveCurrentContent()
 
 void PaintView::RestoreContent()
 {
-	glDrawBuffer(GL_BACK);
+	// glDrawBuffer(GL_BACK);
+	glDrawBuffer(GL_FRONT);
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
@@ -237,6 +239,5 @@ void PaintView::RestoreContent()
 				  GL_UNSIGNED_BYTE, 
 				  m_pPaintBitstart);
 
-//	glDrawBuffer(GL_FRONT);
 }
 
