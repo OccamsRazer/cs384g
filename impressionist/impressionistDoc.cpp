@@ -20,6 +20,7 @@
 #include "lineBrush.h"
 #include "circleBrush.h"
 #include "triangleBrush.h"
+#include "scatterPointBrush.h"
 
 
 #define DESTROY(p)	{  if ((p)!=NULL) {delete [] p; p=NULL; } }
@@ -39,14 +40,13 @@ ImpressionistDoc::ImpressionistDoc()
 	ImpBrush::c_nBrushCount	= NUM_BRUSH_TYPE;
 	ImpBrush::c_pBrushes	= new ImpBrush* [ImpBrush::c_nBrushCount];
 
-	ImpBrush::c_pBrushes[BRUSH_POINTS] 		= new PointBrush( this, "Points" );
-	ImpBrush::c_pBrushes[BRUSH_LINES] 		= new LineBrush( this, "Lines" );
-	ImpBrush::c_pBrushes[BRUSH_CIRCLES] 	= new CircleBrush( this, "Circles" );
-	ImpBrush::c_pBrushes[BRUSH_TRIANGLES] 	= new TriangleBrush( this, "Triangles" );
+	ImpBrush::c_pBrushes[BRUSH_POINTS] = new PointBrush( this, "Points" );
+	ImpBrush::c_pBrushes[BRUSH_LINES] = new LineBrush( this, "Lines" );
+	ImpBrush::c_pBrushes[BRUSH_CIRCLES] = new CircleBrush( this, "Circles" );
+	ImpBrush::c_pBrushes[BRUSH_TRIANGLES] = new TriangleBrush( this, "Triangles" );
+	ImpBrush::c_pBrushes[BRUSH_SCATTERED_POINTS] = new ScatterPointBrush( this, "Scattered Points" );
 
 	// Note: You should implement these 5 brushes.  They are set the same (PointBrush) for now
-	ImpBrush::c_pBrushes[BRUSH_SCATTERED_POINTS]	
-		= new PointBrush( this, "Scattered Points" );
 	ImpBrush::c_pBrushes[BRUSH_SCATTERED_LINES]		
 		= new PointBrush( this, "Scattered Lines" );
 	ImpBrush::c_pBrushes[BRUSH_SCATTERED_CIRCLES]	
