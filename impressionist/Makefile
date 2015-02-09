@@ -17,7 +17,7 @@ ALL.O = bitmap.o impBrush.o \
 	impressionist.o impressionistDoc.o impressionistUI.o \
 	originalView.o paintView.o pointBrush.o \
 	triangleBrush.o circleBrush.o lineBrush.o \
-	scatterPointBrush.o scatterLineBrush.o
+	scatterPointBrush.o scatterLineBrush.o scatterCircleBrush.o
 ALL.CPP = $(subst .o,.cpp,$(ALL.O)) 
 
 MAKEDEPEND = gcc -M $(CPPFLAGS) $(INCLUDE) -o $*.d $<

@@ -48,7 +48,7 @@ void CircleBrush::BrushMove( const Point source, const Point target )
 		glVertex2f(target.x,target.y);
 		 
 		for (angle=0.0f; angle <= 2.0f * 3.14159265 + 0.2 ;angle+=0.2){
-	    glVertex2f(target.x+sin(angle)*radius, target.y+cos(angle)*radius);
+		    glVertex2f(target.x+sin(angle)*radius, target.y+cos(angle)*radius);
 		}
 	 
 	glEnd();
