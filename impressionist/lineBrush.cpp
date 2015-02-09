@@ -53,8 +53,8 @@ void LineBrush::BrushMove( const Point source, const Point target )
 	end_y = target.y + (0.5*length) * sin(angle);
 
 	glLineWidth(width);
+	SetColor( source, alpha );
 	glBegin(GL_LINES);
-		SetColor( source, alpha );
 		glVertex2f(start_x, start_y);
 		glVertex2f(end_x, end_y);
 	glEnd();

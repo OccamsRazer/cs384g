@@ -53,8 +53,8 @@ void ScatterCircleBrush::BrushMove( const Point source, const Point target )
 	for(i = 0; i <= numCircles; i++){
 		x_val = min_x + rand() % size;
 		y_val = min_y + rand() % size;
+		SetColor( Point(x_val, y_val), alpha );
 		glBegin( GL_TRIANGLE_FAN );
-			SetColor( Point(x_val, y_val), alpha );
 			glVertex2f(x_val, y_val);
 			for (angle=0.0f; angle <= 2.0f * 3.14159265 + 0.2 ;angle+=0.2){
 				glVertex2f(x_val+sin(angle)*radius, y_val+cos(angle)*radius);

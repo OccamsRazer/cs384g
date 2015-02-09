@@ -52,12 +52,12 @@ void TriangleBrush::BrushMove( const Point source, const Point target )
 	By = target.y - (.5*size);
 	Cy = target.y + (.5*size);
 
+	SetColor( source, alpha );
 	glBegin( GL_POLYGON );
-	  SetColor( source, alpha );
-	  glVertex2i( Ax, Ay );
-	  glVertex2i( Bx, By );
-	  glVertex2i( Cx, Cy );
-  glEnd();
+		glVertex2i( Ax, Ay );
+		glVertex2i( Bx, By );
+		glVertex2i( Cx, Cy );
+	glEnd();
 }
 
 void TriangleBrush::BrushEnd( const Point source, const Point target )

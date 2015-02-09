@@ -41,8 +41,8 @@ void PointBrush::BrushMove( const Point source, const Point target )
 	}
 	float alpha = pDoc->getAlpha();
 
+	SetColor( source, alpha );
 	glBegin( GL_POINTS );
-		SetColor( source, alpha );
 
 		glVertex2d( target.x, target.y );
 

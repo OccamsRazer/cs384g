@@ -47,6 +47,9 @@ void PaintView::draw()
 	// To avoid flicker on some machines.
   	// glDrawBuffer(GL_FRONT_AND_BACK);
 	#endif // !MESA
+	
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable (GL_BLEND);
 
 	if(!valid())
 	{

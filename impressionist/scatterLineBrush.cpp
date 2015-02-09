@@ -52,19 +52,18 @@ void ScatterLineBrush::BrushMove( const Point source, const Point target )
 
 	int numLines =  4;
 	glLineWidth(width);
-	glBegin( GL_LINES );
 
-		for(i = 0; i <= numLines; i++){
-			x_val = min_x + rand() % length;
-			y_val = min_y + rand() % length;
-			SetColor( Point(x_val, y_val), alpha );
-
+	for(i = 0; i <= numLines; i++){
+		x_val = min_x + rand() % length;
+		y_val = min_y + rand() % length;
+		SetColor( Point(x_val, y_val), alpha );
+		glBegin( GL_LINES );
 			glVertex2f(x_val - x_offset, y_val - y_offset);
 			glVertex2f(x_val + x_offset, y_val + y_offset);
-		}
+		glEnd();
+	}
 
 
-	glEnd();
 }
 
 void ScatterLineBrush::BrushEnd( const Point source, const Point target )
