@@ -39,9 +39,10 @@ void PointBrush::BrushMove( const Point source, const Point target )
 		printf( "PointBrush::BrushMove  document is NULL\n" );
 		return;
 	}
+	float alpha = pDoc->getAlpha();
 
 	glBegin( GL_POINTS );
-		SetColor( source );
+		SetColor( source, alpha );
 
 		glVertex2d( target.x, target.y );
 

@@ -40,6 +40,7 @@ void LineBrush::BrushMove( const Point source, const Point target )
 		printf( "LineBrush::BrushMove  document is NULL\n" );
 		return;
 	}
+	float alpha = pDoc->getAlpha();
 	float angle = pDoc->getAngle() * 3.14159265 / 180.0;
 	float width = pDoc->getWeight()*1.0;
 	float length = pDoc->getSize()*1.0;
@@ -53,7 +54,7 @@ void LineBrush::BrushMove( const Point source, const Point target )
 
 	glLineWidth(width);
 	glBegin(GL_LINES);
-		SetColor( source );
+		SetColor( source, alpha );
 		glVertex2f(start_x, start_y);
 		glVertex2f(end_x, end_y);
 	glEnd();

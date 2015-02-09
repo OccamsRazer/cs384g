@@ -98,11 +98,19 @@ int ImpressionistDoc::getWeight()
 }
 
 //---------------------------------------------------------
-// Returns the weight of the brush.
+// Returns the angle of the brush.
 //---------------------------------------------------------
 int ImpressionistDoc::getAngle()
 {
 	return m_pUI->getAngle();
+}
+
+//---------------------------------------------------------
+// Returns the alpha of the brush.
+//---------------------------------------------------------
+float ImpressionistDoc::getAlpha()
+{
+	return m_pUI->getAlpha();
 }
 
 

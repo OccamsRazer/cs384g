@@ -45,6 +45,7 @@ public:
 	Fl_Slider*			m_BrushSizeSlider;
 	Fl_Slider*			m_BrushWeightSlider;
 	Fl_Slider*			m_BrushAngleSlider;
+	Fl_Slider*			m_BrushAlphaSlider;
 	Fl_Button*          m_ClearCanvasButton;
 
 	// Member functions
@@ -65,6 +66,9 @@ public:
 	int					getAngle();
 	void				setAngle(int angle);
 
+	float				getAlpha();
+	void				setAlpha(float alpha);
+
 	// Callbacks for the image filter dialogue (different from
 	// the other callbacks because they aren't static)
 	void				initFltDesignUI(void);
@@ -82,6 +86,7 @@ private:
 	int		m_nSize;
 	int		m_nWeight;
 	int		m_nAngle;
+	float 	m_nAlpha;
 
 	// These attributes are set by the filter kernel UI
 	double fltKernel[FLT_WIDTH*FLT_HEIGHT];		//the kernel of the image filter
@@ -110,6 +115,7 @@ private:
 	static void	cb_sizeSlides(Fl_Widget* o, void* v);
 	static void	cb_weightSlides(Fl_Widget* o, void* v);
 	static void	cb_angleSlides(Fl_Widget* o, void* v);
+	static void	cb_alphaSlides(Fl_Widget* o, void* v);
 
 };
 

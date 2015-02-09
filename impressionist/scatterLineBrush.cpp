@@ -37,6 +37,7 @@ void ScatterLineBrush::BrushMove( const Point source, const Point target )
 		printf( "ScatterLineBrush::BrushMove  document is NULL\n" );
 		return;
 	}
+	float alpha = pDoc->getAlpha();
 	float angle = pDoc->getAngle() * 3.14159265 / 180.0;
 	float width = pDoc->getWeight()*1.0;
 	int length = pDoc->getSize();
@@ -56,7 +57,7 @@ void ScatterLineBrush::BrushMove( const Point source, const Point target )
 		for(i = 0; i <= numLines; i++){
 			x_val = min_x + rand() % length;
 			y_val = min_y + rand() % length;
-			SetColor( Point(x_val, y_val) );
+			SetColor( Point(x_val, y_val), alpha );
 
 			glVertex2f(x_val - x_offset, y_val - y_offset);
 			glVertex2f(x_val + x_offset, y_val + y_offset);

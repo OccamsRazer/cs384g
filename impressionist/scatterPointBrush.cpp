@@ -37,6 +37,7 @@ void ScatterPointBrush::BrushMove( const Point source, const Point target )
 		return;
 	}
 	int size = pDoc->getSize();
+	float alpha = pDoc->getAlpha();
 
 	float x_val, y_val, min_x, min_y;
 	// max_x = 0.5 * size + target.x;
@@ -52,7 +53,7 @@ void ScatterPointBrush::BrushMove( const Point source, const Point target )
 		for(i = 0; i <= (size * size)*0.5; i++){
 			x_val = min_x + rand() % size;
 			y_val = min_y + rand() % size;
-			SetColor( Point(x_val, y_val) );
+			SetColor( Point(x_val, y_val), alpha );
 
 			glVertex2d(x_val, y_val);
 		}

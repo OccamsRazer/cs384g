@@ -42,9 +42,10 @@ void CircleBrush::BrushMove( const Point source, const Point target )
 	}
 	float angle;
 	float radius = pDoc->getSize() / 2.0;
+	float alpha = pDoc->getAlpha();
 
+	SetColor( source, alpha );
 	glBegin(GL_TRIANGLE_FAN);
-		SetColor( source );
 		glVertex2f(target.x,target.y);
 		 
 		for (angle=0.0f; angle <= 2.0f * 3.14159265 + 0.2 ;angle+=0.2){
