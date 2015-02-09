@@ -24,6 +24,7 @@ void ScatterLineBrush::BrushBegin( const Point source, const Point target )
 	ImpressionistDoc* pDoc = GetDocument();
 	ImpressionistUI* dlg=pDoc->m_pUI;
 
+	srand(time(NULL));
 	BrushMove( source, target );
 }
 
@@ -48,7 +49,6 @@ void ScatterLineBrush::BrushMove( const Point source, const Point target )
 
 	int i;
 
-	srand(time(NULL));
 	int numLines =  4;
 	glLineWidth(width);
 	glBegin( GL_LINES );

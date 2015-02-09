@@ -23,6 +23,7 @@ void ScatterPointBrush::BrushBegin( const Point source, const Point target )
 	ImpressionistDoc* pDoc = GetDocument();
 	ImpressionistUI* dlg=pDoc->m_pUI;
 
+	srand(time(NULL));
 	BrushMove( source, target );
 }
 
@@ -44,9 +45,6 @@ void ScatterPointBrush::BrushMove( const Point source, const Point target )
 	min_y = (float)target.y - 0.5 * size;
 
 	int i;
-
-	// glPointSize( (float)size );
-	srand(time(NULL));
 
 	glBegin( GL_POINTS );
 
