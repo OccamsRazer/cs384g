@@ -369,7 +369,7 @@ void ImpressionistUI::setWeight( int weight )
 	m_nWeight=weight;
 
 	if (weight<=40) 
-		m_BrushSizeSlider->value(m_nWeight);
+		m_BrushWeightSlider->value(m_nWeight);
 }
 
 
@@ -466,17 +466,17 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushSizeSlider->callback(cb_sizeSlides);
 
 		// Add line thickness slider to the dialog
-		m_BrushSizeSlider = new Fl_Value_Slider(10, 110, 300, 20, "Line Weight");
-		m_BrushSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_BrushSizeSlider->type(FL_HOR_NICE_SLIDER);
-        m_BrushSizeSlider->labelfont(FL_COURIER);
-        m_BrushSizeSlider->labelsize(12);
-		m_BrushSizeSlider->minimum(1);
-		m_BrushSizeSlider->maximum(40);
-		m_BrushSizeSlider->step(1);
-		m_BrushSizeSlider->value(m_nWeight);
-		m_BrushSizeSlider->align(FL_ALIGN_RIGHT);
-		m_BrushSizeSlider->callback(cb_weightSlides);
+		m_BrushWeightSlider = new Fl_Value_Slider(10, 110, 300, 20, "Line Weight");
+		m_BrushWeightSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_BrushWeightSlider->type(FL_HOR_NICE_SLIDER);
+        m_BrushWeightSlider->labelfont(FL_COURIER);
+        m_BrushWeightSlider->labelsize(12);
+		m_BrushWeightSlider->minimum(1);
+		m_BrushWeightSlider->maximum(40);
+		m_BrushWeightSlider->step(1);
+		m_BrushWeightSlider->value(m_nWeight);
+		m_BrushWeightSlider->align(FL_ALIGN_RIGHT);
+		m_BrushWeightSlider->callback(cb_weightSlides);
 
 		// Add brush angle slider to the dialog
 

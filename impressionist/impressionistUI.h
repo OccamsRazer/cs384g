@@ -43,6 +43,7 @@ public:
 	Fl_Choice*			m_BrushTypeChoice;
 
 	Fl_Slider*			m_BrushSizeSlider;
+	Fl_Slider*			m_BrushWeightSlider;
 	Fl_Button*          m_ClearCanvasButton;
 
 	// Member functions
