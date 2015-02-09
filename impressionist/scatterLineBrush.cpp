@@ -49,7 +49,7 @@ void ScatterLineBrush::BrushMove( const Point source, const Point target )
 	int i;
 
 	srand(time(NULL));
-	int numLines =  3 + rand() % 2;
+	int numLines =  4;
 	glLineWidth(width);
 	glBegin( GL_LINES );
 
