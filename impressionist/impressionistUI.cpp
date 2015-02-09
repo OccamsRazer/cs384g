@@ -284,6 +284,16 @@ void ImpressionistUI::cb_sizeSlides(Fl_Widget* o, void* v)
 	((ImpressionistUI*)(o->user_data()))->m_nSize=int( ((Fl_Slider *)o)->value() ) ;
 }
 
+//-----------------------------------------------------------
+// Updates the brush weight to use from the value of the weight
+// slider
+// Called by the UI when the weight slider is moved
+//-----------------------------------------------------------
+void ImpressionistUI::cb_weightSlides(Fl_Widget* o, void* v)
+{
+	((ImpressionistUI*)(o->user_data()))->m_nWeight=int( ((Fl_Slider *)o)->value() ) ;
+}
+
 //---------------------------------- per instance functions --------------------------------------
 
 //------------------------------------------------
@@ -343,6 +353,24 @@ void ImpressionistUI::setSize( int size )
 		m_BrushSizeSlider->value(m_nSize);
 }
 
+//------------------------------------------------
+// Return the brush weight
+//------------------------------------------------
+int ImpressionistUI::getWeight()
+{
+	return m_nWeight;
+}
+
+//-------------------------------------------------
+// Set the brush size
+//-------------------------------------------------
+void ImpressionistUI::setWeight( int weight )
+{
+	m_nWeight=weight;
+
+	if (weight<=40) 
+		m_BrushSizeSlider->value(m_nWeight);
+}
 
 
 // Main menu definition
@@ -409,6 +437,7 @@ ImpressionistUI::ImpressionistUI() {
 	// init values
 
 	m_nSize = 10;
+	m_nWeight = 1;
 
 	// brush dialog definition
 	m_brushDialog = new Fl_Window(400, 325, "Brush Dialog");
@@ -435,6 +464,24 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushSizeSlider->value(m_nSize);
 		m_BrushSizeSlider->align(FL_ALIGN_RIGHT);
 		m_BrushSizeSlider->callback(cb_sizeSlides);
+
+		// Add line thickness slider to the dialog
+		m_BrushSizeSlider = new Fl_Value_Slider(10, 110, 300, 20, "Line Weight");
+		m_BrushSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_BrushSizeSlider->type(FL_HOR_NICE_SLIDER);
+        m_BrushSizeSlider->labelfont(FL_COURIER);
+        m_BrushSizeSlider->labelsize(12);
+		m_BrushSizeSlider->minimum(1);
+		m_BrushSizeSlider->maximum(40);
+		m_BrushSizeSlider->step(1);
+		m_BrushSizeSlider->value(m_nWeight);
+		m_BrushSizeSlider->align(FL_ALIGN_RIGHT);
+		m_BrushSizeSlider->callback(cb_weightSlides);
+
+		// Add brush angle slider to the dialog
+
+		// Add alpha slider to the dialog
+
 
     m_brushDialog->end();	
 
