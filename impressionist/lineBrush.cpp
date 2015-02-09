@@ -40,17 +40,22 @@ void LineBrush::BrushMove( const Point source, const Point target )
 		printf( "LineBrush::BrushMove  document is NULL\n" );
 		return;
 	}
-	float angle;
-	int radius = pDoc->getSize();
+	float angle = 45.0 * 3.14159265 / 180.0; // need to get from UI
+	float width = 10.0f; // need to get from UI
+	float length = pDoc->getSize()*1.0;
+	float start_x, start_y, end_x, end_y;
 
-	glBegin(GL_TRIANGLE_FAN);
+	start_x = target.x - (0.5*length) * cos(angle);
+	start_y = target.y - (0.5*length) * sin(angle);
+
+	end_x = target.x + (0.5*length) * cos(angle);
+	end_y = target.y + (0.5*length) * sin(angle);
+
+	glLineWidth(width);
+	glBegin(GL_LINES);
 		SetColor( source );
-		glVertex2f(target.x,target.y);
-		 
-		for (angle=0.0f; angle <= 2.0f * 3.14159265 + 0.2 ;angle+=0.2){
-			glVertex2f(target.x+sin(angle)*radius, target.y+cos(angle)*radius);
-		}
-	 
+		glVertex2f(start_x, start_y);
+		glVertex2f(end_x, end_y);
 	glEnd();
 }
 
