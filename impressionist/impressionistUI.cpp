@@ -261,16 +261,13 @@ void ImpressionistUI::cb_brushChoice(Fl_Widget* o, void* v)
 
 	pDoc->setBrushType(type);
 
-	if(type == BRUSH_LINES){
+	if(type == BRUSH_LINES || type == BRUSH_SCATTERED_LINES){
 		pUI->m_BrushWeightSlider->activate();
-		fl_message("Activating weight slider");
-	}
-	else if(type == BRUSH_SCATTERED_LINES){
-		pUI->m_BrushWeightSlider->activate();
-		fl_message("Activating weight slider");
+		pUI->m_BrushAngleSlider->activate();
 	}
 	else{
 		pUI->m_BrushWeightSlider->deactivate();
+		pUI->m_BrushAngleSlider->deactivate();
 	}
 
 }
@@ -305,6 +302,16 @@ void ImpressionistUI::cb_sizeSlides(Fl_Widget* o, void* v)
 void ImpressionistUI::cb_weightSlides(Fl_Widget* o, void* v)
 {
 	((ImpressionistUI*)(o->user_data()))->m_nWeight=int( ((Fl_Slider *)o)->value() ) ;
+}
+
+//-----------------------------------------------------------
+// Updates the brush weight to use from the value of the weight
+// slider
+// Called by the UI when the weight slider is moved
+//-----------------------------------------------------------
+void ImpressionistUI::cb_angleSlides(Fl_Widget* o, void* v)
+{
+	((ImpressionistUI*)(o->user_data()))->m_nAngle=int( ((Fl_Slider *)o)->value() ) ;
 }
 
 //---------------------------------- per instance functions --------------------------------------
@@ -385,6 +392,24 @@ void ImpressionistUI::setWeight( int weight )
 		m_BrushWeightSlider->value(m_nWeight);
 }
 
+//------------------------------------------------
+// Return the brush weight
+//------------------------------------------------
+int ImpressionistUI::getAngle()
+{
+	return m_nAngle;
+}
+
+//-------------------------------------------------
+// Set the brush size
+//-------------------------------------------------
+void ImpressionistUI::setAngle( int angle )
+{
+	m_nAngle=angle;
+
+	if (angle<=40) 
+		m_BrushAngleSlider->value(m_nAngle);
+}
 
 // Main menu definition
 Fl_Menu_Item ImpressionistUI::menuitems[] = {
@@ -451,6 +476,7 @@ ImpressionistUI::ImpressionistUI() {
 
 	m_nSize = 10;
 	m_nWeight = 1;
+	m_nAngle = 0;
 
 	// brush dialog definition
 	m_brushDialog = new Fl_Window(400, 325, "Brush Dialog");
@@ -493,6 +519,18 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushWeightSlider->deactivate();
 
 		// Add brush angle slider to the dialog
+		m_BrushAngleSlider = new Fl_Value_Slider(10, 140, 300, 20, "Line Angle");
+		m_BrushAngleSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_BrushAngleSlider->type(FL_HOR_NICE_SLIDER);
+		m_BrushAngleSlider->labelfont(FL_COURIER);
+		m_BrushAngleSlider->labelsize(12);
+		m_BrushAngleSlider->minimum(0);
+		m_BrushAngleSlider->maximum(359);
+		m_BrushAngleSlider->step(1);
+		m_BrushAngleSlider->value(m_nAngle);
+		m_BrushAngleSlider->align(FL_ALIGN_RIGHT);
+		m_BrushAngleSlider->callback(cb_angleSlides);
+		m_BrushAngleSlider->deactivate();
 
 		// Add alpha slider to the dialog
 

@@ -98,6 +98,15 @@ int ImpressionistDoc::getWeight()
 }
 
 //---------------------------------------------------------
+// Returns the weight of the brush.
+//---------------------------------------------------------
+int ImpressionistDoc::getAngle()
+{
+	return m_pUI->getAngle();
+}
+
+
+//---------------------------------------------------------
 // Load the specified image
 // This is called by the UI when the load image button is 
 // pressed.

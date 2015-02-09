@@ -40,8 +40,8 @@ void LineBrush::BrushMove( const Point source, const Point target )
 		printf( "LineBrush::BrushMove  document is NULL\n" );
 		return;
 	}
-	float angle = 45.0 * 3.14159265 / 180.0; // need to get from UI
-	float width = pDoc->getWeight()*1.0; // need to get from UI
+	float angle = pDoc->getAngle() * 3.14159265 / 180.0;
+	float width = pDoc->getWeight()*1.0;
 	float length = pDoc->getSize()*1.0;
 	float start_x, start_y, end_x, end_y;
 

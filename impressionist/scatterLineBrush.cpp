@@ -37,8 +37,8 @@ void ScatterLineBrush::BrushMove( const Point source, const Point target )
 		printf( "ScatterLineBrush::BrushMove  document is NULL\n" );
 		return;
 	}
-	float angle = 45.0 * 3.14159265 / 180.0; // need to get from UI
-	float width = pDoc->getWeight()*1.0; // need to get from UI
+	float angle = pDoc->getAngle() * 3.14159265 / 180.0;
+	float width = pDoc->getWeight()*1.0;
 	int length = pDoc->getSize();
 
 	float x_val, y_val, min_x, min_y;
