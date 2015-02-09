@@ -41,7 +41,7 @@ void CircleBrush::BrushMove( const Point source, const Point target )
 		return;
 	}
 	float angle;
-	int radius = pDoc->getSize();
+	float radius = pDoc->getSize() / 2.0;
 
 	glBegin(GL_TRIANGLE_FAN);
 		SetColor( source );
