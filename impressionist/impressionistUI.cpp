@@ -260,6 +260,19 @@ void ImpressionistUI::cb_brushChoice(Fl_Widget* o, void* v)
 	int type = static_cast<int>(tmp);
 
 	pDoc->setBrushType(type);
+
+	if(type == BRUSH_LINES){
+		pUI->m_BrushWeightSlider->activate();
+		fl_message("Activating weight slider");
+	}
+	else if(type == BRUSH_SCATTERED_LINES){
+		pUI->m_BrushWeightSlider->activate();
+		fl_message("Activating weight slider");
+	}
+	else{
+		pUI->m_BrushWeightSlider->deactivate();
+	}
+
 }
 
 //------------------------------------------------------------
@@ -477,6 +490,7 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushWeightSlider->value(m_nWeight);
 		m_BrushWeightSlider->align(FL_ALIGN_RIGHT);
 		m_BrushWeightSlider->callback(cb_weightSlides);
+		m_BrushWeightSlider->deactivate();
 
 		// Add brush angle slider to the dialog
 

@@ -46,6 +46,7 @@ void ScatterPointBrush::BrushMove( const Point source, const Point target )
 
 	int i;
 
+	glPointSize( 1.0);
 	glBegin( GL_POINTS );
 
 		for(i = 0; i <= (size * size)*0.5; i++){
