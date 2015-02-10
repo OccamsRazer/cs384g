@@ -27,6 +27,8 @@
 static int		eventToDo;
 static int		isAnEvent=0;
 static Point	coord;
+static Point	rightStartCoord;
+static Point	rightEndCoord;
 
 PaintView::PaintView(int			x, 
 					 int			y, 
@@ -120,13 +122,25 @@ void PaintView::draw()
 			RestoreContent();
 			break;
 		case RIGHT_MOUSE_DOWN:
-
+			rightStartCoord.x = target.x;
+			rightStartCoord.y = target.y;
 			break;
 		case RIGHT_MOUSE_DRAG:
-
+			rightEndCoord.x = target.x;
+			rightEndCoord.y = target.y;
 			break;
 		case RIGHT_MOUSE_UP:
-
+			rightEndCoord.x = target.x;
+			rightEndCoord.y = target.y;
+			if ( m_pDoc->m_nCurrentStroke == STROKE_SLIDERS ){
+				glLineWidth(1);
+				glColor3ub( 255, 0, 0 );
+				glBegin(GL_LINES);
+					glVertex2f(rightStartCoord.x, rightStartCoord.y);
+					glVertex2f(target.x, target.y);
+				glEnd();
+				m_pDoc->SetFromRightClick(rightStartCoord, rightEndCoord);
+			}
 			break;
 
 		default:

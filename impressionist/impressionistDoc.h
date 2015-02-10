@@ -33,6 +33,7 @@ public:
 		double divisor, double offset );
 
 	void	setBrushType(int type);			// called by the UI to set the brushType
+	void	setStrokeType(int type);			// called by the UI to set the brushType
 	int		getSize();						// get the UI size
 	int		getWeight();					// get the UI weight
 	int		getAngle();						// get the UI angle
@@ -60,7 +61,8 @@ public:
 
 
 	// The current active brush.
-	ImpBrush*			m_pCurrentBrush;	
+	ImpBrush*			m_pCurrentBrush;
+	int 				m_nCurrentStroke;	
 	// Size of the brush.
 	int m_nSize;							
 	int m_nWeight;
@@ -74,6 +76,8 @@ public:
 	GLubyte* GetOriginalPixel( int x, int y );   
 	// Get the color of the original picture at the specified point	
 	GLubyte* GetOriginalPixel( const Point p );
+	// Sets the angle and length base on line start and end
+	void SetFromRightClick( const Point start, const Point end);
 
 
 

@@ -272,6 +272,24 @@ void ImpressionistUI::cb_brushChoice(Fl_Widget* o, void* v)
 
 }
 
+//-------------------------------------------------------------
+// Sets the type of stroke to use to the one chosen in the stroke 
+// choice.  
+// Called by the UI when a stroke is chosen in the stroke choice
+//-------------------------------------------------------------
+void ImpressionistUI::cb_strokeChoice(Fl_Widget* o, void* v)
+{
+	ImpressionistUI* pUI=((ImpressionistUI *)(o->user_data()));
+	ImpressionistDoc* pDoc=pUI->getDocument();
+
+	//	int type=(int)v;
+	long long tmp = reinterpret_cast<long long>(v);
+	int type = static_cast<int>(tmp);
+
+	pDoc->setStrokeType(type);
+
+}
+
 //------------------------------------------------------------
 // Clears the paintview canvas.
 // Called by the UI when the clear canvas button is pushed
@@ -417,7 +435,7 @@ void ImpressionistUI::setAngle( int angle )
 {
 	m_nAngle=angle;
 
-	if (angle<=40) 
+	if (angle<=359)
 		m_BrushAngleSlider->value(m_nAngle);
 }
 
@@ -467,6 +485,13 @@ Fl_Menu_Item ImpressionistUI::brushTypeMenu[NUM_BRUSH_TYPE+1] = {
   {"Scattered Points",	FL_ALT+'q', (Fl_Callback *)ImpressionistUI::cb_brushChoice, (void *)BRUSH_SCATTERED_POINTS},
   {"Scattered Lines",	FL_ALT+'m', (Fl_Callback *)ImpressionistUI::cb_brushChoice, (void *)BRUSH_SCATTERED_LINES},
   {"Scattered Circles",	FL_ALT+'d', (Fl_Callback *)ImpressionistUI::cb_brushChoice, (void *)BRUSH_SCATTERED_CIRCLES},
+  {0}
+};
+
+// Stroke chooser menu definition
+Fl_Menu_Item ImpressionistUI::strokeMenu[NUM_STROKE_TYPE+1] = {
+  {"Sliders/Right Click",	FL_ALT+'s', (Fl_Callback *)ImpressionistUI::cb_strokeChoice, (void *)STROKE_SLIDERS},
+  {"Brush Direction",		FL_ALT+'b', (Fl_Callback *)ImpressionistUI::cb_strokeChoice, (void *)STROKE_BRUSH},
   {0}
 };
 
@@ -521,6 +546,12 @@ ImpressionistUI::ImpressionistUI() {
 		m_ClearCanvasButton = new Fl_Button(240,10,150,25,"&Clear Canvas");
 		m_ClearCanvasButton->user_data((void*)(this));
 		m_ClearCanvasButton->callback(cb_clear_canvas_button);
+
+		// Add a stroke type choice to the dialog
+		m_BrushTypeChoice = new Fl_Choice(125,40,150,25,"&Stroke Direction");
+		m_BrushTypeChoice->user_data((void*)(this));	// record self to be used by static callback functions
+		m_BrushTypeChoice->menu(strokeMenu);
+		m_BrushTypeChoice->callback(cb_strokeChoice);
 
 
 		// Add brush size slider to the dialog 

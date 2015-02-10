@@ -9,6 +9,7 @@
 #include <FL/fl_ask.H>
 
 #include <algorithm>
+#include <math.h>
 
 #include "impressionistDoc.h"
 #include "impressionistUI.h"
@@ -52,6 +53,7 @@ ImpressionistDoc::ImpressionistDoc()
 
 	// make one of the brushes current
 	m_pCurrentBrush	= ImpBrush::c_pBrushes[0];
+	m_nCurrentStroke = STROKE_SLIDERS;
 
 }
 
@@ -79,6 +81,15 @@ char* ImpressionistDoc::getImageName()
 void ImpressionistDoc::setBrushType(int type)
 {
 	m_pCurrentBrush	= ImpBrush::c_pBrushes[type];
+}
+
+//---------------------------------------------------------
+// Called by the UI when the user changes the stroke type.
+// type: one of the defined stroke types.
+//---------------------------------------------------------
+void ImpressionistDoc::setStrokeType(int type)
+{
+	m_nCurrentStroke = type;
 }
 
 //---------------------------------------------------------
@@ -274,5 +285,12 @@ GLubyte* ImpressionistDoc::GetOriginalPixel( const Point p )
 	return GetOriginalPixel( p.x, p.y );
 }
 
+void ImpressionistDoc::SetFromRightClick(const Point start, const Point end){
+	int length = (int) sqrt(pow(start.x - end.x, 2)+pow(start.y - end.y, 2));
+	int delta_y = abs(start.y - end.y);
+	int delta_x = abs(start.x - end.x);
+	int angle = (int) (atan2(delta_y, delta_x) * 180/ 3.14159265);
 
-
+	m_pUI->setSize(length);
+	m_pUI->setAngle(angle);
+}

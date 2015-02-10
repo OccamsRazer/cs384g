@@ -21,6 +21,11 @@ enum
 	BRUSH_TRIANGLES = 6,
 	NUM_BRUSH_TYPE // Make sure this stays at the end!
 };
+enum{
+	STROKE_SLIDERS = 0,
+	STROKE_BRUSH = 1,
+	NUM_STROKE_TYPE
+};
 
 
 class ImpressionistDoc; // Pre-declaring class
