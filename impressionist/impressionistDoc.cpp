@@ -285,12 +285,16 @@ GLubyte* ImpressionistDoc::GetOriginalPixel( const Point p )
 	return GetOriginalPixel( p.x, p.y );
 }
 
-void ImpressionistDoc::SetFromRightClick(const Point start, const Point end){
+void ImpressionistDoc::SetFromMousePoints(const Point start, const Point end){
 	int length = (int) sqrt(pow(start.x - end.x, 2)+pow(start.y - end.y, 2));
-	int delta_y = abs(start.y - end.y);
-	int delta_x = abs(start.x - end.x);
+	int delta_y = (start.y - end.y);
+	int delta_x = (start.x - end.x);
 	int angle = (int) (atan2(delta_y, delta_x) * 180/ 3.14159265);
+	if( angle < 0 )
+		angle += 180;
 
-	m_pUI->setSize(length);
+	if(m_nCurrentStroke == STROKE_SLIDERS){
+		m_pUI->setSize(length);
+	}
 	m_pUI->setAngle(angle);
 }

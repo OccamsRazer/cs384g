@@ -77,7 +77,7 @@ public:
 	// Get the color of the original picture at the specified point	
 	GLubyte* GetOriginalPixel( const Point p );
 	// Sets the angle and length base on line start and end
-	void SetFromRightClick( const Point start, const Point end);
+	void SetFromMousePoints( const Point start, const Point end);
 
 
 

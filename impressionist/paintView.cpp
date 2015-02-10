@@ -27,8 +27,8 @@
 static int		eventToDo;
 static int		isAnEvent=0;
 static Point	coord;
-static Point	rightStartCoord;
-static Point	rightEndCoord;
+static Point	startCoord;
+static Point	endCoord;
 
 PaintView::PaintView(int			x, 
 					 int			y, 
@@ -110,36 +110,58 @@ void PaintView::draw()
 		switch (eventToDo) 
 		{
 		case LEFT_MOUSE_DOWN:
+			startCoord.x = target.x;
+			startCoord.y = target.y;
+			endCoord.x = target.x;
+			endCoord.y = target.y;
+			if ( m_pDoc->m_nCurrentStroke == STROKE_BRUSH ){
+				m_pDoc->SetFromMousePoints(startCoord, endCoord);
+			}
 			m_pDoc->m_pCurrentBrush->BrushBegin( source, target );
 			break;
 		case LEFT_MOUSE_DRAG:
+			startCoord.x = endCoord.x;
+			startCoord.y = endCoord.y;
+			endCoord.x = target.x;
+			endCoord.y = target.y;
+			if ( m_pDoc->m_nCurrentStroke == STROKE_BRUSH ){
+				m_pDoc->SetFromMousePoints(startCoord, endCoord);
+			}
 			m_pDoc->m_pCurrentBrush->BrushMove( source, target );
 			break;
 		case LEFT_MOUSE_UP:
+			startCoord.x = endCoord.x;
+			startCoord.y = endCoord.y;
+			endCoord.x = target.x;
+			endCoord.y = target.y;
+			if ( m_pDoc->m_nCurrentStroke == STROKE_BRUSH ){
+				m_pDoc->SetFromMousePoints(startCoord, endCoord);
+			}
 			m_pDoc->m_pCurrentBrush->BrushEnd( source, target );
 
-			SaveCurrentContent();
-			RestoreContent();
 			break;
 		case RIGHT_MOUSE_DOWN:
-			rightStartCoord.x = target.x;
-			rightStartCoord.y = target.y;
+			startCoord.x = target.x;
+			startCoord.y = target.y;
 			break;
 		case RIGHT_MOUSE_DRAG:
-			rightEndCoord.x = target.x;
-			rightEndCoord.y = target.y;
+			endCoord.x = target.x;
+			endCoord.y = target.y;
+			if ( m_pDoc->m_nCurrentStroke == STROKE_SLIDERS ){
+				m_pDoc->SetFromMousePoints(startCoord, endCoord);
+			}
 			break;
 		case RIGHT_MOUSE_UP:
-			rightEndCoord.x = target.x;
-			rightEndCoord.y = target.y;
+			endCoord.x = target.x;
+			endCoord.y = target.y;
 			if ( m_pDoc->m_nCurrentStroke == STROKE_SLIDERS ){
 				glLineWidth(1);
 				glColor3ub( 255, 0, 0 );
 				glBegin(GL_LINES);
-					glVertex2f(rightStartCoord.x, rightStartCoord.y);
+					glVertex2f(startCoord.x, startCoord.y);
 					glVertex2f(target.x, target.y);
 				glEnd();
-				m_pDoc->SetFromRightClick(rightStartCoord, rightEndCoord);
+				m_pDoc->SetFromMousePoints(startCoord, endCoord);
 			}
 			break;
 
