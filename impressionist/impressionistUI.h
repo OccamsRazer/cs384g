@@ -15,6 +15,7 @@
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Int_Input.H>
 #include <FL/Fl_Color_Chooser.H>
 
 #include "impressionist.h"
@@ -38,9 +39,20 @@ public:
 	PaintView*			m_paintView;
 	OriginalView*		m_origView;
 
-// for brush dialog
+	// for kernel dialog
+	Fl_Window*			m_kernelDialog;
+	Fl_Int_Input*		m_divisor;
+	Fl_Int_Input*		m_offset;
+	Fl_Int_Input*       m_kernel[FLT_HEIGHT*FLT_WIDTH];
+	Fl_Button*			m_CancelKernel;
+	Fl_Button*			m_PreviewKernel;
+	Fl_Button*			m_ApplyKernel;
+
+
+	// for brush dialog
 	Fl_Window*			m_brushDialog;
 	Fl_Choice*			m_BrushTypeChoice;
+	Fl_Choice*			m_strokeTypeChoice;
 
 	Fl_Slider*			m_BrushSizeSlider;
 	Fl_Slider*			m_BrushWeightSlider;
@@ -90,8 +102,8 @@ private:
 
 	// These attributes are set by the filter kernel UI
 	double fltKernel[FLT_WIDTH*FLT_HEIGHT];		//the kernel of the image filter
-	double scale,offset;						//the divisor and offset parameter, 
-												//applied after convolving to transform 
+	double divisor,offset;						//the divisor and offset parameter,
+												//applied after convolving to transform
 												//the filtered image into the range [0,255]
 
 

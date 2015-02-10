@@ -46,7 +46,7 @@ in links on the fltk help session page.
 			{ 0 }
 		};
 		myMenubar->menu(myMenuItems);
-    myWindow->end();
+	myWindow->end();
 
 	//----The window callback--------------------------
 	// One of the callbacks
@@ -67,8 +67,8 @@ in links on the fltk help session page.
 	Fl_Value_Slider * mySlider = new Fl_Value_Slider(10, 80, 300, 20, "My Value");
 	mySlider->user_data((void*)(this));	// record self to be used by static callback functions
 	mySlider->type(FL_HOR_NICE_SLIDER);
-    mySlider->labelfont(FL_COURIER);
-    mySlider->labelsize(12);
+	mySlider->labelfont(FL_COURIER);
+	mySlider->labelsize(12);
 	mySlider->minimum(1);
 	mySlider->maximum(40);
 	mySlider->step(1);
@@ -143,7 +143,7 @@ in links on the fltk help session page.
 
 //----------Int Input--------------------------------------
 
-    //---To install an int input-----------------------
+	//---To install an int input-----------------------
 	Fl_Int_Input* myInput = new Fl_Int_Input(200, 50, 5, 5, "&My Input");
 	myInput->user_data((void*)(this));   // record self to be used by static callback functions
 	myInput->callback(cb_myInput);
@@ -208,6 +208,16 @@ void ImpressionistUI::cb_save_image(Fl_Menu_* o, void* v)
 void ImpressionistUI::cb_brushes(Fl_Menu_* o, void* v) 
 {
 	whoami(o)->m_brushDialog->show();
+}
+
+//-------------------------------------------------------------
+// Brings up the paint dialog
+// This is called by the UI when the brushes menu item
+// is chosen
+//-------------------------------------------------------------
+void ImpressionistUI::cb_filter_kernel(Fl_Menu_* o, void* v)
+{
+	whoami(o)->m_kernelDialog->show();
 }
 
 
@@ -463,7 +473,8 @@ Fl_Menu_Item ImpressionistUI::menuitems[] = {
 	{ "&File",		0, 0, 0, FL_SUBMENU },
 		{ "&Load Image...",	FL_ALT + 'l', (Fl_Callback *)ImpressionistUI::cb_load_image },
 		{ "&Save Image...",	FL_ALT + 's', (Fl_Callback *)ImpressionistUI::cb_save_image },
-		{ "&Brushes...",	FL_ALT + 'b', (Fl_Callback *)ImpressionistUI::cb_brushes }, 
+		{ "&Brushes...",	FL_ALT + 'b', (Fl_Callback *)ImpressionistUI::cb_brushes },
+		{ "&Kernel...",		FL_ALT + 'k', (Fl_Callback *)ImpressionistUI::cb_filter_kernel},
 		{ "&Clear Canvas", FL_ALT + 'c', (Fl_Callback *)ImpressionistUI::cb_clear_canvas, 0, FL_MENU_DIVIDER },
 		
 		{ "&Quit",			FL_ALT + 'q', (Fl_Callback *)ImpressionistUI::cb_exit },
@@ -502,6 +513,7 @@ Fl_Menu_Item ImpressionistUI::strokeMenu[NUM_STROKE_TYPE+1] = {
 // Add new widgets here
 //----------------------------------------------------
 ImpressionistUI::ImpressionistUI() {
+	int r,c;
 	// Create the main window
 
 
@@ -526,7 +538,7 @@ ImpressionistUI::ImpressionistUI() {
 
 		group->end();
 		Fl_Group::current()->resizable(group);
-    m_mainWindow->end();
+	m_mainWindow->end();
 
 	// init values
 
@@ -534,6 +546,9 @@ ImpressionistUI::ImpressionistUI() {
 	m_nWeight = 1;
 	m_nAngle = 0;
 	m_nAlpha = 1.0;
+	fltKernel[12] = 1.0;
+	divisor = 1.0;
+	offset = 0;
 
 	// brush dialog definition
 	m_brushDialog = new Fl_Window(400, 325, "Brush Dialog");
@@ -548,18 +563,18 @@ ImpressionistUI::ImpressionistUI() {
 		m_ClearCanvasButton->callback(cb_clear_canvas_button);
 
 		// Add a stroke type choice to the dialog
-		m_BrushTypeChoice = new Fl_Choice(125,40,150,25,"&Stroke Direction");
-		m_BrushTypeChoice->user_data((void*)(this));	// record self to be used by static callback functions
-		m_BrushTypeChoice->menu(strokeMenu);
-		m_BrushTypeChoice->callback(cb_strokeChoice);
+		m_strokeTypeChoice = new Fl_Choice(125,40,150,25,"&Stroke Direction");
+		m_strokeTypeChoice->user_data((void*)(this));	// record self to be used by static callback functions
+		m_strokeTypeChoice->menu(strokeMenu);
+		m_strokeTypeChoice->callback(cb_strokeChoice);
 
 
 		// Add brush size slider to the dialog 
 		m_BrushSizeSlider = new Fl_Value_Slider(10, 80, 300, 20, "Size");
 		m_BrushSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_BrushSizeSlider->type(FL_HOR_NICE_SLIDER);
-        m_BrushSizeSlider->labelfont(FL_COURIER);
-        m_BrushSizeSlider->labelsize(12);
+		m_BrushSizeSlider->labelfont(FL_COURIER);
+		m_BrushSizeSlider->labelsize(12);
 		m_BrushSizeSlider->minimum(1);
 		m_BrushSizeSlider->maximum(40);
 		m_BrushSizeSlider->step(1);
@@ -571,8 +586,8 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushWeightSlider = new Fl_Value_Slider(10, 110, 300, 20, "Line Weight");
 		m_BrushWeightSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_BrushWeightSlider->type(FL_HOR_NICE_SLIDER);
-        m_BrushWeightSlider->labelfont(FL_COURIER);
-        m_BrushWeightSlider->labelsize(12);
+		m_BrushWeightSlider->labelfont(FL_COURIER);
+		m_BrushWeightSlider->labelsize(12);
 		m_BrushWeightSlider->minimum(1);
 		m_BrushWeightSlider->maximum(40);
 		m_BrushWeightSlider->step(1);
@@ -609,7 +624,37 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushAlphaSlider->callback(cb_alphaSlides);
 
 
-    m_brushDialog->end();	
+	m_brushDialog->end();
+
+	m_kernelDialog = new Fl_Window(270, 280, "Kernel Dialog");
+		for(int r = 0; r < FLT_HEIGHT; r++){
+			for(int c = 0; c < FLT_WIDTH; c++){
+				m_kernel[r*5+c] = new Fl_Int_Input(10+r*50, 10+c*25, 50, 25, "");
+				m_kernel[r*5+c]->user_data((void*)(this));
+				// m_kernel[r*5+c]->callback(cb_clear_canvas_button);
+			}
+		}
+		m_divisor = new Fl_Int_Input(110, 145, 100, 25, "Divide By");
+		m_divisor->user_data((void*)(this));
+		// m_divisor->callback(cb_clear_canvas_button);
+
+		m_offset = new Fl_Int_Input(110, 175, 100, 25, "Offset");
+		m_offset->user_data((void*)(this));
+		// m_offset->callback(cb_clear_canvas_button);
+
+		m_PreviewKernel = new Fl_Button(60, 210,150,25,"&Preview");
+		m_PreviewKernel->user_data((void*)(this));
+		m_PreviewKernel->callback(cb_clear_canvas_button);
+
+		m_ApplyKernel = new Fl_Button(10,245,120,25,"&Apply");
+		m_ApplyKernel->user_data((void*)(this));
+		m_ApplyKernel->callback(cb_clear_canvas_button);
+
+		m_CancelKernel = new Fl_Button(140,245,120,25,"&Cancel");
+		m_CancelKernel->user_data((void*)(this));
+		m_CancelKernel->callback(cb_clear_canvas_button);
+
+	m_kernelDialog->end();
 
 }
 
