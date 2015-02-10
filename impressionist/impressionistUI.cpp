@@ -603,7 +603,7 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushAlphaSlider->labelsize(12);
 		m_BrushAlphaSlider->minimum(0.0);
 		m_BrushAlphaSlider->maximum(1.0);
-		m_BrushAlphaSlider->step(0.1);
+		m_BrushAlphaSlider->step(0.01);
 		m_BrushAlphaSlider->value(m_nAlpha);
 		m_BrushAlphaSlider->align(FL_ALIGN_RIGHT);
 		m_BrushAlphaSlider->callback(cb_alphaSlides);
