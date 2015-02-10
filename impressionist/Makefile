@@ -2,8 +2,8 @@
 #  Makefile for campus Linux computers
 #
 
-INCLUDE = -I/lusr/include -I/lusr/X11/include -I/p/graft/fltk-1.1.10/include
-LIBDIR = -L/lusr/lib -L/lusr/X11/lib -L/p/graft/fltk-1.1.10/lib
+INCLUDE = -I/lusr/include -I/lusr/X11/include -I/p/include
+LIBDIR = -L/lusr/lib -L/lusr/X11/lib -L/p/lib
 
 LIBS = -lfltk -lfltk_gl -lfltk_images -lGL -ljpeg -lpng -lz
 
