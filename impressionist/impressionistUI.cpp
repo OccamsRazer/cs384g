@@ -311,6 +311,19 @@ void ImpressionistUI::cb_clear_canvas_button(Fl_Widget* o, void* v)
 	pDoc->clearCanvas();
 }
 
+
+//------------------------------------------------------------
+// Auto paints on canvas
+// Called by the UI when the clear canvas button is pushed
+//------------------------------------------------------------
+void ImpressionistUI::cb_auto_draw_buton(Fl_Widget* o, void* v)
+{
+	ImpressionistDoc * pDoc = ((ImpressionistUI*)(o->user_data()))->getDocument();
+
+	pDoc->autoDraw();
+}
+
+
 //------------------------------------------------------------
 // Preview the kernel in the paintview canvas.
 // Called by the UI when the preview kernel button is pushed
@@ -628,10 +641,14 @@ ImpressionistUI::ImpressionistUI() {
 		m_ClearCanvasButton->callback(cb_clear_canvas_button);
 
 		// Add a stroke type choice to the dialog
-		m_strokeTypeChoice = new Fl_Choice(125,40,150,25,"&Stroke Direction");
+		m_strokeTypeChoice = new Fl_Choice(50,40,150,25,"&Stroke");
 		m_strokeTypeChoice->user_data((void*)(this));	// record self to be used by static callback functions
 		m_strokeTypeChoice->menu(strokeMenu);
 		m_strokeTypeChoice->callback(cb_strokeChoice);
+
+		m_ClearCanvasButton = new Fl_Button(280,40,110,25,"&Auto Draw");
+		m_ClearCanvasButton->user_data((void*)(this));
+		m_ClearCanvasButton->callback(cb_auto_draw_buton);
 
 
 		// Add brush size slider to the dialog 
@@ -702,18 +719,15 @@ ImpressionistUI::ImpressionistUI() {
 				else{
 					m_kernel[r*FLT_WIDTH+c]->value("0");	
 				}
-				// m_kernel[r*5+c]->callback(cb_clear_canvas_button);
 			}
 		}
 		m_divisor = new Fl_Float_Input(110, 145, 100, 25, "Divide By");
 		m_divisor->user_data((void*)(this));
 		m_divisor->value("1");
-		// m_divisor->callback(cb_clear_canvas_button);
 
 		m_offset = new Fl_Float_Input(110, 175, 100, 25, "Offset");
 		m_offset->user_data((void*)(this));
 		m_offset->value("0");
-		// m_offset->callback(cb_clear_canvas_button);
 
 		m_PreviewKernel = new Fl_Button(60, 210,150,25,"&Preview");
 		m_PreviewKernel->user_data((void*)(this));

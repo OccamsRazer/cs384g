@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include <math.h>
+#include "time.h"
+#include "stdlib.h"
 
 #include "impressionistDoc.h"
 #include "impressionistUI.h"
@@ -214,6 +216,33 @@ int ImpressionistDoc::clearCanvas()
 	}
 	
 	return 0;
+}
+
+
+//----------------------------------------------------------------
+// Clear the drawing canvas
+// This is called by the UI when the clear canvas menu item is 
+// chosen
+//-----------------------------------------------------------------
+int ImpressionistDoc::autoDraw() 
+{
+	srand(time(NULL));
+	int x = 0, y = 0;
+	Point source, target;
+	int max_spacing = getSize()/2;
+
+	m_pCurrentBrush->BrushBegin( source, target );
+	for(x = 0; x < m_nPaintWidth; x = 1 + rand() % max_spacing){
+		for(y = 0; y < m_nPaintHeight; y = 1 + rand() % max_spacing){
+			source = Point(x,y);
+			target = Point(x,y);
+			m_pCurrentBrush->BrushMove( source, target );
+		}
+	}
+	m_pUI->m_paintView->SaveCurrentContent();
+	m_pUI->m_paintView->RestoreContent();
+	m_pCurrentBrush->BrushEnd( source, target );
+	m_pUI->m_paintView->flush();
 }
 
 // Apply the filter specified by filter_kernel to the 

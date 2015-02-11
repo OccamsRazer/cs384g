@@ -59,6 +59,7 @@ public:
 	Fl_Slider*			m_BrushAngleSlider;
 	Fl_Slider*			m_BrushAlphaSlider;
 	Fl_Button*          m_ClearCanvasButton;
+	Fl_Button*          m_AutoDrawButton;
 
 	// Member functions
 	void				setDocument(ImpressionistDoc* doc);
@@ -126,6 +127,7 @@ private:
 	static void	cb_brushChoice(Fl_Widget* o, void* v);
 	static void	cb_strokeChoice(Fl_Widget* o, void* v);
 	static void	cb_clear_canvas_button(Fl_Widget* o, void* v);
+	static void cb_auto_draw_buton(Fl_Widget* o, void* v);
 	static void	cb_previewKernelButton(Fl_Widget* o, void* v);
 	static void	cb_applyKernelButton(Fl_Widget* o, void* v);
 	static void	cb_cancelKernelButton(Fl_Widget* o, void* v);
