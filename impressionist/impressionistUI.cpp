@@ -333,7 +333,6 @@ void ImpressionistUI::cb_previewKernelButton(Fl_Widget* o, void* v)
 	}
 
 	pDoc->applyFilter(pDoc->m_ucPainting, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);
-	pUI->m_paintView->RestoreContent();
 	// pUI->m_paintView->refresh();
 }
 
@@ -360,7 +359,7 @@ void ImpressionistUI::cb_applyKernelButton(Fl_Widget* o, void* v)
 
 	pDoc->applyFilter(pDoc->m_ucBitmap, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);
 	// pUI->m_paintView->RestoreContent();
-	pUI->m_paintView->flush();
+	
 	// clear backup
 }
 

@@ -254,7 +254,7 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
 		double divisor, double offset )
 {
 	int r, c, rgb, flt_r, flt_c, row_offset, col_offset;
-	unsigned char new_r_value, new_g_value, new_b_value;
+	double new_r_value, new_g_value, new_b_value;
 
 	memcpy ( m_ucPreviewBackup, sourceBuffer,  srcBufferWidth*srcBufferHeight*3 );
 
@@ -265,16 +265,21 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
 			new_b_value = 0;
 			for(flt_r = 0, row_offset = knlHeight/(-2); flt_r < knlHeight; flt_r++, row_offset++ ){
 				for(flt_c = 0, col_offset = knlWidth/(-2); flt_c < knlWidth; flt_c++, col_offset++ ){
-					new_r_value += getPixel(sourceBuffer, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 0) * filterKernel[(flt_r + row_offset)*knlWidth+(flt_c + col_offset)];
-					new_g_value += getPixel(sourceBuffer, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 1) * filterKernel[(flt_r + row_offset)*knlWidth+(flt_c + col_offset)];
-					new_b_value += getPixel(sourceBuffer, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 2) * filterKernel[(flt_r + row_offset)*knlWidth+(flt_c + col_offset)];
+					new_r_value += getPixel(m_ucPreviewBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 0) * filterKernel[(flt_r)*knlWidth+(flt_c)];
+					new_g_value += getPixel(m_ucPreviewBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 1) * filterKernel[(flt_r)*knlWidth+(flt_c)];
+					new_b_value += getPixel(m_ucPreviewBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 2) * filterKernel[(flt_r)*knlWidth+(flt_c)];
 				}
 			}
-			destBuffer[3*(r*srcBufferWidth+c)+0] = (unsigned char) (new_r_value / divisor + offset);
-			destBuffer[3*(r*srcBufferWidth+c)+1] = (unsigned char) (new_g_value / divisor + offset);
-			destBuffer[3*(r*srcBufferWidth+c)+2] = (unsigned char) (new_b_value / divisor + offset);
+			new_r_value = boundedColor(new_r_value / divisor + offset);
+			new_g_value = boundedColor(new_g_value / divisor + offset);
+			new_b_value = boundedColor(new_b_value / divisor + offset);
+			destBuffer[3*(r*srcBufferWidth+c)+0] = (new_r_value / divisor + offset);
+			destBuffer[3*(r*srcBufferWidth+c)+1] = (new_g_value / divisor + offset);
+			destBuffer[3*(r*srcBufferWidth+c)+2] = (new_b_value / divisor + offset);
 		}
 	}
+
+	m_pUI->m_paintView->flush();
 
 }
 
@@ -318,16 +323,19 @@ void ImpressionistDoc::SetFromMousePoints(const Point start, const Point end){
 	m_pUI->setAngle(angle);
 }
 
-unsigned char ImpressionistDoc::calculateFilter(const double *filterKernel, int knlWidth, int knlHeight, unsigned char value){
-	unsigned char new_value = value;
-
-	return new_value;
-}
-
 unsigned char ImpressionistDoc::getPixel(const unsigned char* buffer, int bufferWidth, int bufferHeight, int row, int column, int rgbOffset){
 	// if out of bounds return nothing
 	if ( column < 0 ||  column >= bufferWidth || row < 0 || row >= bufferHeight) 
-		return (unsigned char) 0;
+		return 0;
 
-	return buffer[3*(row*bufferWidth+column) + rgbOffset];
+	return (buffer[3*(row*bufferWidth+column) + rgbOffset]);
+}
+
+int ImpressionistDoc::boundedColor(double color){
+	if(color < 0)
+		return 0;
+	else if (color > 255)
+		return 255;
+	else
+		return (int)color;
 }

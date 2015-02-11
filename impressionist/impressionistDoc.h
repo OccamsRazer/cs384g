@@ -83,8 +83,8 @@ public:
 
 private:
 	char			m_imageName[256];
-	unsigned char	calculateFilter(const double *filterKernel, int knlWidth, int knlHeight, unsigned char value);
 	unsigned char	getPixel(const unsigned char* buffer, int bufferWidth, int bufferHeight, int x, int y, int rgbOffset);
+	int				boundedColor(double color);
 
 };
 
