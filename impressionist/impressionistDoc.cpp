@@ -302,9 +302,9 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
 			new_r_value = boundedColor(new_r_value / divisor + offset);
 			new_g_value = boundedColor(new_g_value / divisor + offset);
 			new_b_value = boundedColor(new_b_value / divisor + offset);
-			destBuffer[3*(r*srcBufferWidth+c)+0] = (new_r_value / divisor + offset);
-			destBuffer[3*(r*srcBufferWidth+c)+1] = (new_g_value / divisor + offset);
-			destBuffer[3*(r*srcBufferWidth+c)+2] = (new_b_value / divisor + offset);
+			destBuffer[3*(r*srcBufferWidth+c)+0] = new_r_value;
+			destBuffer[3*(r*srcBufferWidth+c)+1] = new_g_value;
+			destBuffer[3*(r*srcBufferWidth+c)+2] = new_b_value;
 		}
 	}
 
