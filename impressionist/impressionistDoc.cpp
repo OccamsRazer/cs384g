@@ -209,7 +209,7 @@ int ImpressionistDoc::clearCanvas()
 		m_ucPainting	= new unsigned char [m_nPaintWidth*m_nPaintHeight*3];
 		memset(m_ucPainting, 0, m_nPaintWidth*m_nPaintHeight*3);
 
-		// refresh paint view as well	
+		// refresh paint view as well
 		m_pUI->m_paintView->refresh();
 	}
 	
@@ -253,11 +253,30 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
 		int knlWidth, int knlHeight, 
 		double divisor, double offset )
 {
-	// This needs to be implemented for image filtering to work.
+	int r, c, rgb, flt_r, flt_c, row_offset, col_offset;
+	unsigned char new_r_value, new_g_value, new_b_value;
 
+	memcpy ( m_ucPreviewBackup, sourceBuffer,  srcBufferWidth*srcBufferHeight*3 );
+
+	for(r = 0; r < srcBufferHeight; r++){
+		for(c = 0; c < srcBufferWidth; c++){
+			new_r_value = 0;
+			new_g_value = 0;
+			new_b_value = 0;
+			for(flt_r = 0, row_offset = knlHeight/(-2); flt_r < knlHeight; flt_r++, row_offset++ ){
+				for(flt_c = 0, col_offset = knlWidth/(-2); flt_c < knlWidth; flt_c++, col_offset++ ){
+					new_r_value += getPixel(sourceBuffer, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 0) * filterKernel[(flt_r + row_offset)*knlWidth+(flt_c + col_offset)];
+					new_g_value += getPixel(sourceBuffer, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 1) * filterKernel[(flt_r + row_offset)*knlWidth+(flt_c + col_offset)];
+					new_b_value += getPixel(sourceBuffer, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 2) * filterKernel[(flt_r + row_offset)*knlWidth+(flt_c + col_offset)];
+				}
+			}
+			destBuffer[3*(r*srcBufferWidth+c)+0] = (unsigned char) (new_r_value / divisor + offset);
+			destBuffer[3*(r*srcBufferWidth+c)+1] = (unsigned char) (new_g_value / divisor + offset);
+			destBuffer[3*(r*srcBufferWidth+c)+2] = (unsigned char) (new_b_value / divisor + offset);
+		}
+	}
 
 }
-
 
 //------------------------------------------------------------------
 // Get the color of the pixel in the original image at coord x and y
@@ -297,4 +316,18 @@ void ImpressionistDoc::SetFromMousePoints(const Point start, const Point end){
 		m_pUI->setSize(length);
 	}
 	m_pUI->setAngle(angle);
+}
+
+unsigned char ImpressionistDoc::calculateFilter(const double *filterKernel, int knlWidth, int knlHeight, unsigned char value){
+	unsigned char new_value = value;
+
+	return new_value;
+}
+
+unsigned char ImpressionistDoc::getPixel(const unsigned char* buffer, int bufferWidth, int bufferHeight, int row, int column, int rgbOffset){
+	// if out of bounds return nothing
+	if ( column < 0 ||  column >= bufferWidth || row < 0 || row >= bufferHeight) 
+		return (unsigned char) 0;
+
+	return buffer[3*(row*bufferWidth+column) + rgbOffset];
 }

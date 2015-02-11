@@ -311,6 +311,73 @@ void ImpressionistUI::cb_clear_canvas_button(Fl_Widget* o, void* v)
 	pDoc->clearCanvas();
 }
 
+//------------------------------------------------------------
+// Preview the kernel in the paintview canvas.
+// Called by the UI when the preview kernel button is pushed
+//------------------------------------------------------------
+void ImpressionistUI::cb_previewKernelButton(Fl_Widget* o, void* v)
+{
+	ImpressionistUI* pUI=((ImpressionistUI *)(o->user_data()));
+	ImpressionistDoc * pDoc = pUI->getDocument();
+
+	pUI->divisor = atof(pUI->m_divisor->value());
+	pUI->offset = atof(pUI->m_offset->value());
+
+	if(pUI->divisor == 0)
+		return;
+	// grab the values from kernel
+	for(int r = 0; r < FLT_HEIGHT; r++){
+		for(int c = 0; c < FLT_WIDTH; c++){
+			pUI->fltKernel[r*FLT_WIDTH+c] = atof(pUI->m_kernel[r*FLT_WIDTH+c]->value());
+		}
+	}
+
+	pDoc->applyFilter(pDoc->m_ucPainting, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);
+	pUI->m_paintView->RestoreContent();
+	// pUI->m_paintView->refresh();
+}
+
+//------------------------------------------------------------
+// Apply the kernel in the paintview canvas.
+// Called by the UI when the apply kernel button is pushed
+//------------------------------------------------------------
+void ImpressionistUI::cb_applyKernelButton(Fl_Widget* o, void* v)
+{
+	ImpressionistUI* pUI=((ImpressionistUI *)(o->user_data()));
+	ImpressionistDoc * pDoc = pUI->getDocument();
+
+	pUI->divisor = atof(pUI->m_divisor->value());
+	pUI->offset = atof(pUI->m_offset->value());
+
+	if(pUI->divisor == 0)
+		return;
+	// grab the values from kernel
+	for(int r = 0; r < FLT_HEIGHT; r++){
+		for(int c = 0; c < FLT_WIDTH; c++){
+			pUI->fltKernel[r*FLT_WIDTH+c] = atof(pUI->m_kernel[r*FLT_WIDTH+c]->value());
+		}
+	}
+
+	pDoc->applyFilter(pDoc->m_ucBitmap, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);
+	// pUI->m_paintView->RestoreContent();
+	pUI->m_paintView->flush();
+	// clear backup
+}
+
+//------------------------------------------------------------
+// Cancel the kernel in the paintview canvas.
+// Called by the UI when the cancel kernel button is pushed
+//------------------------------------------------------------
+void ImpressionistUI::cb_cancelKernelButton(Fl_Widget* o, void* v)
+{
+	// ImpressionistDoc * pDoc = ((ImpressionistUI*)(o->user_data()))->getDocument();
+
+	// clear any preview
+	// hide the window
+	// pDoc->clearCanvas();
+	((ImpressionistUI*)(o->user_data()))->m_kernelDialog->hide();
+	// cancel filter
+}
 
 //-----------------------------------------------------------
 // Updates the brush size to use from the value of the size
@@ -546,9 +613,8 @@ ImpressionistUI::ImpressionistUI() {
 	m_nWeight = 1;
 	m_nAngle = 0;
 	m_nAlpha = 1.0;
-	fltKernel[12] = 1.0;
 	divisor = 1.0;
-	offset = 0;
+	offset = 0.0;
 
 	// brush dialog definition
 	m_brushDialog = new Fl_Window(400, 325, "Brush Dialog");
@@ -629,30 +695,38 @@ ImpressionistUI::ImpressionistUI() {
 	m_kernelDialog = new Fl_Window(270, 280, "Kernel Dialog");
 		for(int r = 0; r < FLT_HEIGHT; r++){
 			for(int c = 0; c < FLT_WIDTH; c++){
-				m_kernel[r*5+c] = new Fl_Int_Input(10+r*50, 10+c*25, 50, 25, "");
-				m_kernel[r*5+c]->user_data((void*)(this));
+				m_kernel[r*FLT_WIDTH+c] = new Fl_Float_Input(10+r*50, 10+c*25, 50, 25, "");
+				m_kernel[r*FLT_WIDTH+c]->user_data((void*)(this));
+				if(r*FLT_WIDTH+c == FLT_HEIGHT*FLT_WIDTH/2){
+					m_kernel[r*FLT_WIDTH+c]->value("1");
+				}
+				else{
+					m_kernel[r*FLT_WIDTH+c]->value("0");	
+				}
 				// m_kernel[r*5+c]->callback(cb_clear_canvas_button);
 			}
 		}
-		m_divisor = new Fl_Int_Input(110, 145, 100, 25, "Divide By");
+		m_divisor = new Fl_Float_Input(110, 145, 100, 25, "Divide By");
 		m_divisor->user_data((void*)(this));
+		m_divisor->value("1");
 		// m_divisor->callback(cb_clear_canvas_button);
 
-		m_offset = new Fl_Int_Input(110, 175, 100, 25, "Offset");
+		m_offset = new Fl_Float_Input(110, 175, 100, 25, "Offset");
 		m_offset->user_data((void*)(this));
+		m_offset->value("0");
 		// m_offset->callback(cb_clear_canvas_button);
 
 		m_PreviewKernel = new Fl_Button(60, 210,150,25,"&Preview");
 		m_PreviewKernel->user_data((void*)(this));
-		m_PreviewKernel->callback(cb_clear_canvas_button);
+		m_PreviewKernel->callback(cb_previewKernelButton);
 
 		m_ApplyKernel = new Fl_Button(10,245,120,25,"&Apply");
 		m_ApplyKernel->user_data((void*)(this));
-		m_ApplyKernel->callback(cb_clear_canvas_button);
+		m_ApplyKernel->callback(cb_applyKernelButton);
 
 		m_CancelKernel = new Fl_Button(140,245,120,25,"&Cancel");
 		m_CancelKernel->user_data((void*)(this));
-		m_CancelKernel->callback(cb_clear_canvas_button);
+		m_CancelKernel->callback(cb_cancelKernelButton);
 
 	m_kernelDialog->end();
 

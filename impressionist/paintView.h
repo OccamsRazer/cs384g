@@ -24,6 +24,8 @@ public:
 
 	void refresh();
 	
+	void clear();
+	
 	void resizeWindow(int width, int height);
 
 	void SaveCurrentContent();

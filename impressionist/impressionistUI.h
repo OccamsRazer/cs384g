@@ -15,7 +15,7 @@
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Light_Button.H>
-#include <FL/Fl_Int_Input.H>
+#include <FL/Fl_Float_Input.H>
 #include <FL/Fl_Color_Chooser.H>
 
 #include "impressionist.h"
@@ -41,9 +41,9 @@ public:
 
 	// for kernel dialog
 	Fl_Window*			m_kernelDialog;
-	Fl_Int_Input*		m_divisor;
-	Fl_Int_Input*		m_offset;
-	Fl_Int_Input*       m_kernel[FLT_HEIGHT*FLT_WIDTH];
+	Fl_Float_Input*		m_divisor;
+	Fl_Float_Input*		m_offset;
+	Fl_Float_Input*		m_kernel[FLT_HEIGHT*FLT_WIDTH];
 	Fl_Button*			m_CancelKernel;
 	Fl_Button*			m_PreviewKernel;
 	Fl_Button*			m_ApplyKernel;
@@ -126,6 +126,9 @@ private:
 	static void	cb_brushChoice(Fl_Widget* o, void* v);
 	static void	cb_strokeChoice(Fl_Widget* o, void* v);
 	static void	cb_clear_canvas_button(Fl_Widget* o, void* v);
+	static void	cb_previewKernelButton(Fl_Widget* o, void* v);
+	static void	cb_applyKernelButton(Fl_Widget* o, void* v);
+	static void	cb_cancelKernelButton(Fl_Widget* o, void* v);
 	static void	cb_sizeSlides(Fl_Widget* o, void* v);
 	static void	cb_weightSlides(Fl_Widget* o, void* v);
 	static void	cb_angleSlides(Fl_Widget* o, void* v);

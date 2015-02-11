@@ -138,7 +138,8 @@ void PaintView::draw()
 				m_pDoc->SetFromMousePoints(startCoord, endCoord);
 			}
 			m_pDoc->m_pCurrentBrush->BrushEnd( source, target );
-
+			SaveCurrentContent();
+			RestoreContent();
 			break;
 		case RIGHT_MOUSE_DOWN:
 			startCoord.x = target.x;
@@ -234,6 +235,11 @@ int PaintView::handle(int event)
 
 void PaintView::refresh()
 {
+	redraw();
+}
+
+void PaintView::clear()
+{
 	glClear( GL_COLOR_BUFFER_BIT );
 	redraw();
 }
@@ -247,7 +253,7 @@ void PaintView::SaveCurrentContent()
 {
 	// Tell openGL to read from the front buffer when capturing
 	// out paint strokes
-	glReadBuffer(GL_FRONT);
+	glReadBuffer(GL_BACK);
 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
 	glPixelStorei( GL_PACK_ROW_LENGTH, m_pDoc->m_nPaintWidth );
@@ -264,8 +270,7 @@ void PaintView::SaveCurrentContent()
 
 void PaintView::RestoreContent()
 {
-	// glDrawBuffer(GL_BACK);
-	glDrawBuffer(GL_FRONT);
+	glDrawBuffer(GL_BACK);
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
@@ -278,5 +283,6 @@ void PaintView::RestoreContent()
 				  GL_UNSIGNED_BYTE, 
 				  m_pPaintBitstart);
 
+	// glDrawBuffer(GL_FRONT);
 }
 
