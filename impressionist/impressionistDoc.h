@@ -34,6 +34,15 @@ public:
 		int knlWidth, int knlHeight, 
 		double divisor, double offset );
 
+	void previewFilter( const unsigned char* sourceBuffer, //The filter kernel
+		int srcBufferWidth, int srcBufferHeight,
+		unsigned char* destBuffer,
+		const double *filterKernel, 
+		int knlWidth, int knlHeight, 
+		double divisor, double offset );
+
+	void cancelFilter( unsigned char* destBuffer, int srcBufferWidth, int srcBufferHeight );
+
 	void	setBrushType(int type);			// called by the UI to set the brushType
 	void	setStrokeType(int type);			// called by the UI to set the brushType
 	int		getSize();						// get the UI size
@@ -59,6 +68,8 @@ public:
 	// Used by the filtering code so that we can
 	// preview filters before applying.
 	unsigned char*	m_ucPreviewBackup;
+	// used by filter incase source == destination
+	unsigned char*	m_ucSourceBackup;
 
 
 

@@ -155,12 +155,14 @@ int ImpressionistDoc::loadImage(char *iname)
 	delete [] m_ucBitmap;
 	delete [] m_ucPainting;
 	delete [] m_ucPreviewBackup;
+	delete [] m_ucSourceBackup;
 
 	m_ucBitmap		= data;
 
 	// allocate space for draw view
 	m_ucPainting		= new unsigned char [width*height*3];
 	m_ucPreviewBackup	= new unsigned char [width*height*3];
+	m_ucSourceBackup	= new unsigned char [width*height*3];
 	memset(m_ucPainting, 0, width*height*3);
 
 	m_pUI->m_mainWindow->resize(m_pUI->m_mainWindow->x(), 
@@ -282,10 +284,26 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
 		int knlWidth, int knlHeight, 
 		double divisor, double offset )
 {
+	previewFilter(sourceBuffer, srcBufferWidth, srcBufferHeight, destBuffer, filterKernel, knlWidth, knlHeight, divisor, offset);
+
+	// clear the backup
+	delete [] m_ucPreviewBackup;
+	m_ucPreviewBackup	= new unsigned char [srcBufferWidth*srcBufferHeight*3];
+
+}
+
+void ImpressionistDoc::previewFilter( const unsigned char* sourceBuffer,
+		int srcBufferWidth, int srcBufferHeight,
+		unsigned char* destBuffer,
+		const double *filterKernel, 
+		int knlWidth, int knlHeight, 
+		double divisor, double offset )
+{
 	int r, c, rgb, flt_r, flt_c, row_offset, col_offset;
 	double new_r_value, new_g_value, new_b_value;
 
-	memcpy ( m_ucPreviewBackup, sourceBuffer,  srcBufferWidth*srcBufferHeight*3 );
+	memcpy ( m_ucPreviewBackup, destBuffer,  srcBufferWidth*srcBufferHeight*3 );
+	memcpy ( m_ucSourceBackup, sourceBuffer,  srcBufferWidth*srcBufferHeight*3 );
 
 	for(r = 0; r < srcBufferHeight; r++){
 		for(c = 0; c < srcBufferWidth; c++){
@@ -294,9 +312,9 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
 			new_b_value = 0;
 			for(flt_r = 0, row_offset = knlHeight/(-2); flt_r < knlHeight; flt_r++, row_offset++ ){
 				for(flt_c = 0, col_offset = knlWidth/(-2); flt_c < knlWidth; flt_c++, col_offset++ ){
-					new_r_value += getPixel(m_ucPreviewBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 0) * filterKernel[(flt_r)*knlWidth+(flt_c)];
-					new_g_value += getPixel(m_ucPreviewBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 1) * filterKernel[(flt_r)*knlWidth+(flt_c)];
-					new_b_value += getPixel(m_ucPreviewBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 2) * filterKernel[(flt_r)*knlWidth+(flt_c)];
+					new_r_value += getPixel(m_ucSourceBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 0) * filterKernel[(flt_r)*knlWidth+(flt_c)];
+					new_g_value += getPixel(m_ucSourceBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 1) * filterKernel[(flt_r)*knlWidth+(flt_c)];
+					new_b_value += getPixel(m_ucSourceBackup, srcBufferWidth, srcBufferHeight,r + row_offset, c + col_offset, 2) * filterKernel[(flt_r)*knlWidth+(flt_c)];
 				}
 			}
 			new_r_value = boundedColor(new_r_value / divisor + offset);
@@ -310,6 +328,13 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
 
 	m_pUI->m_paintView->flush();
 
+}
+
+void ImpressionistDoc::cancelFilter( unsigned char* destBuffer, int srcBufferWidth, int srcBufferHeight ){
+	if ( m_ucPreviewBackup ){
+		memcpy ( destBuffer, m_ucPreviewBackup,  srcBufferWidth*srcBufferHeight*3 );
+		m_pUI->m_paintView->flush();
+	}
 }
 
 //------------------------------------------------------------------

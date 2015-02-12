@@ -27,6 +27,12 @@
 const int FLT_WIDTH = 5;
 const int FLT_HEIGHT = 5;
 
+enum{
+	ORIG_IMAGE = 0,
+	PAINT_IMAGE = 1,
+	NUM_IMAGE_TYPE
+};
+
 class ImpressionistUI {
 public:
 	ImpressionistUI();
@@ -47,6 +53,7 @@ public:
 	Fl_Button*			m_CancelKernel;
 	Fl_Button*			m_PreviewKernel;
 	Fl_Button*			m_ApplyKernel;
+	Fl_Choice*			m_srcImageChoice;
 
 
 	// for brush dialog
@@ -112,6 +119,7 @@ private:
 	static Fl_Menu_Item		menuitems[];
 	static Fl_Menu_Item		brushTypeMenu[NUM_BRUSH_TYPE+1];
 	static Fl_Menu_Item		strokeMenu[3];
+	static Fl_Menu_Item		imageMenu[NUM_IMAGE_TYPE + 1];
 
 	static ImpressionistUI*	whoami(Fl_Menu_* o);
 
@@ -135,6 +143,8 @@ private:
 	static void	cb_weightSlides(Fl_Widget* o, void* v);
 	static void	cb_angleSlides(Fl_Widget* o, void* v);
 	static void	cb_alphaSlides(Fl_Widget* o, void* v);
+
+	static void cb_dummyCallback(Fl_Widget* o, void* v);
 
 };
 

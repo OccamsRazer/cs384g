@@ -300,6 +300,16 @@ void ImpressionistUI::cb_strokeChoice(Fl_Widget* o, void* v)
 
 }
 
+//-------------------------------------------------------------
+// Sets the type of stroke to use to the one chosen in the stroke 
+// choice.  
+// Called by the UI when a stroke is chosen in the stroke choice
+//-------------------------------------------------------------
+void ImpressionistUI::cb_dummyCallback(Fl_Widget* o, void* v)
+{
+	return;
+}
+
 //------------------------------------------------------------
 // Clears the paintview canvas.
 // Called by the UI when the clear canvas button is pushed
@@ -335,6 +345,7 @@ void ImpressionistUI::cb_previewKernelButton(Fl_Widget* o, void* v)
 
 	pUI->divisor = atof(pUI->m_divisor->value());
 	pUI->offset = atof(pUI->m_offset->value());
+	int image = pUI->m_srcImageChoice->value();
 
 	if(pUI->divisor == 0)
 		return;
@@ -345,8 +356,12 @@ void ImpressionistUI::cb_previewKernelButton(Fl_Widget* o, void* v)
 		}
 	}
 
-	pDoc->applyFilter(pDoc->m_ucPainting, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);
-	// pUI->m_paintView->refresh();
+	if(image == ORIG_IMAGE){
+		pDoc->previewFilter(pDoc->m_ucBitmap, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);
+	}
+	else{
+		pDoc->previewFilter(pDoc->m_ucPainting, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);	
+	}
 }
 
 //------------------------------------------------------------
@@ -360,6 +375,7 @@ void ImpressionistUI::cb_applyKernelButton(Fl_Widget* o, void* v)
 
 	pUI->divisor = atof(pUI->m_divisor->value());
 	pUI->offset = atof(pUI->m_offset->value());
+	int image = pUI->m_srcImageChoice->value();
 
 	if(pUI->divisor == 0)
 		return;
@@ -370,10 +386,12 @@ void ImpressionistUI::cb_applyKernelButton(Fl_Widget* o, void* v)
 		}
 	}
 
-	pDoc->applyFilter(pDoc->m_ucBitmap, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);
-	// pUI->m_paintView->RestoreContent();
-	
-	// clear backup
+	if(image == ORIG_IMAGE){
+		pDoc->applyFilter(pDoc->m_ucBitmap, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);
+	}
+	else{
+		pDoc->applyFilter(pDoc->m_ucPainting, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting, pUI->fltKernel, FLT_WIDTH, FLT_HEIGHT, pUI->divisor, pUI->offset);	
+	}
 }
 
 //------------------------------------------------------------
@@ -387,7 +405,11 @@ void ImpressionistUI::cb_cancelKernelButton(Fl_Widget* o, void* v)
 	// clear any preview
 	// hide the window
 	// pDoc->clearCanvas();
-	((ImpressionistUI*)(o->user_data()))->m_kernelDialog->hide();
+	ImpressionistUI* pUI=((ImpressionistUI *)(o->user_data()));
+	ImpressionistDoc * pDoc = pUI->getDocument();
+
+	pDoc->cancelFilter(pDoc->m_ucPainting, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight);
+	pUI->m_kernelDialog->hide();
 	// cancel filter
 }
 
@@ -585,6 +607,11 @@ Fl_Menu_Item ImpressionistUI::strokeMenu[NUM_STROKE_TYPE+1] = {
   {0}
 };
 
+Fl_Menu_Item ImpressionistUI::imageMenu[3] = {
+  {"Original",	FL_ALT+'o', (Fl_Callback *)ImpressionistUI::cb_dummyCallback, (void *)ORIG_IMAGE},
+  {"Painting",	FL_ALT+'p', (Fl_Callback *)ImpressionistUI::cb_dummyCallback, (void *)PAINT_IMAGE},
+  {0}
+};
 
 
 //----------------------------------------------------
@@ -708,7 +735,7 @@ ImpressionistUI::ImpressionistUI() {
 
 	m_brushDialog->end();
 
-	m_kernelDialog = new Fl_Window(270, 280, "Kernel Dialog");
+	m_kernelDialog = new Fl_Window(270, 310, "Kernel Dialog");
 		for(int r = 0; r < FLT_HEIGHT; r++){
 			for(int c = 0; c < FLT_WIDTH; c++){
 				m_kernel[r*FLT_WIDTH+c] = new Fl_Float_Input(10+r*50, 10+c*25, 50, 25, "");
@@ -729,15 +756,20 @@ ImpressionistUI::ImpressionistUI() {
 		m_offset->user_data((void*)(this));
 		m_offset->value("0");
 
-		m_PreviewKernel = new Fl_Button(60, 210,150,25,"&Preview");
+		m_srcImageChoice = new Fl_Choice(110,205,150,25,"&Source");
+		m_srcImageChoice->user_data((void*)(this));
+		m_srcImageChoice->value(ORIG_IMAGE);
+		m_srcImageChoice->menu(imageMenu);
+
+		m_PreviewKernel = new Fl_Button(60, 240,150,25,"&Preview");
 		m_PreviewKernel->user_data((void*)(this));
 		m_PreviewKernel->callback(cb_previewKernelButton);
 
-		m_ApplyKernel = new Fl_Button(10,245,120,25,"&Apply");
+		m_ApplyKernel = new Fl_Button(10,275,120,25,"&Apply");
 		m_ApplyKernel->user_data((void*)(this));
 		m_ApplyKernel->callback(cb_applyKernelButton);
 
-		m_CancelKernel = new Fl_Button(140,245,120,25,"&Cancel");
+		m_CancelKernel = new Fl_Button(140,275,120,25,"&Cancel");
 		m_CancelKernel->user_data((void*)(this));
 		m_CancelKernel->callback(cb_cancelKernelButton);
 
