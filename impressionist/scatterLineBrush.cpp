@@ -71,3 +71,6 @@ void ScatterLineBrush::BrushEnd( const Point source, const Point target )
 	// do nothing so far
 }
 
+void ScatterLineBrush::AutoBrush(int width, int height){
+	// do nothing so far		
+}

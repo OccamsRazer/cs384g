@@ -60,3 +60,7 @@ void CircleBrush::BrushEnd( const Point source, const Point target )
 	// do nothing so far
 }
 
+void CircleBrush::AutoBrush(int width, int height){
+	// do nothing so far		
+}
+

@@ -70,3 +70,6 @@ void ScatterCircleBrush::BrushEnd( const Point source, const Point target )
 	// do nothing so far
 }
 
+void ScatterCircleBrush::AutoBrush(int width, int height){
+	// do nothing so far		
+}

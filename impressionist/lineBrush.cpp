@@ -65,3 +65,7 @@ void LineBrush::BrushEnd( const Point source, const Point target )
 	// do nothing so far
 }
 
+void LineBrush::AutoBrush(int width, int height){
+	// do nothing so far		
+}
+

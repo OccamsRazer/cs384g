@@ -65,3 +65,6 @@ void TriangleBrush::BrushEnd( const Point source, const Point target )
 	// do nothing so far
 }
 
+void TriangleBrush::AutoBrush(int width, int height){
+	// do nothing so far		
+}

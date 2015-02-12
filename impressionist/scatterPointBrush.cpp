@@ -66,3 +66,23 @@ void ScatterPointBrush::BrushEnd( const Point source, const Point target )
 	// do nothing so far
 }
 
+void ScatterPointBrush::AutoBrush(int width, int height){
+	ImpressionistDoc* pDoc = GetDocument();
+	ImpressionistUI* dlg=pDoc->m_pUI;
+
+	srand(time(NULL));
+	int i, j, x_pos, y_pos;
+	int size = pDoc->getSize();
+	float x_val, y_val, min_x, min_y;
+
+	glPointSize( 1.0f );
+	glBegin( GL_POINTS );
+		for(i = 0; i <= (width * height)*0.9; i++){
+			x_pos = rand() % width;
+			y_pos = rand() % height;
+
+			SetColor( Point(x_pos, y_pos), 1.0f );
+			glVertex2d(x_pos, y_pos);
+		}
+	glEnd();
+}

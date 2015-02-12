@@ -8,6 +8,9 @@
 #include "impressionistDoc.h"
 #include "impressionistUI.h"
 #include "pointBrush.h"
+#include "stdlib.h"
+#include "time.h"
+#include "math.h"
 
 extern float frand();
 
@@ -52,5 +55,23 @@ void PointBrush::BrushMove( const Point source, const Point target )
 void PointBrush::BrushEnd( const Point source, const Point target )
 {
 	// do nothing so far
+}
+
+void PointBrush::AutoBrush(int width, int height ){
+	ImpressionistDoc* pDoc = GetDocument();
+	ImpressionistUI* dlg=pDoc->m_pUI;
+
+	srand(time(NULL));
+	int i, x_pos, y_pos;
+	int size = pDoc->getSize();
+	glPointSize( (float)size );
+	glBegin( GL_POINTS );
+		for(i = 0; i <= (width * height); i++){
+			x_pos = rand() % width;
+			y_pos = rand() % height;
+			SetColor( Point(x_pos, y_pos), 1.0f );
+			glVertex2d( x_pos, y_pos );
+		}
+	glEnd();
 }
 
