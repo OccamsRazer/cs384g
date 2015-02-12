@@ -149,6 +149,14 @@ void PaintView::draw()
 			endCoord.x = target.x;
 			endCoord.y = target.y;
 			if ( m_pDoc->m_nCurrentStroke == STROKE_SLIDERS ){
+				RestoreContent();
+				glLineWidth(1);
+				glColor3ub( 255, 0, 0 );
+				glBegin(GL_LINES);
+					glVertex2f(startCoord.x, startCoord.y);
+					glVertex2f(target.x, target.y);
+				glEnd();
+				glFlush();
 				m_pDoc->SetFromMousePoints(startCoord, endCoord);
 			}
 			break;
@@ -156,12 +164,7 @@ void PaintView::draw()
 			endCoord.x = target.x;
 			endCoord.y = target.y;
 			if ( m_pDoc->m_nCurrentStroke == STROKE_SLIDERS ){
-				glLineWidth(1);
-				glColor3ub( 255, 0, 0 );
-				glBegin(GL_LINES);
-					glVertex2f(startCoord.x, startCoord.y);
-					glVertex2f(target.x, target.y);
-				glEnd();
+				RestoreContent();
 				m_pDoc->SetFromMousePoints(startCoord, endCoord);
 			}
 			break;
