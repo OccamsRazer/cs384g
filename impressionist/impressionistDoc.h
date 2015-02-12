@@ -109,6 +109,8 @@ public:
 
 	void calculateGradient();
 
+	void setAngleFromGradient(int r, int c);
+
 
 
 private:

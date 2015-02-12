@@ -466,7 +466,6 @@ void ImpressionistDoc::calculateGradient(){
 				}
 			}
 
-			result_x = boundedColor(getGrayscale(new_rx_value, new_gx_value, new_bx_value));
 			m_ucGradientX[3*(r * m_nPaintWidth + c)+0] = boundedColor(new_rx_value);
 			m_ucGradientX[3*(r * m_nPaintWidth + c)+1] = boundedColor(new_gx_value);
 			m_ucGradientX[3*(r * m_nPaintWidth + c)+2] = boundedColor(new_bx_value);
@@ -476,5 +475,28 @@ void ImpressionistDoc::calculateGradient(){
 			m_ucGradientY[3*(r * m_nPaintWidth + c)+2] = boundedColor(new_by_value);
 		}
 	}
+
+}
+
+void ImpressionistDoc::setAngleFromGradient(int r, int c){
+	int x_red, x_green, x_blue;
+	int y_red, y_green, y_blue;
+
+	x_red = 	m_ucGradientX[3*(r * m_nPaintWidth + c)+0];
+	x_green = 	m_ucGradientX[3*(r * m_nPaintWidth + c)+1];
+	x_blue = 	m_ucGradientX[3*(r * m_nPaintWidth + c)+2];
+
+	y_red = 	m_ucGradientY[3*(r * m_nPaintWidth + c)+0];
+	y_green = 	m_ucGradientY[3*(r * m_nPaintWidth + c)+1];
+	y_blue = 	m_ucGradientY[3*(r * m_nPaintWidth + c)+2];
+
+	int rise = getGrayscale(y_red, y_green, y_blue);
+	int run  = getGrayscale(x_red, x_green,x_blue);
+
+	int angle = (int) (atan2(rise, run) * 180/ 3.14159265) + 90; // add 90 to get perpendicular
+	if( angle < 0 )
+		angle += 180;
+
+	m_pUI->setAngle(angle);
 
 }

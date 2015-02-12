@@ -117,6 +117,9 @@ void PaintView::draw()
 			if ( m_pDoc->m_nCurrentStroke == STROKE_BRUSH ){
 				m_pDoc->SetFromMousePoints(startCoord, endCoord);
 			}
+			else if ( m_pDoc->m_nCurrentStroke == STROKE_GRAD ){
+				m_pDoc->setAngleFromGradient(target.x, target.y);
+			}
 			m_pDoc->m_pCurrentBrush->BrushBegin( source, target );
 			break;
 		case LEFT_MOUSE_DRAG:
@@ -127,6 +130,9 @@ void PaintView::draw()
 			if ( m_pDoc->m_nCurrentStroke == STROKE_BRUSH ){
 				m_pDoc->SetFromMousePoints(startCoord, endCoord);
 			}
+			else if ( m_pDoc->m_nCurrentStroke == STROKE_GRAD ){
+				m_pDoc->setAngleFromGradient(target.x, target.y);
+			}
 			m_pDoc->m_pCurrentBrush->BrushMove( source, target );
 			break;
 		case LEFT_MOUSE_UP:
@@ -136,6 +142,9 @@ void PaintView::draw()
 			endCoord.y = target.y;
 			if ( m_pDoc->m_nCurrentStroke == STROKE_BRUSH ){
 				m_pDoc->SetFromMousePoints(startCoord, endCoord);
+			}
+			else if ( m_pDoc->m_nCurrentStroke == STROKE_GRAD ){
+				m_pDoc->setAngleFromGradient(target.x, target.y);
 			}
 			m_pDoc->m_pCurrentBrush->BrushEnd( source, target );
 			SaveCurrentContent();

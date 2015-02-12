@@ -24,6 +24,7 @@ enum
 enum{
 	STROKE_SLIDERS = 0,
 	STROKE_BRUSH = 1,
+	STROKE_GRAD = 2,
 	NUM_STROKE_TYPE
 };
 
