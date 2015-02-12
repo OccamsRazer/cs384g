@@ -71,5 +71,28 @@ void ScatterCircleBrush::BrushEnd( const Point source, const Point target )
 }
 
 void ScatterCircleBrush::AutoBrush(int width, int height){
-	// do nothing so far		
+	ImpressionistDoc* pDoc = GetDocument();
+	ImpressionistUI* dlg=pDoc->m_pUI;
+
+	srand(time(NULL));
+	int i, x_pos, y_pos;
+	float angle;
+	float radius = pDoc->getSize() / 2.0;
+	float inc = (radius > 20) ? 0.3 : 0.5;
+	float alpha = pDoc->getAlpha();
+	glBegin( GL_POINTS );
+		for(i = 0; i <= (width * height) * 0.9; i++){
+			x_pos = rand() % width;
+			y_pos = rand() % height;
+			SetColor( Point(x_pos, y_pos), alpha );
+			glBegin(GL_TRIANGLE_FAN);
+				glVertex2f(x_pos,y_pos);
+
+				for (angle=0.0f; angle <= 2.0f * 3.14159265 + inc ;angle+=inc){
+					glVertex2f(x_pos+sin(angle)*radius, y_pos+cos(angle)*radius);
+				}
+
+			glEnd();
+		}
+	glEnd();
 }
