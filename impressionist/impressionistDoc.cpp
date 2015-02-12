@@ -379,8 +379,14 @@ void ImpressionistDoc::SetFromMousePoints(const Point start, const Point end){
 
 unsigned char ImpressionistDoc::getPixel(const unsigned char* buffer, int bufferWidth, int bufferHeight, int row, int column, int rgbOffset){
 	// if out of bounds return nothing
-	if ( column < 0 ||  column >= bufferWidth || row < 0 || row >= bufferHeight) 
-		return 0;
+	if ( column < 0 )
+		column = 0;
+	else if (column >= bufferWidth)
+		column = bufferWidth - 1;
+	else if (row < 0)
+		row = 0;
+	else if (row >= bufferHeight)
+		row = bufferHeight - 1;
 
 	return (buffer[3*(row*bufferWidth+column) + rgbOffset]);
 }
