@@ -24,11 +24,9 @@ void PointBrush::BrushBegin( const Point source, const Point target )
 	ImpressionistDoc* pDoc = GetDocument();
 	ImpressionistUI* dlg=pDoc->m_pUI;
 
-	int size = pDoc->getSize();
 
 
 
-	glPointSize( (float)size );
 
 	BrushMove( source, target );
 }
@@ -43,8 +41,10 @@ void PointBrush::BrushMove( const Point source, const Point target )
 		return;
 	}
 	float alpha = pDoc->getAlpha();
+	int size = pDoc->getSize();
 
 	SetColor( source, alpha );
+	glPointSize( (float)size );
 	glBegin( GL_POINTS );
 
 		glVertex2d( target.x, target.y );
