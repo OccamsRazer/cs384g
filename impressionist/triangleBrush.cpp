@@ -8,6 +8,8 @@
 #include "impressionistDoc.h"
 #include "impressionistUI.h"
 #include "triangleBrush.h"
+#include "time.h"
+#include "math.h"
 
 extern float frand();
 
@@ -66,5 +68,32 @@ void TriangleBrush::BrushEnd( const Point source, const Point target )
 }
 
 void TriangleBrush::AutoBrush(int width, int height){
-	// do nothing so far		
+	ImpressionistDoc* pDoc = GetDocument();
+	ImpressionistUI* dlg=pDoc->m_pUI;
+
+	srand(time(NULL));
+	float alpha = pDoc->getAlpha();
+	int i, x_pos, y_pos;
+	int Ax,Ay,Bx,By,Cx,Cy;
+	int size = pDoc->getSize();
+
+	for(i = 0; i <= (width * height); i++){
+		x_pos = rand() % width;
+		y_pos = rand() % height;
+
+		Ax = x_pos - (.5*size);
+		Bx = x_pos + (.5*size);
+		Cx = x_pos;
+		Ay = y_pos - (.5*size);
+		By = y_pos - (.5*size);
+		Cy = y_pos + (.5*size);
+
+		SetColor( Point(x_pos, y_pos), alpha );
+
+		glBegin( GL_POLYGON );
+			glVertex2i( Ax, Ay );
+			glVertex2i( Bx, By );
+			glVertex2i( Cx, Cy );
+		glEnd();
+	}
 }

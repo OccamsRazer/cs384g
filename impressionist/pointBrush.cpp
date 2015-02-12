@@ -62,6 +62,7 @@ void PointBrush::AutoBrush(int width, int height ){
 	ImpressionistUI* dlg=pDoc->m_pUI;
 
 	srand(time(NULL));
+	float alpha = pDoc->getAlpha();
 	int i, x_pos, y_pos;
 	int size = pDoc->getSize();
 	glPointSize( (float)size );
@@ -69,7 +70,7 @@ void PointBrush::AutoBrush(int width, int height ){
 		for(i = 0; i <= (width * height); i++){
 			x_pos = rand() % width;
 			y_pos = rand() % height;
-			SetColor( Point(x_pos, y_pos), 1.0f );
+			SetColor( Point(x_pos, y_pos), alpha );
 			glVertex2d( x_pos, y_pos );
 		}
 	glEnd();

@@ -72,5 +72,37 @@ void ScatterLineBrush::BrushEnd( const Point source, const Point target )
 }
 
 void ScatterLineBrush::AutoBrush(int width, int height){
-	// do nothing so far		
+		ImpressionistDoc* pDoc = GetDocument();
+	ImpressionistUI* dlg=pDoc->m_pUI;
+
+	srand(time(NULL));
+	int i, x_pos, y_pos;
+
+	float alpha = pDoc->getAlpha();
+	float angle = pDoc->getAngle() * 3.14159265 / 180.0;
+	float line_width = pDoc->getWeight()*1.0;
+	float length = pDoc->getSize()*1.0;
+	float start_x, start_y, end_x, end_y;
+
+	float cos_angle = cos(angle);
+	float sin_angle = sin(angle);
+	int numLines =  4;
+
+	glLineWidth(line_width);
+	glBegin( GL_LINES );
+		for(i = 0; i <= (width * height)*0.9; i++){
+			x_pos = rand() % width;
+			y_pos = rand() % height;
+			SetColor( Point(x_pos, y_pos), alpha );
+
+			start_x = x_pos - (0.5*length) * cos_angle;
+			start_y = y_pos - (0.5*length) * sin_angle;
+
+			end_x = x_pos + (0.5*length) * cos_angle;
+			end_y = y_pos + (0.5*length) * sin_angle;
+
+			glVertex2f(start_x, start_y);
+			glVertex2f(end_x, end_y);
+		}
+	glEnd();
 }

@@ -74,6 +74,7 @@ void ScatterPointBrush::AutoBrush(int width, int height){
 	int i, j, x_pos, y_pos;
 	int size = pDoc->getSize();
 	float x_val, y_val, min_x, min_y;
+	float alpha = pDoc->getAlpha();
 
 	glPointSize( 1.0f );
 	glBegin( GL_POINTS );
@@ -81,7 +82,7 @@ void ScatterPointBrush::AutoBrush(int width, int height){
 			x_pos = rand() % width;
 			y_pos = rand() % height;
 
-			SetColor( Point(x_pos, y_pos), 1.0f );
+			SetColor( Point(x_pos, y_pos), alpha );
 			glVertex2d(x_pos, y_pos);
 		}
 	glEnd();
