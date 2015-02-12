@@ -30,7 +30,7 @@
 
 #define DESTROY(p)	{  if ((p)!=NULL) {delete [] p; p=NULL; } }
 
-ImpressionistDoc::ImpressionistDoc() 
+ImpressionistDoc::ImpressionistDoc()
 {
 	// Set NULL image name as init. 
 	m_imageName[0]	='\0';	
@@ -39,7 +39,28 @@ ImpressionistDoc::ImpressionistDoc()
 	m_ucBitmap		= NULL;
 	m_ucPainting	= NULL;
 	m_ucPreviewBackup = NULL;
+	m_ucGradientX 	= NULL;
+	m_ucGradientY 	= NULL;
 
+	gradKernelX[0] = -1;
+	gradKernelX[1] =  0;
+	gradKernelX[2] =  1;
+	gradKernelX[3] = -2;
+	gradKernelX[4] =  0;
+	gradKernelX[5] =  2;
+	gradKernelX[6] = -1;
+	gradKernelX[7] =  0;
+	gradKernelX[8] =  1;
+
+	gradKernelY[0] = -1;
+	gradKernelY[1] = -2;
+	gradKernelY[2] = -1;
+	gradKernelY[3] =  0;
+	gradKernelY[4] =  0;
+	gradKernelY[5] =  0;
+	gradKernelY[6] =  1;
+	gradKernelY[7] =  2;
+	gradKernelY[8] =  1;
 
 	// create one instance of each brush
 	ImpBrush::c_nBrushCount	= NUM_BRUSH_TYPE;
@@ -156,13 +177,18 @@ int ImpressionistDoc::loadImage(char *iname)
 	delete [] m_ucPainting;
 	delete [] m_ucPreviewBackup;
 	delete [] m_ucSourceBackup;
+	delete [] m_ucGradientX;
+	delete [] m_ucGradientY;
 
 	m_ucBitmap		= data;
+
 
 	// allocate space for draw view
 	m_ucPainting		= new unsigned char [width*height*3];
 	m_ucPreviewBackup	= new unsigned char [width*height*3];
 	m_ucSourceBackup	= new unsigned char [width*height*3];
+	m_ucGradientX 		= new unsigned char [width*height*3];
+	m_ucGradientY 		= new unsigned char [width*height*3];
 	memset(m_ucPainting, 0, width*height*3);
 
 	m_pUI->m_mainWindow->resize(m_pUI->m_mainWindow->x(), 
@@ -178,6 +204,7 @@ int ImpressionistDoc::loadImage(char *iname)
 	m_pUI->m_paintView->resizeWindow(width, height);	
 	m_pUI->m_paintView->refresh();
 
+	calculateGradient();
 
 	return 1;
 }
@@ -324,6 +351,20 @@ void ImpressionistDoc::cancelFilter( unsigned char* destBuffer, int srcBufferWid
 	}
 }
 
+void ImpressionistDoc::loadGradient(const unsigned char* sourceBuffer, int srcBufferWidth, int srcBufferHeight,  unsigned char* destBuffer){
+	int r, c;
+	memcpy ( m_ucSourceBackup, destBuffer, srcBufferWidth*srcBufferHeight*3 );
+	memcpy ( destBuffer, sourceBuffer, srcBufferWidth*srcBufferHeight*3);
+	m_pUI->m_paintView->flush();
+}
+
+void ImpressionistDoc::unloadGradient( unsigned char* destBuffer, int srcBufferWidth, int srcBufferHeight ){
+	if (m_ucSourceBackup){
+		memcpy ( destBuffer, m_ucSourceBackup,  srcBufferWidth*srcBufferHeight*3 );
+		m_pUI->m_paintView->flush();
+	}
+}
+
 //------------------------------------------------------------------
 // Get the color of the pixel in the original image at coord x and y
 //------------------------------------------------------------------
@@ -385,4 +426,55 @@ int ImpressionistDoc::boundedColor(double color){
 		return 255;
 	else
 		return (int)color;
+}
+
+int ImpressionistDoc::getGrayscale(int r, int g, int b){
+	return (int)(0.299*r + 0.587*g + 0.114*b);
+}
+
+void ImpressionistDoc::calculateGradient(){
+	int r, c, flt_r, flt_c, row_offset, col_offset;
+	int new_rx_value, new_gx_value, new_bx_value, new_ry_value, new_gy_value, new_by_value;
+	int red, blue, green;
+	int result_x, result_y;
+
+	for(r = 0; r < m_nPaintHeight; r++){
+		for(c = 0; c < m_nPaintWidth; c++){
+			new_rx_value = 0;
+			new_gx_value = 0;
+			new_bx_value = 0;
+
+			new_ry_value = 0;
+			new_gy_value = 0;
+			new_by_value = 0;
+
+			result_x = 0;
+			result_y = 0;
+			for(flt_r = 0, row_offset = GRAD_HEIGHT/(-2); flt_r < GRAD_HEIGHT; flt_r++, row_offset++ ){
+				for(flt_c = 0, col_offset = GRAD_WIDTH/(-2); flt_c < GRAD_WIDTH; flt_c++, col_offset++ ){
+					red = getPixel(m_ucBitmap, m_nPaintWidth, m_nPaintHeight,r + row_offset, c + col_offset, 0);
+					green = getPixel(m_ucBitmap, m_nPaintWidth, m_nPaintHeight,r + row_offset, c + col_offset, 1);
+					blue = getPixel(m_ucBitmap, m_nPaintWidth, m_nPaintHeight,r + row_offset, c + col_offset, 2);
+					
+					new_rx_value += red * gradKernelX[(flt_r)*GRAD_WIDTH+(flt_c)];
+					new_gx_value += green * gradKernelX[(flt_r)*GRAD_WIDTH+(flt_c)];
+					new_bx_value += blue * gradKernelX[(flt_r)*GRAD_WIDTH+(flt_c)];
+
+					new_ry_value += red * gradKernelY[(flt_r)*GRAD_WIDTH+(flt_c)];
+					new_gy_value += green * gradKernelY[(flt_r)*GRAD_WIDTH+(flt_c)];
+					new_by_value += blue * gradKernelY[(flt_r)*GRAD_WIDTH+(flt_c)];
+				}
+			}
+
+			result_x = boundedColor(getGrayscale(new_rx_value, new_gx_value, new_bx_value));
+			m_ucGradientX[3*(r * m_nPaintWidth + c)+0] = boundedColor(new_rx_value);
+			m_ucGradientX[3*(r * m_nPaintWidth + c)+1] = boundedColor(new_gx_value);
+			m_ucGradientX[3*(r * m_nPaintWidth + c)+2] = boundedColor(new_bx_value);
+
+			m_ucGradientY[3*(r * m_nPaintWidth + c)+0] = boundedColor(new_ry_value);
+			m_ucGradientY[3*(r * m_nPaintWidth + c)+1] = boundedColor(new_gy_value);
+			m_ucGradientY[3*(r * m_nPaintWidth + c)+2] = boundedColor(new_by_value);
+		}
+	}
+
 }

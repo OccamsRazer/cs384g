@@ -413,6 +413,28 @@ void ImpressionistUI::cb_cancelKernelButton(Fl_Widget* o, void* v)
 	// cancel filter
 }
 
+void ImpressionistUI::cb_showYGradient(Fl_Menu_* o, void* v) 
+{
+	ImpressionistDoc* pDoc=whoami(o)->getDocument();
+
+	pDoc->loadGradient(pDoc->m_ucGradientY, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting);
+}
+
+void ImpressionistUI::cb_showXGradient(Fl_Menu_* o, void* v) 
+{
+	ImpressionistDoc* pDoc=whoami(o)->getDocument();
+
+	pDoc->loadGradient(pDoc->m_ucGradientX, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight, pDoc->m_ucPainting);
+}
+
+
+void ImpressionistUI::cb_unshowGradient(Fl_Menu_* o, void* v) 
+{
+	ImpressionistDoc* pDoc=whoami(o)->getDocument();
+
+	pDoc->unloadGradient(pDoc->m_ucPainting, pDoc->m_nPaintWidth, pDoc->m_nPaintHeight);
+}
+
 //-----------------------------------------------------------
 // Updates the brush size to use from the value of the size
 // slider
@@ -580,6 +602,11 @@ Fl_Menu_Item ImpressionistUI::menuitems[] = {
 		
 		{ "&Quit",			FL_ALT + 'q', (Fl_Callback *)ImpressionistUI::cb_exit },
 		{ 0 },
+	{ "&Gradients", 0, 0, 0, FL_SUBMENU},
+		{ "&X Gradient",	FL_ALT + 'x', (Fl_Callback *)ImpressionistUI::cb_showXGradient },
+		{ "&Y Gradient",	FL_ALT + 'y', (Fl_Callback *)ImpressionistUI::cb_showYGradient },
+		{ "&Return to Paint view",	FL_ALT + 'r', (Fl_Callback *)ImpressionistUI::cb_unshowGradient },
+		{ 0 },
 
 	{ "&Help",		0, 0, 0, FL_SUBMENU },
 		{ "&About",	FL_ALT + 'a', (Fl_Callback *)ImpressionistUI::cb_about },
@@ -738,7 +765,7 @@ ImpressionistUI::ImpressionistUI() {
 	m_kernelDialog = new Fl_Window(270, 310, "Kernel Dialog");
 		for(int r = 0; r < FLT_HEIGHT; r++){
 			for(int c = 0; c < FLT_WIDTH; c++){
-				m_kernel[r*FLT_WIDTH+c] = new Fl_Float_Input(10+r*50, 10+c*25, 50, 25, "");
+				m_kernel[r*FLT_WIDTH+c] = new Fl_Float_Input(10+c*50, 10+r*25, 50, 25, "");
 				m_kernel[r*FLT_WIDTH+c]->user_data((void*)(this));
 				if(r*FLT_WIDTH+c == FLT_HEIGHT*FLT_WIDTH/2){
 					m_kernel[r*FLT_WIDTH+c]->value("1");

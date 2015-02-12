@@ -146,6 +146,10 @@ private:
 
 	static void cb_dummyCallback(Fl_Widget* o, void* v);
 
+	static void cb_showXGradient(Fl_Menu_* o, void* v);
+	static void cb_showYGradient(Fl_Menu_* o, void* v);
+	static void cb_unshowGradient(Fl_Menu_* o, void* v);
+
 };
 
 #endif

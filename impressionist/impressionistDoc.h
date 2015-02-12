@@ -12,6 +12,9 @@
 
 class ImpressionistUI;
 
+const int GRAD_WIDTH = 3;
+const int GRAD_HEIGHT = 3;
+
 class ImpressionistDoc 
 {
 public:
@@ -42,6 +45,10 @@ public:
 		double divisor, double offset );
 
 	void cancelFilter( unsigned char* destBuffer, int srcBufferWidth, int srcBufferHeight );
+	
+	void unloadGradient( unsigned char* destBuffer, int srcBufferWidth, int srcBufferHeight );
+
+	void loadGradient(const unsigned char* sourceBuffer, int srcBufferWidth, int srcBufferHeight,  unsigned char* destBuffer);
 
 	void	setBrushType(int type);			// called by the UI to set the brushType
 	void	setStrokeType(int type);			// called by the UI to set the brushType
@@ -70,6 +77,12 @@ public:
 	unsigned char*	m_ucPreviewBackup;
 	// used by filter incase source == destination
 	unsigned char*	m_ucSourceBackup;
+	
+	unsigned char*	m_ucGradientX;
+	unsigned char*	m_ucGradientY;
+
+	int gradKernelX[GRAD_WIDTH*GRAD_HEIGHT];
+	int gradKernelY[GRAD_WIDTH*GRAD_HEIGHT];
 
 
 
@@ -91,6 +104,10 @@ public:
 	GLubyte* GetOriginalPixel( const Point p );
 	// Sets the angle and length base on line start and end
 	void SetFromMousePoints( const Point start, const Point end);
+
+	int getGrayscale(int r, int g, int b);
+
+	void calculateGradient();
 
 
 
