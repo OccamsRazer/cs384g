@@ -28,6 +28,7 @@ public:
 
 	int     clearCanvas();                  // called by the UI to clear the drawing canvas
 	int     autoDraw();                  // called by the UI to clear the drawing canvas
+	int     radialDraw(float x, float y);   // called by the UI to clear the drawing canvas
 
 
 	void applyFilter( const unsigned char* sourceBuffer, //The filter kernel

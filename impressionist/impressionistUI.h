@@ -67,6 +67,9 @@ public:
 	Fl_Slider*			m_BrushAlphaSlider;
 	Fl_Button*          m_ClearCanvasButton;
 	Fl_Button*          m_AutoDrawButton;
+	Fl_Float_Input*		m_radialX;
+	Fl_Float_Input*		m_radialY;
+	Fl_Button*          m_RadialDrawButton;
 
 	// Member functions
 	void				setDocument(ImpressionistDoc* doc);
@@ -143,6 +146,7 @@ private:
 	static void	cb_weightSlides(Fl_Widget* o, void* v);
 	static void	cb_angleSlides(Fl_Widget* o, void* v);
 	static void	cb_alphaSlides(Fl_Widget* o, void* v);
+	static void cb_radial_draw_buton(Fl_Widget* o, void* v);
 
 	static void cb_dummyCallback(Fl_Widget* o, void* v);
 

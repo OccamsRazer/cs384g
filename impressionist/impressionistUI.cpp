@@ -333,6 +333,21 @@ void ImpressionistUI::cb_auto_draw_buton(Fl_Widget* o, void* v)
 	pDoc->autoDraw();
 }
 
+//------------------------------------------------------------
+// Auto paints on canvas
+// Called by the UI when the clear canvas button is pushed
+//------------------------------------------------------------
+void ImpressionistUI::cb_radial_draw_buton(Fl_Widget* o, void* v)
+{
+	ImpressionistUI* pUI=((ImpressionistUI *)(o->user_data()));
+	ImpressionistDoc * pDoc = pUI->getDocument();
+
+	float x_val = atof(pUI->m_radialX->value());
+	float y_val = atof(pUI->m_radialY->value());
+
+	pDoc->radialDraw(x_val, y_val);
+}
+
 
 //------------------------------------------------------------
 // Preview the kernel in the paintview canvas.
@@ -701,9 +716,9 @@ ImpressionistUI::ImpressionistUI() {
 		m_strokeTypeChoice->menu(strokeMenu);
 		m_strokeTypeChoice->callback(cb_strokeChoice);
 
-		m_ClearCanvasButton = new Fl_Button(280,40,110,25,"&Auto Draw");
-		m_ClearCanvasButton->user_data((void*)(this));
-		m_ClearCanvasButton->callback(cb_auto_draw_buton);
+		m_AutoDrawButton = new Fl_Button(280,40,110,25,"&Auto Draw");
+		m_AutoDrawButton->user_data((void*)(this));
+		m_AutoDrawButton->callback(cb_auto_draw_buton);
 
 
 		// Add brush size slider to the dialog 
@@ -759,6 +774,18 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushAlphaSlider->value(m_nAlpha);
 		m_BrushAlphaSlider->align(FL_ALIGN_RIGHT);
 		m_BrushAlphaSlider->callback(cb_alphaSlides);
+
+		m_radialX = new Fl_Float_Input(20, 200, 50, 25, "X");
+		m_radialX->user_data((void*)(this));
+		m_radialX->value("0");
+
+		m_radialY = new Fl_Float_Input(90, 200, 50, 25, "Y");
+		m_radialY->user_data((void*)(this));
+		m_radialY->value("0");
+
+		m_RadialDrawButton = new Fl_Button(150,200,110,25,"&Radial Draw");
+		m_RadialDrawButton->user_data((void*)(this));
+		m_RadialDrawButton->callback(cb_radial_draw_buton);
 
 
 	m_brushDialog->end();

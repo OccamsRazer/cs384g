@@ -261,6 +261,64 @@ int ImpressionistDoc::autoDraw()
 	m_pUI->m_paintView->flush();
 }
 
+//----------------------------------------------------------------
+// Clear the drawing canvas
+// This is called by the UI when the clear canvas menu item is 
+// chosen
+//-----------------------------------------------------------------
+int ImpressionistDoc::radialDraw(float x, float y) 
+{
+	srand(time(NULL));
+	int i, j;
+
+	float alpha = getAlpha();
+	float line_width = getWeight()*1.0;
+	int length = getSize();
+	float start_x, start_y, end_x, end_y;
+
+	float angle, cos_angle, sin_angle, tan_angle;
+	int numLines =  4;
+	float x_center, y_center, x_pos, y_pos;
+
+	GLubyte color[4];
+
+	glLineWidth(line_width);
+	glBegin( GL_LINES );
+		for(i = 0; i <= (m_nPaintWidth * m_nPaintHeight); i++){
+			x_center = rand() % m_nPaintWidth;
+			y_center = rand() % m_nPaintHeight;
+			
+			memcpy ( color, GetOriginalPixel( x_center, y_center ), 3 );
+			color[3] = static_cast<GLubyte>(alpha * 255.f);
+
+			glColor4ubv( color );
+
+			for(j = 0; j < numLines; j++){
+				x_pos = (x_center - 0.5 * length) + rand() % length;
+				y_pos = (y_center - 0.5 * length) + rand() % length;
+				// y_pos = rand() % m_nPaintHeight;
+
+				angle = atan2((y_pos - y),(x_pos - x));
+				cos_angle = cos(angle);
+				sin_angle = sin(angle);
+	
+				start_x = x_pos - (0.5*length) * cos_angle;
+				start_y = y_pos - (0.5*length) * sin_angle;
+	
+				end_x = x_pos + (0.5*length) * cos_angle;
+				end_y = y_pos + (0.5*length) * sin_angle;
+	
+				glVertex2f(start_x, start_y);
+				glVertex2f(end_x, end_y);
+			}
+		}
+	glEnd();
+
+	m_pUI->m_paintView->SaveCurrentContent();
+	m_pUI->m_paintView->RestoreContent();
+	m_pUI->m_paintView->flush();
+}
+
 // Apply the filter specified by filter_kernel to the 
 // each pixel in the source buffer and place the resulting
 // pixel in the destination buffer.  
@@ -399,9 +457,9 @@ void ImpressionistDoc::SetFromMousePoints(const Point start, const Point end){
 	if( angle < 0 )
 		angle += 180;
 
-	if(m_nCurrentStroke == STROKE_SLIDERS){
-		m_pUI->setSize(length);
-	}
+	// if(m_nCurrentStroke == STROKE_SLIDERS){
+	// 	m_pUI->setSize(length);
+	// }
 	m_pUI->setAngle(angle);
 }
 
