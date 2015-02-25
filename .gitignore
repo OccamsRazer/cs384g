@@ -27,3 +27,5 @@
 *.out
 *.app
 ray/ray
+*.P
+*sublime*
