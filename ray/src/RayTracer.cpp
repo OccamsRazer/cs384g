@@ -69,7 +69,7 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 	isect i;
 	Vec3d colorC;
 
-	if(scene->intersect(r, i)) {
+	if(scene->intersect(r, i) && depth >= 0) {
 		// YOUR CODE HERE
 
 		// An intersection occurred!  We've got work to do.  For now,
