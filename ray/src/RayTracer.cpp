@@ -71,22 +71,48 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 
 	if(scene->intersect(r, i) ) {
 
-	  const Material& m = i.getMaterial();
-	  colorC = m.shade(scene, r, i);
+		const Material& m = i.getMaterial();
+		colorC = m.shade(scene, r, i);
 
-	  if ( depth < 1) return colorC;
+		if ( depth < 1) return colorC;
 
-	  Vec3d reflectedDir = (-2.0) * ( (r.getDirection()) * i.N ) * i.N + r.getDirection(); // R = Ci + Si
-	  reflectedDir.normalize();
+		Vec3d Ci = ( (-1 * r.getDirection()) * i.N ) * i.N;
+		Vec3d Si = Ci + r.getDirection();
+		Vec3d reflectedDir = Ci + Si;
+		reflectedDir.normalize();
 
-	  ray reflected(r.at(i.t), reflectedDir, ray::REFLECTION);
+		ray reflected(r.at(i.t), reflectedDir, ray::REFLECTION);
 
-	  Vec3d Ireflect = m.kr(i) % traceRay( reflected, depth - 1);
+		Vec3d Ireflect = m.kr(i) % traceRay( reflected, depth - 1);
 
-	  colorC += Ireflect;
+		colorC += Ireflect;
 
-	  // add refraction
-	  // T = Ct + St
+		double Thetai = i.N * r.getDirection();
+		bool tir = 1.0 - m.index(i) * m.index(i) * ( 1.0 - Thetai * Thetai) < 0;
+		bool entering = Thetai < 0.0;
+
+		// refract iff kt is nonzero, ray is entering object, ray is exiting and not have tir
+		if ( !m.kt(i).iszero() && ( entering || ( !entering && !tir ) ) ) {
+			Vec3d refractedDir;
+			if ( entering ) {
+				Vec3d St = ( 1.0/m.index(i) ) * Si;
+				double StdotSt = St * St;
+				Vec3d Ct =  -1.0 * i.N * sqrt(1.0 - StdotSt);
+				refractedDir = Ct + St;
+			}
+			else {
+				Vec3d St = m.index(i) * Si;
+				double StdotSt = St * St;
+				Vec3d Ct = i.N * sqrt(1.0 - StdotSt);
+				refractedDir = Ct + St;
+			}
+			refractedDir.normalize();
+	
+			ray refracted(r.at(i.t), refractedDir, ray::REFRACTION);
+			Vec3d Irefract = m.kt(i) % traceRay( refracted, depth - 1);
+	
+			colorC += Irefract;
+		}
 	} else {
 		// No intersection.  This ray travels to infinity, so we color
 		// it according to the background color, which in this (simple) case
@@ -134,7 +160,7 @@ bool RayTracer::loadScene( char* fn ) {
 
 	// Call this with 'true' for debug output from the tokenizer
 	Tokenizer tokenizer( ifs, false );
-    Parser parser( tokenizer, path );
+	Parser parser( tokenizer, path );
 	try {
 		delete scene;
 		scene = 0;
