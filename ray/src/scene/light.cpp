@@ -6,69 +6,67 @@ using namespace std;
 
 double DirectionalLight::distanceAttenuation(const Vec3d& P) const
 {
-  // distance to light is infinite, so f(di) goes to 0.  Return 1.
-  return 1.0;
+	// distance to light is infinite, so f(di) goes to 0.  Return 1.
+	return 1.0;
 }
 
 
 Vec3d DirectionalLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 {
-  Vec3d d = position - p;
-  d.normalize();
+	Vec3d atten(1,1,1);
 
-  isect i;
-  ray shadowRay( p, d, ray::SHADOW );
+	isect i;
+	ray shadowRay( p, getDirection(p), ray::SHADOW );
 
-  if ( scene->intersect(shadowRay, i) ) {
-    return Vec3d(0,0,0);
-  }
-  else {
-    return Vec3d(1,1,1);
-  }
+	if ( scene->intersect(shadowRay, i) ) {
+		atten = Vec3d(0,0,0);
+	}
+
+	return atten;
 }
 
 Vec3d DirectionalLight::getColor() const
 {
-  return color;
+	return color;
 }
 
 Vec3d DirectionalLight::getDirection(const Vec3d& P) const
 {
-  // for directional light, direction doesn't depend on P
-  return -orientation;
+	// for directional light, direction doesn't depend on P
+	return -orientation;
 }
 
 double PointLight::distanceAttenuation(const Vec3d& P) const
 {
-  double d = (position - P).length();
-  return min(1.0, 1.0/( constantTerm + linearTerm*d + quadraticTerm*d*d ));
+	double d = (position - P).length();
+	return min(1.0, 1.0/( constantTerm + linearTerm*d + quadraticTerm*d*d ));
 }
 
 Vec3d PointLight::getColor() const
 {
-  return color;
+	return color;
 }
 
 Vec3d PointLight::getDirection(const Vec3d& P) const
 {
-  Vec3d ret = position - P;
-  ret.normalize();
-  return ret;
+	Vec3d ret = position - P;
+	ret.normalize();
+	return ret;
 }
 
 
 Vec3d PointLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 {
-  Vec3d d = position - p;
-  d.normalize();
+	Vec3d atten(1,1,1);
+	Vec3d d = position - p;
+	d.normalize();
 
-  isect i;
-  ray shadowRay( p, d, ray::SHADOW );
+	isect i;
+	ray shadowRay( p, d, ray::SHADOW );
 
-  if ( scene->intersect(shadowRay, i) ) {
-    return Vec3d(0,0,0);
-  }
-  else {
-    return Vec3d(1,1,1);
-  }
+	if ( scene->intersect(shadowRay, i) ) {
+		atten = Vec3d(0,0,0);
+	}
+
+	return atten;
 }
