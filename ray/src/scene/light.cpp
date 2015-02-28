@@ -19,7 +19,12 @@ Vec3d DirectionalLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 	ray shadowRay( p, getDirection(p), ray::SHADOW );
 
 	if ( scene->intersect(shadowRay, i) ) {
+		const Material& m = i.getMaterial();
 		atten = Vec3d(0,0,0);
+
+		if ( !m.kt(i).iszero() ){
+			atten = ( distanceAttenuation(p) * getColor() ) % m.kt(i);
+		}
 	}
 
 	return atten;
@@ -65,7 +70,12 @@ Vec3d PointLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 	ray shadowRay( p, d, ray::SHADOW );
 
 	if ( scene->intersect(shadowRay, i) ) {
+		const Material& m = i.getMaterial();
 		atten = Vec3d(0,0,0);
+
+		if ( !m.kt(i).iszero() ){
+			atten = ( distanceAttenuation(p) * getColor() ) % m.kt(i);
+		}
 	}
 
 	return atten;
