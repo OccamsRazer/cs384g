@@ -52,8 +52,29 @@ Vec3d RayTracer::tracePixel(int i, int j)
 	double y = double(j)/double(buffer_height);
 
 	unsigned char *pixel = buffer + ( i + j * buffer_width ) * 3;
+	int aaSamples = traceUI->getAASamples();
 
-	col = trace(x, y);
+	if (aaSamples > 1) {
+		double minX = (double)i - 0.5;
+		double minY = (double)j - 0.5;
+		double maxX = (double)i + 0.5;
+		double maxY = (double)j + 0.5;
+
+		double inc = 1.0/(aaSamples - 1);
+
+		int r, c;
+		for( r = 0; r < aaSamples; r++ ){
+			x = (minX + r * inc)/double(buffer_width);
+			for( c = 0; c < aaSamples; c++ ){
+				y = (minY + c * inc)/double(buffer_height);
+				col += trace (x, y);
+			}
+		}
+		col /= (aaSamples*aaSamples);
+	}
+	else {
+		col = trace( x, y);
+	}
 
 	pixel[0] = (int)( 255.0 * col[0]);
 	pixel[1] = (int)( 255.0 * col[1]);
