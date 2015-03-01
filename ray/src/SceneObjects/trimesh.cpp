@@ -95,9 +95,57 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
     const Vec3d& b = parent->vertices[ids[1]];
     const Vec3d& c = parent->vertices[ids[2]];
 
-    // YOUR CODE HERE
+    Vec3d n = (a - b) ^ (b - c);
+    n.normalize();
+    double d = -(n * a);
 
-    return false;
+    double t = - ( (n * r.getPosition()) + d )/(n * r.getDirection());
+    if( t <= RAY_EPSILON ) {
+        return false;
+    }
+
+    Vec3d Q = r.at(t);
+
+    // project to xy (default)
+    double max = abs(n[2]);
+    Mat3d mat(a[0], b[0], c[0],
+              a[1], b[1], c[1],
+                1,    1,    1);
+    Vec3d Qprime(Q[0], Q[1], 1);
+    
+    // project to xz
+    if ( max < abs(n[1]) ) {
+        mat = Mat3d(a[0], b[0], c[0],
+                      1,    1,    1,
+                    a[2], b[2], c[2]);
+        Qprime = Vec3d(Q[0], 1, Q[2]);
+        max = abs(n[1]);
+    }
+    // project to yz
+    if ( max < abs(n[0]) ) {
+        mat = Mat3d(  1,    1,    1,
+                    a[1], b[1], c[1],
+                    a[2], b[2], c[2]);
+        Qprime = Vec3d(1, Q[1], Q[2]);
+        max = abs(n[0]);
+    }
+
+    Vec3d bary = mat.inverse() * Qprime;
+
+    if( bary.iszero() || bary[0] < 0 || bary[1] < 0 || bary[2] < 0) return false;
+
+    if( parent->vertNorms ){
+        n = parent->normals[ids[0]] % bary + parent->normals[ids[1]] % bary + parent->normals[ids[2]] % bary;
+        n.normalize();
+    }
+
+    i.setN(n);
+    i.setT(t);
+    i.setBary(bary);
+    i.setMaterial(getMaterial());
+    // i.setUVCoordinates(Vec2d(bary[0],bary[1]));
+
+    return true;
 }
 
 void Trimesh::generateNormals()
