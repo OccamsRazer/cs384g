@@ -27,10 +27,12 @@ Vec3d Material::shade(Scene *scene, const ray& r, const isect& i) const
 		Vec3d reflected = 2 * ( Lj * i.N ) * i.N - Lj;
 		reflected.normalize();
 
-		total += (kd(i) % LjIntensity) * max( 0.0, Lj * i.N ) + (ks(i) % LjIntensity) * pow(max(0.0, -1.0 * reflected * r.getDirection()), shininess(i));
+		Vec3d temptotal = (kd(i) % LjIntensity) * max( 0.0, Lj * i.N ) + (ks(i) % LjIntensity) * pow(max(0.0, -1.0 * reflected * r.getDirection()), shininess(i));
 
-		total *= pLight->distanceAttenuation(r.at(i.t));
-		total %= shadow;
+		temptotal *= pLight->distanceAttenuation(r.at(i.t));
+		temptotal %= shadow;
+
+		total += temptotal;
 	}
 
 	total += ke(i) + ka(i) % scene->ambient();
