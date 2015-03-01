@@ -11,6 +11,7 @@
 #pragma warning(disable : 4786)
 
 #include <string>
+#include <thread>
 
 using std::string;
 
@@ -20,7 +21,7 @@ class TraceUI {
 public:
 	TraceUI() : m_nDepth(0), m_nSize(512), m_displayDebuggingInfo(false),
                     m_shadows(true), m_smoothshade(true), raytracer(0),
-                    m_nFilterWidth(1), m_nAASamples(1)
+                    m_nFilterWidth(1), m_nAASamples(1), m_nThreads(std::thread::hardware_concurrency())
                     {}
 
 	virtual int	run() = 0;
@@ -37,7 +38,8 @@ public:
 	int	getSize() const { return m_nSize; }
 	int	getDepth() const { return m_nDepth; }
 	int	getAASamples() const { return m_nAASamples; }
-	int		getFilterWidth() const { return m_nFilterWidth; }
+	int	getNumThreads() const { return m_nThreads; }
+	int	getFilterWidth() const { return m_nFilterWidth; }
 
 	bool	shadowSw() const { return m_shadows; }
 	bool	smShadSw() const { return m_smoothshade; }
@@ -50,6 +52,7 @@ protected:
 	int	m_nSize;	// Size of the traced image
 	int	m_nDepth;	// Max depth of recursion
 	int m_nAASamples; // Number of samples for aa
+	int m_nThreads; // Number of threads
 
 	// Determines whether or not to show debugging information
 	// for individual rays.  Disabled by default for efficiency
