@@ -19,8 +19,8 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 	int i;
 
 	progName=argv[0];
-
-	while( (i = getopt( argc, argv, "tr:w:h:" )) != EOF )
+	m_nAASamples = 1;
+	while( (i = getopt( argc, argv, "tr:w:h:s:" )) != EOF )
 	{
 		switch( i )
 		{
@@ -31,6 +31,11 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 			case 'w':
 				m_nSize = atoi( optarg );
 				break;
+
+			case 's':
+				m_nAASamples = atoi( optarg );
+				break;
+
 			default:
 			// Oops; unknown argument
 			std::cerr << "Invalid argument: '" << i << "'." << std::endl;
@@ -66,7 +71,7 @@ int CommandLineUI::run()
 
 		for( int j = 0; j < height; ++j )
 			for( int i = 0; i < width; ++i )
-//				raytracer->tracePixel(i,j);
+				raytracer->tracePixel(i,j);
 
 		end=clock();
 
@@ -100,4 +105,7 @@ void CommandLineUI::usage()
 	std::cerr << "usage: " << progName << " [options] [input.ray output.bmp]" << std::endl;
 	std::cerr << "  -r <#>      set recursion level (default " << m_nDepth << ")" << std::endl; 
 	std::cerr << "  -w <#>      set output image width (default " << m_nSize << ")" << std::endl;
+	std::cerr << "  -s <#>      set number of samples for anti-aliasing (default " << m_nAASamples << ")" << std::endl;
+	std::cerr << "              Note: this value will be squared, ie -aa 3 = 9 samples" << std::endl;
+
 }
