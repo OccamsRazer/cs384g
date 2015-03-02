@@ -87,7 +87,12 @@ Vec3d TextureMap::getMappedValue( const Vec2d& coord ) const
 	// and use these to perform bilinear interpolation
 	// of the values.
 
-	return Vec3d(1,1,1);
+	double x = coord[0] * width;
+	double y = coord[1] * height;
+	int x1 = floor(x);
+	int y1 = floor(y);
+
+	return (getPixelAt(x1,y1) + getPixelAt(x1+1, y1+1))/2.0;
 
 }
 

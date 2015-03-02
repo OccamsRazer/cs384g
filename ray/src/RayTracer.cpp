@@ -134,7 +134,11 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 	
 			colorC += Irefract;
 		}
-	} else {
+	} 
+	else if ( haveCubeMap() ) {
+		colorC = getCubeMap()->getColor(r);
+	}
+	else {
 		// No intersection.  This ray travels to infinity, so we color
 		// it according to the background color, which in this (simple) case
 		// is just black.
