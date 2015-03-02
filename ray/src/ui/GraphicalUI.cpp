@@ -7,7 +7,6 @@
 #include <time.h>
 #include <string.h>
 #include <stdarg.h>
-#include <thread>
 
 #ifndef COMMAND_LINE_ONLY
 
