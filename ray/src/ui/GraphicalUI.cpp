@@ -63,6 +63,13 @@ void GraphicalUI::cb_load_scene(Fl_Menu_* o, void* v)
 	}
 }
 
+void GraphicalUI::cb_load_cubemaps(Fl_Menu_* o, void* v) 
+{
+	pUI = whoami(o);
+
+	pUI->m_cubeMapChooser->show();
+}
+
 void GraphicalUI::cb_save_image(Fl_Menu_* o, void* v) 
 {
 	pUI = whoami(o);
@@ -83,6 +90,7 @@ void GraphicalUI::cb_exit(Fl_Menu_* o, void* v)
 	pUI->m_traceGlWindow->hide();
 	pUI->m_mainWindow->hide();
 	pUI->m_debuggingWindow->hide();
+	pUI->m_cubeMapChooser->hide();
 	TraceUI::m_debug = false;
 }
 
@@ -96,6 +104,7 @@ void GraphicalUI::cb_exit2(Fl_Widget* o, void* v)
 	pUI->m_traceGlWindow->hide();
 	pUI->m_mainWindow->hide();
 	pUI->m_debuggingWindow->hide();
+	pUI->m_cubeMapChooser->hide();
 	TraceUI::m_debug = false;
 }
 
@@ -137,6 +146,11 @@ void GraphicalUI::cb_threadsSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_nThreads = int( ((Fl_Slider *)o)->value() );
 }
 
+void GraphicalUI::cb_filterWidthSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_nFilterWidth = int( ((Fl_Slider *)o)->value() );
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	pUI=(GraphicalUI*)(o->user_data());
@@ -151,6 +165,18 @@ void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 	    pUI->m_debuggingWindow->hide();
 	    pUI->m_debug = false;
 	  }
+}
+
+void GraphicalUI::cb_enableCubemapsCheckButton(Fl_Widget* o, void* v)
+{
+	pUI=(GraphicalUI*)(o->user_data());
+	pUI->m_enableCubemaps = (((Fl_Check_Button*)o)->value() == 1);
+	if ( !pUI->m_enableCubemaps) {
+		pUI->m_filterSlider->deactivate();
+	}
+	else {
+		pUI->m_filterSlider->activate();
+	}
 }
 
 void GraphicalUI::cb_render(Fl_Widget* o, void* v) {
@@ -281,6 +307,7 @@ void GraphicalUI::setRayTracer(RayTracer *tracer)
 Fl_Menu_Item GraphicalUI::menuitems[] = {
 	{ "&File", 0, 0, 0, FL_SUBMENU },
 	{ "&Load Scene...",	FL_ALT + 'l', (Fl_Callback *)GraphicalUI::cb_load_scene },
+	{ "&Load Cubemaps...", FL_ALT + 'c', (Fl_Callback *)GraphicalUI::cb_load_cubemaps },
 	{ "&Save Image...", FL_ALT + 's', (Fl_Callback *)GraphicalUI::cb_save_image },
 	{ "&Exit", FL_ALT + 'e', (Fl_Callback *)GraphicalUI::cb_exit },
 	{ 0 },
@@ -378,6 +405,25 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_threadsSlider->align(FL_ALIGN_RIGHT);
 	m_threadsSlider->callback(cb_threadsSlides);
 
+	// set up cubemap checkbox and filter slider
+	m_cubeMapCheckButton = new Fl_Check_Button(10, 165, 140, 20, "Cubemaps");
+	m_cubeMapCheckButton->user_data((void*)(this));
+	m_cubeMapCheckButton->callback(cb_enableCubemapsCheckButton);
+	m_cubeMapCheckButton->value(m_enableCubemaps);
+	m_cubeMapCheckButton->deactivate();
+	m_filterSlider = new Fl_Value_Slider(150, 165, 180, 20, "Filter width");
+	m_filterSlider->user_data((void*)(this));	// record self to be used by static callback functions
+	m_filterSlider->type(FL_HOR_NICE_SLIDER);
+	m_filterSlider->labelfont(FL_COURIER);
+	m_filterSlider->labelsize(12);
+	m_filterSlider->minimum(1);
+	m_filterSlider->maximum(32);
+	m_filterSlider->step(1);
+	m_filterSlider->value(m_nFilterWidth);
+	m_filterSlider->align(FL_ALIGN_RIGHT);
+	m_filterSlider->callback(cb_filterWidthSlides);
+	m_filterSlider->deactivate();
+
 	// set up debugging display checkbox
 	m_debuggingDisplayCheckButton = new Fl_Check_Button(10, 429, 140, 20, "Debugging display");
 	m_debuggingDisplayCheckButton->user_data((void*)(this));
@@ -395,6 +441,9 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 
 	// debugging view
 	m_debuggingWindow = new DebuggingWindow();
+
+	m_cubeMapChooser = new CubeMapChooser();
+	m_cubeMapChooser->setCaller(this);
 }
 
 #endif

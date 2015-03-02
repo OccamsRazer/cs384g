@@ -82,6 +82,7 @@ private:
 	static GraphicalUI* whoami(Fl_Menu_* o);
 
 	static void cb_load_scene(Fl_Menu_* o, void* v);
+	static void cb_load_cubemaps(Fl_Menu_* o, void* v);
 	static void cb_save_image(Fl_Menu_* o, void* v);
 	static void cb_exit(Fl_Menu_* o, void* v);
 	static void cb_about(Fl_Menu_* o, void* v);
@@ -94,10 +95,12 @@ private:
 	static void cb_refreshSlides(Fl_Widget* o, void* v);
 	static void cb_aaSamplesSlides(Fl_Widget* o, void* v);
 	static void cb_threadsSlides(Fl_Widget* o, void* v);
+	static void cb_filterWidthSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);
 	static void cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v);
+	static void cb_enableCubemapsCheckButton(Fl_Widget* o, void* v);
 	static void cb_ssCheckButton(Fl_Widget* o, void* v);
 	static void cb_shCheckButton(Fl_Widget* o, void* v);
 	static void cb_bfCheckButton(Fl_Widget* o, void* v);

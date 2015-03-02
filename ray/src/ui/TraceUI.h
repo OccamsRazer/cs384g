@@ -19,7 +19,7 @@ class RayTracer;
 
 class TraceUI {
 public:
-	TraceUI() : m_nDepth(0), m_nSize(512), m_displayDebuggingInfo(false),
+	TraceUI() : m_nDepth(0), m_nSize(512), m_displayDebuggingInfo(false), m_enableCubemaps(false),
                     m_shadows(true), m_smoothshade(true), raytracer(0),
                     m_nFilterWidth(1), m_nAASamples(1), m_nThreads(std::thread::hardware_concurrency())
                     {}
@@ -58,6 +58,7 @@ protected:
 	// for individual rays.  Disabled by default for efficiency
 	// reasons.
 	bool m_displayDebuggingInfo;
+	bool m_enableCubemaps;
 	bool m_shadows;  // compute shadows?
 	bool m_smoothshade;  // turn on/off smoothshading?
 	bool		m_usingCubeMap;  // render with cubemap
