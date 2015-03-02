@@ -197,13 +197,14 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v) {
 		const char *old_label = pUI->m_traceGlWindow->label();
 
 		int numThreads = pUI->getNumThreads();
+		int squareSize = 10;
 		std::vector<std::thread> threads;
 
 		clock_t now, prev;
 		now = prev = clock();
 		clock_t intervalMS = pUI->refreshInterval * 100;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y+=squareSize) {
+			for (int x = 0; x < width; x+=numThreads*squareSize) {
 				if (stopTrace) break;
 				// check for input and refresh view every so often while tracing
 				now = clock();
@@ -216,13 +217,12 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v) {
 					if (Fl::damage()) { Fl::flush(); }
 				}
 				// look for input and refresh window
-				/*for (int i = 0; i < numThreads && x < width; i++){
-					threads.push_back(std::thread(&threadedTracePixel, x, y));
-					x++;
+				for (int i = 0; i < numThreads && x + (i * squareSize) <  width; i++){
+					threads.push_back(std::thread(GraphicalUI::threadedRenderSquare, x + (i * squareSize), y , squareSize));
 				}
 				for (auto& th : threads) th.join();
-				threads.clear();*/
-				pUI->raytracer->tracePixel(x,y);
+				threads.clear();
+				// pUI->raytracer->tracePixel(x,y);
 				pUI->m_debuggingWindow->m_debuggingView->setDirty();
 			}
 			if (stopTrace) break;
@@ -274,6 +274,14 @@ void GraphicalUI::threadedRender(int height, int xStart, int xEnd){
 	}
 	doneTrace = true;
 	stopTrace = false;
+}
+
+void GraphicalUI::threadedRenderSquare( int xStart, int yStart, int size){
+	for (int y = 0; y < size; y++) {
+		for (int x = xStart; x < size; x++){
+			pUI->raytracer->tracePixel(xStart + x, yStart + y);
+		}
+	}
 }
 
 void GraphicalUI::cb_stop(Fl_Widget* o, void* v)
