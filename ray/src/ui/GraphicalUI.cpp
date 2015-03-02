@@ -170,8 +170,8 @@ void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 void GraphicalUI::cb_enableCubemapsCheckButton(Fl_Widget* o, void* v)
 {
 	pUI=(GraphicalUI*)(o->user_data());
-	pUI->m_enableCubemaps = (((Fl_Check_Button*)o)->value() == 1);
-	if ( !pUI->m_enableCubemaps) {
+	pUI->m_usingCubeMap = (((Fl_Check_Button*)o)->value() == 1);
+	if ( !pUI->m_usingCubeMap) {
 		pUI->m_filterSlider->deactivate();
 	}
 	else {
@@ -409,7 +409,7 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_cubeMapCheckButton = new Fl_Check_Button(10, 165, 140, 20, "Cubemaps");
 	m_cubeMapCheckButton->user_data((void*)(this));
 	m_cubeMapCheckButton->callback(cb_enableCubemapsCheckButton);
-	m_cubeMapCheckButton->value(m_enableCubemaps);
+	m_cubeMapCheckButton->value(m_usingCubeMap);
 	m_cubeMapCheckButton->deactivate();
 	m_filterSlider = new Fl_Value_Slider(150, 165, 180, 20, "Filter width");
 	m_filterSlider->user_data((void*)(this));	// record self to be used by static callback functions

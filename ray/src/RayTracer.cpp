@@ -135,7 +135,7 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 			colorC += Irefract;
 		}
 	} 
-	else if ( haveCubeMap() ) {
+	else if ( haveCubeMap() && traceUI->getCubemapsEnabled() ) {
 		colorC = getCubeMap()->getColor(r);
 	}
 	else {

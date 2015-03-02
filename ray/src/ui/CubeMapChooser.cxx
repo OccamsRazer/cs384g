@@ -115,7 +115,7 @@ void CubeMapChooser::cb_ok(Fl_Widget* o, void* v) {
 		ch->caller->useCubeMap(true);
 		ch->caller->m_filterSlider->activate();
 		ch->caller->m_cubeMapCheckButton->activate();
-		ch->caller->m_cubeMapCheckButton->value(1);
+		ch->caller->m_cubeMapCheckButton->value(true);
 	}
 	o->parent()->hide();
 }
