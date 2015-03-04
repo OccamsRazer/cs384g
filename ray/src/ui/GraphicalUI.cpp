@@ -207,23 +207,9 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v) {
 		if (numThreads > 1){
 			for (int i = 0; i < numThreads; i++){
 				threads.push_back(std::thread(GraphicalUI::threadedRender, i, width, height, chunkSize));
-				// threadedRenderSquare(x + (i * squareSize), y , width, height, squareSize);
 			}
-			for (auto& th : threads) {
-				th.join();
-				// sprintf(buffer, "(%d%%) %s", (int)((double)y / (double)height * 100.0), old_label);
-				// pUI->m_traceGlWindow->label(buffer);
-				render_mutex.lock();
-				pUI->m_traceGlWindow->refresh();
-				Fl::check();
-				if (Fl::damage()) { Fl::flush(); }
-				render_mutex.unlock();
-			}
-			pUI->m_debuggingWindow->m_debuggingView->setDirty();
+			for (auto& th : threads) { th.join(); }
 			threads.clear();
-			pUI->m_traceGlWindow->refresh();
-			Fl::check();
-			if (Fl::damage()) { Fl::flush(); }
 
 		}
 		else { // leave this in for benchmarking
@@ -252,9 +238,11 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v) {
 		stopTrace = false;
 		end = clock();
 		// Restore the window label
-		sprintf(buffer, "Time to render: %.5f", ((float)(end - start))/CLOCKS_PER_SEC/numThreads);
+		sprintf(buffer, " %.5f seconds", ((float)(end - start))/CLOCKS_PER_SEC/numThreads);
 		pUI->m_traceGlWindow->label(buffer);
 		pUI->m_traceGlWindow->refresh();
+		Fl::check();
+		if (Fl::damage()) { Fl::flush(); }
 	}
 }
 
@@ -263,17 +251,19 @@ Vec3d GraphicalUI::threadedTracePixel(int x, int y){
 }
 
 void GraphicalUI::threadedRender(int index, int width, int height, int size){
+	render_mutex.lock();
 	clock_t now, prev;
 	now = prev = clock();
 	int i = 0;
 	int numThreads = pUI->getNumThreads();
 	clock_t intervalMS = pUI->refreshInterval * 100;
+	render_mutex.unlock();
 	for (int y = 0; y < height; y+=size) {
 		for (int x = index*size; x < width; x+=(size*numThreads)){
 			if (stopTrace) break;
-			threadedRenderSquare(index, x, y, width, height, size);
 			i++;
 			render_mutex.lock();
+			pUI->m_debuggingWindow->m_debuggingView->setDirty();
 			now = clock();
 			if ((now - prev)/CLOCKS_PER_SEC * 1000 >= intervalMS){
 				prev = now;
@@ -283,6 +273,7 @@ void GraphicalUI::threadedRender(int index, int width, int height, int size){
 			}
 			render_mutex.unlock();
 
+			threadedRenderSquare(index, x, y, width, height, size);
 		}
 		if (stopTrace) break;
 	}
