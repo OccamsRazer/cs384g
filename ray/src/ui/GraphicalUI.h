@@ -107,7 +107,7 @@ private:
 
 	static Vec3d threadedTracePixel(int x, int y);
 	static void threadedRender(int index, int width, int height, int size);
-	static void threadedRenderSquare( int xStart, int yStart, int xMax, int yMax, int size);
+	static void threadedRenderSquare( int index, int xStart, int yStart, int xMax, int yMax, int size);
 
 	static bool stopTrace;
 	static bool doneTrace;
