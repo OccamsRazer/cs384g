@@ -219,7 +219,7 @@ bool RayTracer::loadScene( char* fn ) {
 	if( !sceneLoaded() ) return false;
 
 	if(traceUI->acceleration())
-		scene->buildKdTree(traceUI->getTreeDepth());
+		scene->buildKdTree(traceUI->getTreeDepth(), traceUI->getLeafMax());
 
 	return true;
 }

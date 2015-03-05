@@ -673,7 +673,7 @@ void Parser::parseTrimesh(Scene* scene, TransformNode* transform, const Material
           throw ParserException( error );
 
         if(traceUI->acceleration()){
-            tmesh->buildKdTree(traceUI->getTreeDepth());
+            tmesh->buildKdTree(traceUI->getTreeDepth(), traceUI->getLeafMax());
         }
 
         scene->add( tmesh );

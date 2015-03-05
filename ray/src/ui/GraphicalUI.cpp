@@ -195,9 +195,11 @@ void GraphicalUI::cb_enableKdTree(Fl_Widget* o, void* v)
 	pUI->m_enableAcceleration = (((Fl_Check_Button*)o)->value() == 1);
 	if ( !pUI->m_enableAcceleration) {
 		pUI->m_kdDepthSlider->deactivate();
+		pUI->m_kdLeafSlider->deactivate();
 	}
 	else {
 		pUI->m_kdDepthSlider->activate();
+		pUI->m_kdLeafSlider->activate();
 	}
 }
 

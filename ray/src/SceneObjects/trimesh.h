@@ -49,8 +49,8 @@ public:
     void addNormal( const Vec3d & );
     bool addFace( int a, int b, int c );
 
-    void buildKdTree(int depth) {
-        kdtree = new KdTree<TrimeshFace*>(faces, depth);
+    void buildKdTree(int depth, int maxObjects) {
+        kdtree = new KdTree<TrimeshFace*>(faces, depth, maxObjects);
         std::cout << "Trimesh KdTree built" << std::endl;
     }
 

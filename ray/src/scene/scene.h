@@ -37,7 +37,7 @@ class Node {
 
     Node(){}
 
-    static Node<Obj>* buildTree( std::vector<Obj>& s, int depth) {
+    static Node<Obj>* buildTree( std::vector<Obj>& s, int depth, int maxObjects) {
       Node<Obj>* node = new Node();
       node->shapes = s;
       node->left = NULL;
@@ -62,6 +62,15 @@ class Node {
         node->bb.merge(s[i]->getBoundingBox());
         // mid += ( s[i]->getMidpoint() * (1.0/s.size()) );
       }
+
+      if ( s.size() <= maxObjects ){
+        node->left = new Node();
+        node->left->shapes = std::vector<Obj>();
+        node->right = new Node();
+        node->right->shapes = std::vector<Obj>();
+        return node;
+      }
+
 
       Vec3d mid = node->bb.getMid();
       Vec3d tmp = node->bb.getMax() - node->bb.getMin();
@@ -88,16 +97,16 @@ class Node {
       else if(rightShapes.size() == 0 && leftShapes.size() > 0)
         rightShapes = leftShapes;
 
-      double matches = 0;
-      for(int i=0; i < leftShapes.size(); i++) {
-        for(int j=0; j < rightShapes.size(); j++) {
-          if ( leftShapes[i] == rightShapes[j] ) matches+=1.0;
-        }
-      }
+      // double matches = 0;
+      // for(int i=0; i < leftShapes.size(); i++) {
+      //   for(int j=0; j < rightShapes.size(); j++) {
+      //     if ( leftShapes[i] == rightShapes[j] ) matches+=1.0;
+      //   }
+      // }
 
-      if ( matches/leftShapes.size() < 0.5 && matches/rightShapes.size() < 0.5 ){
-        node->left = buildTree(leftShapes, depth - 1);
-        node->right = buildTree(rightShapes, depth - 1);
+      if ( leftShapes.size() > maxObjects || rightShapes.size() > maxObjects){
+        node->left = buildTree(leftShapes, depth - 1, maxObjects);
+        node->right = buildTree(rightShapes, depth - 1, maxObjects);
       }
       else {
         node->left = new Node();
@@ -113,10 +122,10 @@ class Node {
       Node<Obj>* node = this;
       double tMin, tMax;
       if (node->bb.intersect(r, tMin, tMax)){
-        if( node->left->shapes.size() > 0 ){
+        if( node->left != NULL && node->left->bb.intersect(r, tMin, tMax) ){
           return node->left->intersect(r, i);
         }
-        else if ( node->right->shapes.size() > 0 ){
+        else if ( node->right != NULL && node->right->bb.intersect(r, tMin, tMax) ){
           return node->right->intersect(r, i); 
         }
         else { // leaf
@@ -137,8 +146,8 @@ class KdTree{
 public:
   Node<Obj>* rootNode;
 
-  KdTree(std::vector<Obj>& objects, int depth) {
-    rootNode = Node<Obj>::buildTree(objects, depth);
+  KdTree(std::vector<Obj>& objects, int depth, int maxObjects) {
+    rootNode = Node<Obj>::buildTree(objects, depth, maxObjects);
   }
 
   bool intersect(ray& r, isect& i) {
@@ -381,8 +390,8 @@ public:
 
   const BoundingBox& bounds() const { return sceneBounds; }
 
-  void buildKdTree(int depth) {
-    kdtree = new KdTree<Geometry*>(objects, depth);
+  void buildKdTree(int depth, int maxObjects) {
+    kdtree = new KdTree<Geometry*>(objects, depth, maxObjects);
     std::cout << "KdTree built" << std::endl;
   }
 
