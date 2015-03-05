@@ -386,6 +386,10 @@ public:
     std::cout << "KdTree built" << std::endl;
   }
 
+  bool kdIntersect(ray& r, isect& i){
+    return kdtree->intersect(r, i);
+  }
+
  private:
   std::vector<Geometry*> objects;
   std::vector<Geometry*> nonboundedobjects;

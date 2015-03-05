@@ -90,6 +90,14 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 	isect i;
 	Vec3d colorC;
 
+	bool hit = false;
+	if(traceUI->accleration()){
+		hit = scene->kdIntersect(r, i);
+	}
+	else {
+		hit = scene->intersect(r,i);
+	}
+
 	if(scene->intersect(r, i) ) {
 
 		const Material& m = i.getMaterial();
