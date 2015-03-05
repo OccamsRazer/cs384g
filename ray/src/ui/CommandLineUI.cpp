@@ -20,7 +20,9 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 
 	progName=argv[0];
 	m_nAASamples = 1;
-	while( (i = getopt( argc, argv, "tr:w:h:s:" )) != EOF )
+	m_enableAcceleration = true;
+	m_nThreads = std::thread::hardware_concurrency();
+	while( (i = getopt( argc, argv, "t:r:w:h:s:a:" )) != EOF )
 	{
 		switch( i )
 		{
@@ -34,6 +36,14 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 
 			case 's':
 				m_nAASamples = atoi( optarg );
+				break;
+
+			case 'a':
+				m_enableAcceleration = atoi( optarg ) == 1;
+				break;
+
+			case 't':
+				m_nThreads = atoi( optarg );
 				break;
 
 			default:
@@ -67,11 +77,25 @@ int CommandLineUI::run()
 		raytracer->traceSetup( width, height );
 
 		clock_t start, end;
+		int numThreads = m_nThreads;
+		int squareSize = height/numThreads/100;
+		int chunkSize = 4;
+		std::vector<thread> threads;
 		start = clock();
 
-		for( int j = 0; j < height; ++j )
-			for( int i = 0; i < width; ++i )
-				raytracer->tracePixel(i,j);
+		if (numThreads > 1){
+			for (int i = 0; i < numThreads; i++){
+				threads.push_back(thread(&CommandLineUI::threadedRender, this, i, width, height, chunkSize));
+				// threadedRender(i, width, height, chunkSize);
+			}
+			for (auto& th : threads) { th.join(); }
+			threads.clear();
+		}
+		else {
+			for( int j = 0; j < height; ++j )
+				for( int i = 0; i < width; ++i )
+					raytracer->tracePixel(i,j);
+		}
 
 		end=clock();
 
@@ -95,6 +119,23 @@ int CommandLineUI::run()
 	}
 }
 
+void CommandLineUI::threadedRender(int index, int width, int height, int size){
+	int numThreads = m_nThreads;
+	for (int y = 0; y < height; y+=size) {
+		for (int x = index*size; x < width; x+=(size*numThreads)){
+			threadedRenderSquare(index, x, y, width, height, size);
+		}
+	}
+}
+
+void CommandLineUI::threadedRenderSquare( int index, int xStart, int yStart, int xMax, int yMax, int size){
+	for (int y = 0; y < size && yStart + y < yMax; y++) {
+		for (int x = 0; x < size && xStart + x < xMax; x++){
+			raytracer->tracePixel(xStart + x, yStart + y);
+		}
+	}
+}
+
 void CommandLineUI::alert( const string& msg )
 {
 	std::cerr << msg << std::endl;
@@ -107,5 +148,7 @@ void CommandLineUI::usage()
 	std::cerr << "  -w <#>      set output image width (default " << m_nSize << ")" << std::endl;
 	std::cerr << "  -s <#>      set number of samples for anti-aliasing (default " << m_nAASamples << ")" << std::endl;
 	std::cerr << "              Note: this value will be squared, ie -aa 3 = 9 samples" << std::endl;
+	std::cerr << "  -a [0,1]    enable or disable kdtree acceleration (default " << m_enableAcceleration << ")" << std::endl;
+	std::cerr << "  -t <#>      set the number of threads to use for rendering (default: number of hardware threads)" << std::endl;
 
 }

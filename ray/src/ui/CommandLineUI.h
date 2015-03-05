@@ -27,6 +27,8 @@ public:
 	int		run();
 
 	void		alert( const string& msg );
+	void threadedRender(int index, int width, int height, int size);
+	void threadedRenderSquare( int index, int xStart, int yStart, int xMax, int yMax, int size);
 
 private:
 	void		usage();
