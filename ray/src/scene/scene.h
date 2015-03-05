@@ -28,7 +28,123 @@ class Light;
 class Scene;
 
 template <typename Obj>
-class KdTree;
+class Node {
+  public:
+    BoundingBox bb;
+    Node<Obj>* left;
+    Node<Obj>* right;
+    std::vector<Obj> shapes;
+
+    Node(){}
+
+    static Node<Obj>* buildTree( std::vector<Obj>& s, int depth) {
+      Node<Obj>* node = new Node();
+      node->shapes = s;
+      node->left = NULL;
+      node->right = NULL;
+      node->bb = BoundingBox();
+
+      if ( s.size() <= 0 || depth <= 0) return node;
+
+      if( s.size() == 1){
+        node->bb = s[0]->getBoundingBox();
+        node->left = new Node();
+        node->left->shapes = std::vector<Obj>();
+        node->right = new Node();
+        node->right->shapes = std::vector<Obj>();
+        return node;
+      }
+
+      node->bb = s[0]->getBoundingBox();
+      // Vec3d mid = ( s[0]->getMidpoint() * (1.0/s.size()) )
+
+      for(int i=1; i < s.size(); i++){
+        node->bb.merge(s[i]->getBoundingBox());
+        // mid += ( s[i]->getMidpoint() * (1.0/s.size()) );
+      }
+
+      Vec3d mid = node->bb.getMid();
+      Vec3d tmp = node->bb.getMax() - node->bb.getMin();
+
+      int axis = 0;
+      if( abs(tmp[1]) > abs(tmp[0]) && abs(tmp[1]) > abs(tmp[2])) {
+        axis = 1;
+      }
+      else if( abs(tmp[2]) > abs(tmp[1]) && abs(tmp[2]) > abs(tmp[0])){
+        axis = 2;
+      }
+
+      std::vector<Obj> rightShapes;
+      std::vector<Obj> leftShapes;
+      for(int i=0; i < s.size(); i++) { 
+        if ( mid[axis] >= s[i]->getBoundingBox().getMid()[axis] )
+          rightShapes.push_back(s[i]);
+        else
+          leftShapes.push_back(s[i]);
+      }
+
+      if(leftShapes.size() == 0 && rightShapes.size() > 0) 
+        leftShapes = rightShapes;
+      else if(rightShapes.size() == 0 && leftShapes.size() > 0)
+        rightShapes = leftShapes;
+
+      double matches = 0;
+      for(int i=0; i < leftShapes.size(); i++) {
+        for(int j=0; j < rightShapes.size(); j++) {
+          if ( leftShapes[i] == rightShapes[j] ) matches+=1.0;
+        }
+      }
+
+      if ( matches/leftShapes.size() < 0.5 && matches/rightShapes.size() < 0.5 ){
+        node->left = buildTree(leftShapes, depth - 1);
+        node->right = buildTree(rightShapes, depth - 1);
+      }
+      else {
+        node->left = new Node();
+        node->left->shapes = std::vector<Obj>();
+        node->right = new Node();
+        node->right->shapes = std::vector<Obj>();
+      }
+
+      return node;
+    }
+
+    bool intersect(ray& r, isect& i) {
+      Node<Obj>* node = this;
+      double tMin, tMax;
+      if (node->bb.intersect(r, tMin, tMax)){
+        if( node->left->shapes.size() > 0 ){
+          return node->left->intersect(r, i);
+        }
+        else if ( node->right->shapes.size() > 0 ){
+          return node->right->intersect(r, i); 
+        }
+        else { // leaf
+          for( int x = 0; x < node->shapes.size(); x++) {
+            if (node->shapes[x]->intersect(r, i)) 
+              return true;
+          }
+        }
+      }
+      return false;
+    }
+
+};
+
+
+template <typename Obj>
+class KdTree{
+public:
+  Node<Obj>* rootNode;
+
+  KdTree(std::vector<Obj>& objects) {
+    rootNode = Node<Obj>::buildTree(objects, 20);
+  }
+
+  bool intersect(ray& r, isect& i) {
+    return rootNode->intersect(r, i);
+  }
+};
 
 class SceneElement {
 
@@ -265,7 +381,10 @@ public:
 
   const BoundingBox& bounds() const { return sceneBounds; }
 
-  void buildKdTree();
+  void buildKdTree() {
+    kdtree = new KdTree<Geometry*>(objects);
+    std::cout << "KdTree built" << std::endl;
+  }
 
  private:
   std::vector<Geometry*> objects;
@@ -286,7 +405,7 @@ public:
   // are exempt from this requirement.
   BoundingBox sceneBounds;
   
-  KdTree<Geometry>* kdtree;
+  KdTree<Geometry*>* kdtree;
 
  public:
   // This is used for debugging purposes only.

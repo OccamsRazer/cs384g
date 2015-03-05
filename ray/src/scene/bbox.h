@@ -16,6 +16,7 @@ public:
 
 	Vec3d getMin() const { return bmin; }
 	Vec3d getMax() const { return bmax; }
+	Vec3d getMid() const { return (bmax - bmin)/2 + bmin; }
 	bool isEmpty() { return bEmpty; }
 
 	void setMin(Vec3d bMin) {
