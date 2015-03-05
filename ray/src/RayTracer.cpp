@@ -210,6 +210,9 @@ bool RayTracer::loadScene( char* fn ) {
 
 	if( !sceneLoaded() ) return false;
 
+	if(traceUI->accleration())
+		scene->buildKdTree(traceUI->getTreeDepth());
+
 	return true;
 }
 

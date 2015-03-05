@@ -137,8 +137,8 @@ class KdTree{
 public:
   Node<Obj>* rootNode;
 
-  KdTree(std::vector<Obj>& objects) {
-    rootNode = Node<Obj>::buildTree(objects, 20);
+  KdTree(std::vector<Obj>& objects, int depth) {
+    rootNode = Node<Obj>::buildTree(objects, depth);
   }
 
   bool intersect(ray& r, isect& i) {
@@ -381,8 +381,8 @@ public:
 
   const BoundingBox& bounds() const { return sceneBounds; }
 
-  void buildKdTree() {
-    kdtree = new KdTree<Geometry*>(objects);
+  void buildKdTree(int depth) {
+    kdtree = new KdTree<Geometry*>(objects, depth);
     std::cout << "KdTree built" << std::endl;
   }
 

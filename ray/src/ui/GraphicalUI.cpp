@@ -151,6 +151,11 @@ void GraphicalUI::cb_filterWidthSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_nFilterWidth = int( ((Fl_Slider *)o)->value() );
 }
 
+void GraphicalUI::cb_treeDepthSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_nTreeDepth = int( ((Fl_Slider *)o)->value() );
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	pUI=(GraphicalUI*)(o->user_data());
@@ -176,6 +181,18 @@ void GraphicalUI::cb_enableCubemapsCheckButton(Fl_Widget* o, void* v)
 	}
 	else {
 		pUI->m_filterSlider->activate();
+	}
+}
+
+void GraphicalUI::cb_enableKdTree(Fl_Widget* o, void* v)
+{
+	pUI=(GraphicalUI*)(o->user_data());
+	pUI->m_enableAcceleration = (((Fl_Check_Button*)o)->value() == 1);
+	if ( !pUI->m_enableAcceleration) {
+		pUI->m_kdDepthSlider->deactivate();
+	}
+	else {
+		pUI->m_kdDepthSlider->activate();
 	}
 }
 
@@ -456,6 +473,22 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_filterSlider->align(FL_ALIGN_RIGHT);
 	m_filterSlider->callback(cb_filterWidthSlides);
 	m_filterSlider->deactivate();
+
+	m_kdCheckButton = new Fl_Check_Button(10, 190, 140, 20, "Kd Tree");
+	m_kdCheckButton->user_data((void*)(this));
+	m_kdCheckButton->callback(cb_enableKdTree);
+	m_kdCheckButton->value(m_enableAcceleration);
+	m_kdDepthSlider = new Fl_Value_Slider(150, 190, 180, 20, "Max Depth");
+	m_kdDepthSlider->user_data((void*)(this));	// record self to be used by static callback functions
+	m_kdDepthSlider->type(FL_HOR_NICE_SLIDER);
+	m_kdDepthSlider->labelfont(FL_COURIER);
+	m_kdDepthSlider->labelsize(12);
+	m_kdDepthSlider->minimum(1);
+	m_kdDepthSlider->maximum(30);
+	m_kdDepthSlider->step(1);
+	m_kdDepthSlider->value(m_nTreeDepth);
+	m_kdDepthSlider->align(FL_ALIGN_RIGHT);
+	m_kdDepthSlider->callback(cb_treeDepthSlides);
 
 	// set up debugging display checkbox
 	m_debuggingDisplayCheckButton = new Fl_Check_Button(10, 429, 140, 20, "Debugging display");
