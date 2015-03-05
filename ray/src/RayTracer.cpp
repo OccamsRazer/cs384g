@@ -91,7 +91,7 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 	Vec3d colorC;
 
 	bool hit = false;
-	if(traceUI->accleration()){
+	if(traceUI->acceleration()){
 		hit = scene->kdIntersect(r, i);
 	}
 	else {
@@ -218,7 +218,7 @@ bool RayTracer::loadScene( char* fn ) {
 
 	if( !sceneLoaded() ) return false;
 
-	if(traceUI->accleration())
+	if(traceUI->acceleration())
 		scene->buildKdTree(traceUI->getTreeDepth());
 
 	return true;

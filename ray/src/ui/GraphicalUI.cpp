@@ -156,6 +156,11 @@ void GraphicalUI::cb_treeDepthSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_nTreeDepth = int( ((Fl_Slider *)o)->value() );
 }
 
+void GraphicalUI::cb_treeLeafSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_nLeafMax = int( ((Fl_Slider *)o)->value() );
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	pUI=(GraphicalUI*)(o->user_data());
@@ -461,7 +466,7 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_cubeMapCheckButton->callback(cb_enableCubemapsCheckButton);
 	m_cubeMapCheckButton->value(m_usingCubeMap);
 	m_cubeMapCheckButton->deactivate();
-	m_filterSlider = new Fl_Value_Slider(150, 165, 180, 20, "Filter width");
+	m_filterSlider = new Fl_Value_Slider(140, 165, 200, 20, "Filter width");
 	m_filterSlider->user_data((void*)(this));	// record self to be used by static callback functions
 	m_filterSlider->type(FL_HOR_NICE_SLIDER);
 	m_filterSlider->labelfont(FL_COURIER);
@@ -478,7 +483,7 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_kdCheckButton->user_data((void*)(this));
 	m_kdCheckButton->callback(cb_enableKdTree);
 	m_kdCheckButton->value(m_enableAcceleration);
-	m_kdDepthSlider = new Fl_Value_Slider(150, 190, 180, 20, "Max Depth");
+	m_kdDepthSlider = new Fl_Value_Slider(140, 190, 200, 20, "Max Depth");
 	m_kdDepthSlider->user_data((void*)(this));	// record self to be used by static callback functions
 	m_kdDepthSlider->type(FL_HOR_NICE_SLIDER);
 	m_kdDepthSlider->labelfont(FL_COURIER);
@@ -489,6 +494,17 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_kdDepthSlider->value(m_nTreeDepth);
 	m_kdDepthSlider->align(FL_ALIGN_RIGHT);
 	m_kdDepthSlider->callback(cb_treeDepthSlides);
+	m_kdLeafSlider = new Fl_Value_Slider(140, 210, 200, 20, "Leaf Objects");
+	m_kdLeafSlider->user_data((void*)(this));	// record self to be used by static callback functions
+	m_kdLeafSlider->type(FL_HOR_NICE_SLIDER);
+	m_kdLeafSlider->labelfont(FL_COURIER);
+	m_kdLeafSlider->labelsize(12);
+	m_kdLeafSlider->minimum(1);
+	m_kdLeafSlider->maximum(100);
+	m_kdLeafSlider->step(1);
+	m_kdLeafSlider->value(m_nLeafMax);
+	m_kdLeafSlider->align(FL_ALIGN_RIGHT);
+	m_kdLeafSlider->callback(cb_treeLeafSlides);
 
 	// set up debugging display checkbox
 	m_debuggingDisplayCheckButton = new Fl_Check_Button(10, 429, 140, 20, "Debugging display");

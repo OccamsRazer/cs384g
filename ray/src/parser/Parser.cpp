@@ -672,6 +672,10 @@ void Parser::parseTrimesh(Scene* scene, TransformNode* transform, const Material
         if( error = tmesh->doubleCheck() )
           throw ParserException( error );
 
+        if(traceUI->acceleration()){
+            tmesh->buildKdTree(traceUI->getTreeDepth());
+        }
+
         scene->add( tmesh );
         return;
       }

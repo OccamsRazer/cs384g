@@ -22,7 +22,8 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 	m_nAASamples = 1;
 	m_enableAcceleration = true;
 	m_nThreads = std::thread::hardware_concurrency();
-	while( (i = getopt( argc, argv, "t:r:w:h:s:a:" )) != EOF )
+	m_nLeafMax = 10;
+	while( (i = getopt( argc, argv, "t:r:w:h:s:a:l:" )) != EOF )
 	{
 		switch( i )
 		{
@@ -40,6 +41,10 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 
 			case 'a':
 				m_enableAcceleration = atoi( optarg ) == 1;
+				break;
+
+			case 'l':
+				m_nLeafMax = atoi( optarg );
 				break;
 
 			case 't':
@@ -149,6 +154,7 @@ void CommandLineUI::usage()
 	std::cerr << "  -s <#>      set number of samples for anti-aliasing (default " << m_nAASamples << ")" << std::endl;
 	std::cerr << "              Note: this value will be squared, ie -aa 3 = 9 samples" << std::endl;
 	std::cerr << "  -a [0,1]    enable or disable kdtree acceleration (default " << m_enableAcceleration << ")" << std::endl;
+	std::cerr << "  -a <#>      set maximum number of object in a leaf of the kdtree (default " << m_nLeafMax << ")" << std::endl;
 	std::cerr << "  -t <#>      set the number of threads to use for rendering (default: number of hardware threads)" << std::endl;
 
 }

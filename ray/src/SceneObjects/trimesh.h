@@ -24,11 +24,14 @@ class Trimesh : public MaterialSceneObject
     Materials materials;
 	BoundingBox localBounds;
 
+    KdTree<TrimeshFace*>* kdtree;
+
+
 public:
     Trimesh( Scene *scene, Material *mat, TransformNode *transform )
         : MaterialSceneObject(scene, mat), 
-			displayListWithMaterials(0),
-			displayListWithoutMaterials(0)
+            displayListWithMaterials(0),
+            displayListWithoutMaterials(0)
     {
       this->transform = transform;
       vertNorms = false;
@@ -46,6 +49,11 @@ public:
     void addNormal( const Vec3d & );
     bool addFace( int a, int b, int c );
 
+    void buildKdTree(int depth) {
+        kdtree = new KdTree<TrimeshFace*>(faces, depth);
+        std::cout << "Trimesh KdTree built" << std::endl;
+    }
+
     char *doubleCheck();
     
     void generateNormals();
@@ -55,23 +63,24 @@ public:
     BoundingBox ComputeLocalBoundingBox()
     {
         BoundingBox localbounds;
-		if (vertices.size() == 0) return localbounds;
-		localbounds.setMax(vertices[0]);
-		localbounds.setMin(vertices[0]);
-		Vertices::const_iterator viter;
-		for (viter = vertices.begin(); viter != vertices.end(); ++viter)
-	  {
-	    localbounds.setMax(maximum( localbounds.getMax(), *viter));
-	    localbounds.setMin(minimum( localbounds.getMin(), *viter));
-	  }
-		localBounds = localbounds;
+        if (vertices.size() == 0) return localbounds;
+        localbounds.setMax(vertices[0]);
+        localbounds.setMin(vertices[0]);
+        Vertices::const_iterator viter;
+        for (viter = vertices.begin(); viter != vertices.end(); ++viter)
+      {
+        localbounds.setMax(maximum( localbounds.getMax(), *viter));
+        localbounds.setMin(minimum( localbounds.getMin(), *viter));
+      }
+        localBounds = localbounds;
         return localbounds;
     }
 
 protected:
-	void glDrawLocal(int quality, bool actualMaterials, bool actualTextures) const;
-	mutable int displayListWithMaterials;
-	mutable int displayListWithoutMaterials;
+    void glDrawLocal(int quality, bool actualMaterials, bool actualTextures) const;
+    mutable int displayListWithMaterials;
+    mutable int displayListWithoutMaterials;
+
 };
 
 class TrimeshFace : public MaterialSceneObject
