@@ -48,10 +48,8 @@ class Node {
 
       if( s.size() == 1){
         node->bb = s[0]->getBoundingBox();
-        node->left = new Node();
-        node->left->shapes = std::vector<Obj>();
-        node->right = new Node();
-        node->right->shapes = std::vector<Obj>();
+        node->left = NULL;
+        node->right = NULL;
         return node;
       }
 
@@ -64,10 +62,8 @@ class Node {
       }
 
       if ( s.size() <= maxObjects ){
-        node->left = new Node();
-        node->left->shapes = std::vector<Obj>();
-        node->right = new Node();
-        node->right->shapes = std::vector<Obj>();
+        node->left = NULL;
+        node->right = NULL;
         return node;
       }
 
@@ -109,10 +105,8 @@ class Node {
         node->right = buildTree(rightShapes, depth - 1, maxObjects);
       }
       else {
-        node->left = new Node();
-        node->left->shapes = std::vector<Obj>();
-        node->right = new Node();
-        node->right->shapes = std::vector<Obj>();
+        node->left = NULL;
+        node->right = NULL;
       }
 
       return node;
@@ -396,7 +390,9 @@ public:
   }
 
   bool kdIntersect(ray& r, isect& i){
-    return kdtree->intersect(r, i);
+    bool hit = kdtree->intersect(r, i);
+    if (TraceUI::m_debug) intersectCache.push_back(std::make_pair(new ray(r), new isect(i)));
+    return hit;
   }
 
  private:

@@ -98,7 +98,7 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 		hit = scene->intersect(r,i);
 	}
 
-	if(scene->intersect(r, i) ) {
+	if( hit ) {
 
 		const Material& m = i.getMaterial();
 		colorC = m.shade(scene, r, i);

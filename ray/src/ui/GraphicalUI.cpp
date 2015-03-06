@@ -275,27 +275,21 @@ Vec3d GraphicalUI::threadedTracePixel(int x, int y){
 }
 
 void GraphicalUI::threadedRender(int index, int width, int height, int size){
-	// render_mutex.lock();
-	// clock_t now, prev;
-	// now = prev = clock();
-	int i = 0;
+	clock_t now, prev;
+	now = prev = clock();
+	clock_t intervalMS = pUI->refreshInterval * 100;
 	int numThreads = pUI->getNumThreads();
-	// clock_t intervalMS = pUI->refreshInterval * 100;
-	// render_mutex.unlock();
 	for (int y = 0; y < height; y+=size) {
 		for (int x = index*size; x < width; x+=(size*numThreads)){
 			if (stopTrace) break;
-			i++;
-			// render_mutex.lock();
-			// now = clock();
-			// if ((now - prev)/CLOCKS_PER_SEC/numThreads * 1000 >= intervalMS){
-			// 	prev = now;
-			// 	pUI->m_traceGlWindow->refresh();
-			// 	Fl::check();
-			// 	if (Fl::damage()) { Fl::flush(); }
-			// }
-			// pUI->m_debuggingWindow->m_debuggingView->setDirty();
-			// render_mutex.unlock();
+			now = clock();
+			if ((now - prev)/CLOCKS_PER_SEC/numThreads * 1000 >= intervalMS){
+				render_mutex.lock();
+				prev = now;
+				Fl::check();
+				if (Fl::damage()) { Fl::flush(); }
+				render_mutex.unlock();
+			}
 
 			threadedRenderSquare(index, x, y, width, height, size);
 		}
@@ -305,32 +299,24 @@ void GraphicalUI::threadedRender(int index, int width, int height, int size){
 }
 
 void GraphicalUI::threadedRenderSquare( int index, int xStart, int yStart, int xMax, int yMax, int size){
-	clock_t now, prev;
-	// render_mutex.lock();
-	now = prev = clock();
-	clock_t intervalMS = pUI->refreshInterval * 100;
-	int i = 0;
+	// clock_t now, prev;
+	// now = prev = clock();
+	// clock_t intervalMS = pUI->refreshInterval * 100;
 	for (int y = 0; y < size && yStart + y < yMax; y++) {
 		for (int x = 0; x < size && xStart + x < xMax; x++){
-			i++;
-			// render_mutex.lock();
-			// std::cout << "("<< xStart + x << ", " << yStart + y <<"): " << index << std::endl;
-			// render_mutex.unlock();
-			render_mutex.lock();
-			now = clock();
-			if ((now - prev)/CLOCKS_PER_SEC * 1000 >= intervalMS){
-				prev = now;
-				pUI->m_traceGlWindow->refresh();
-				Fl::check();
-				if (Fl::damage()) { Fl::flush(); }
-			}
-			pUI->m_debuggingWindow->m_debuggingView->setDirty();
-			render_mutex.unlock();
+			// now = clock();
+			// if ((now - prev)/CLOCKS_PER_SEC * 1000 >= intervalMS){
+			// 	prev = now;
+			// 	pUI->m_traceGlWindow->refresh();
+			// 	Fl::check();
+			// 	if (Fl::damage()) { Fl::flush(); }
+			// }
 			pUI->raytracer->tracePixel(xStart + x, yStart + y);
-			// render_mutex.lock();
 		}
 	}
-	// render_mutex.unlock();
+	render_mutex.lock();
+	pUI->m_debuggingWindow->m_debuggingView->setDirty();
+	render_mutex.unlock();
 }
 
 void GraphicalUI::cb_stop(Fl_Widget* o, void* v)
