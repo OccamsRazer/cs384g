@@ -232,7 +232,9 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v) {
 			for (int i = 0; i < numThreads; i++){
 				threads.push_back(std::thread(GraphicalUI::threadedRender, i, width, height, chunkSize));
 			}
-			for (auto& th : threads) { th.join(); }
+			for (auto& th : threads) { 
+				th.join();
+			}
 			threads.clear();
 
 		}
@@ -263,10 +265,11 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v) {
 		end = clock();
 		// Restore the window label
 		sprintf(buffer, " %.5f seconds", ((float)(end - start))/CLOCKS_PER_SEC/numThreads);
-		pUI->m_traceGlWindow->label(buffer);
+		Fl::check();
+		if (Fl::damage()) { Fl::flush(); }
 		pUI->m_traceGlWindow->refresh();
+		pUI->m_traceGlWindow->label(buffer);
 		// Fl::check();
-		// if (Fl::damage()) { Fl::flush(); }
 	}
 }
 
@@ -283,11 +286,13 @@ void GraphicalUI::threadedRender(int index, int width, int height, int size){
 		for (int x = index*size; x < width; x+=(size*numThreads)){
 			if (stopTrace) break;
 			now = clock();
-			if ((now - prev)/CLOCKS_PER_SEC/numThreads * 1000 >= intervalMS){
-				render_mutex.lock();
+			if ((now - prev)/CLOCKS_PER_SEC/100 * 1000 >= intervalMS){
 				prev = now;
+				render_mutex.lock();
+				pUI->m_traceGlWindow->refresh();
 				Fl::check();
 				if (Fl::damage()) { Fl::flush(); }
+				pUI->m_debuggingWindow->m_debuggingView->setDirty();
 				render_mutex.unlock();
 			}
 
@@ -314,9 +319,9 @@ void GraphicalUI::threadedRenderSquare( int index, int xStart, int yStart, int x
 			pUI->raytracer->tracePixel(xStart + x, yStart + y);
 		}
 	}
-	render_mutex.lock();
-	pUI->m_debuggingWindow->m_debuggingView->setDirty();
-	render_mutex.unlock();
+	// render_mutex.lock();
+	// pUI->m_debuggingWindow->m_debuggingView->setDirty();
+	// render_mutex.unlock();
 }
 
 void GraphicalUI::cb_stop(Fl_Widget* o, void* v)
