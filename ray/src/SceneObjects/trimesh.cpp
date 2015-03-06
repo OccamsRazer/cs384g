@@ -95,50 +95,57 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
     const Vec3d& b = parent->vertices[ids[1]];
     const Vec3d& c = parent->vertices[ids[2]];
 
-    Vec3d n = (a - b) ^ (b - c);
+    Vec3d n = (a-c)^(b-c);
     n.normalize();
-    double d = -(n * a);
 
-    double t = - ( (n * r.getPosition()) + d )/(n * r.getDirection());
-    if( t <= RAY_EPSILON ) {
+    double d = -(n*a);
+    double np = (n * r.getDirection());
+
+    if(np == 0)
         return false;
-    }
 
-    Vec3d Q = r.at(t);
+    double t = - (n*r.getPosition() + d)/np;
+    if(t <= RAY_EPSILON )
+        return false;
+
+    Vec3d intersectionPoint = r.at(t);
 
     // project to xy (default)
     double max = abs(n[2]);
-    int cordToDrop = 2;
-    Mat3d mat(a[0], b[0], c[0],
-              a[1], b[1], c[1],
-                1,    1,    1);
-    Vec3d Qprime(Q[0], Q[1], 1);
+    Mat3d mat(a.n[0],b.n[0],c.n[0],
+              a.n[1],b.n[1],c.n[1],
+                  1,     1,     1);
+    Vec3d sol(intersectionPoint.n[0],intersectionPoint.n[1],1);
     
     // project to xz
     if ( max < abs(n[1]) ) {
-        cordToDrop = 1;
-        mat = Mat3d(a[0], b[0], c[0],
-                      1,    1,    1,
-                    a[2], b[2], c[2]);
-        Qprime = Vec3d(Q[0], 1, Q[2]);
         max = abs(n[1]);
+        sol = Vec3d(intersectionPoint.n[0],1,intersectionPoint.n[2]);
+        mat = Mat3d(a.n[0],b.n[0],c.n[0],
+                        1,     1,     1,
+                    a.n[2],b.n[2],c.n[2]);
     }
     // project to yz
     if ( max < abs(n[0]) ) {
-        cordToDrop = 0;
-        mat = Mat3d(  1,    1,    1,
-                    a[1], b[1], c[1],
-                    a[2], b[2], c[2]);
-        Qprime = Vec3d(1, Q[1], Q[2]);
         max = abs(n[0]);
+        sol = Vec3d(1,intersectionPoint.n[1],intersectionPoint.n[2]);
+        mat = Mat3d(    1,     1,     1,
+                    a.n[1],b.n[1],c.n[1],
+                    a.n[2],b.n[2],c.n[2]);
     }
+    
+    Vec3d bary = mat.inverse() * sol;
 
-    Vec3d bary = mat.inverse() * Qprime;
+    if(bary.iszero())
+        return false;
+    if(!(bary[0]>=0&&bary[1]>=0&&bary[2]>=0))
+        return false;
 
-    if( bary.iszero() || bary[0] < 0 || bary[1] < 0 || bary[2] < 0) return false;
-
-    if( parent->vertNorms ){
-        n = parent->normals[ids[0]] % bary + parent->normals[ids[1]] % bary + parent->normals[ids[2]] % bary;
+    if(parent->vertNorms){
+        Vec3d wA(parent->normals[ids[0]][0]*bary[0] , parent->normals[ids[0]][1]*bary[0] , parent->normals[ids[0]][2]*bary[0] );
+        Vec3d wB(parent->normals[ids[1]][0]*bary[1] , parent->normals[ids[1]][1]*bary[1] , parent->normals[ids[1]][2]*bary[1] );
+        Vec3d wC(parent->normals[ids[2]][0]*bary[2] , parent->normals[ids[2]][1]*bary[2] , parent->normals[ids[2]][2]*bary[2] );
+        n = wA + wB + wC;
         n.normalize();
     }
 
