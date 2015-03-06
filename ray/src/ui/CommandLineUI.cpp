@@ -23,7 +23,8 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 	m_enableAcceleration = true;
 	m_nThreads = std::thread::hardware_concurrency();
 	m_nLeafMax = 10;
-	while( (i = getopt( argc, argv, "t:r:w:h:s:a:l:" )) != EOF )
+	m_enableStereogram = false;
+	while( (i = getopt( argc, argv, "t:r:w:h:s:a:l:m" )) != EOF )
 	{
 		switch( i )
 		{
@@ -51,12 +52,20 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 				m_nThreads = atoi( optarg );
 				break;
 
+			case 'm':
+				m_enableStereogram = true;
+				break;
+
 			default:
 			// Oops; unknown argument
 			std::cerr << "Invalid argument: '" << i << "'." << std::endl;
 			usage();
 			exit(1);
 		}
+	}
+
+	if ( m_enableStereogram ) {
+		m_nSize = maxX;
 	}
 
 	if( optind >= argc-1 )
@@ -113,7 +122,7 @@ int CommandLineUI::run()
 			writeBMP(imgName, width, height, buf);
 
 		double t=(double)(end-start)/CLOCKS_PER_SEC;
-//		int totalRays = TraceUI::resetCount();
+		// int totalRays = TraceUI::resetCount();
 		std::cout << "total time = " << t << std::endl;
         return 0;
 	}
@@ -122,6 +131,25 @@ int CommandLineUI::run()
 		std::cerr << "Unable to load ray file '" << rayName << "'" << std::endl;
 		return( 1 );
 	}
+}
+
+void CommandLineUI::renderStereogram(int width, int height){
+	int x, y;
+	for( y = 0; y < maxY; y++){
+		int pix[maxX];
+		int same[maxX];
+
+		int s;
+		int left, right;
+
+		for ( x = 0; x < maxX; x++ )
+			same[x] = x;
+
+		for ( x = 0; x < maxX; x++){
+			s = separation()
+		}
+	}
+	
 }
 
 void CommandLineUI::threadedRender(int index, int width, int height, int size){
@@ -156,5 +184,7 @@ void CommandLineUI::usage()
 	std::cerr << "  -a [0,1]    enable or disable kdtree acceleration (default " << m_enableAcceleration << ")" << std::endl;
 	std::cerr << "  -a <#>      set maximum number of object in a leaf of the kdtree (default " << m_nLeafMax << ")" << std::endl;
 	std::cerr << "  -t <#>      set the number of threads to use for rendering (default: number of hardware threads)" << std::endl;
+	std::cerr << "  -m          render a stereogram instead of the image (default: false)" << std::endl;
+	std::cerr << "              Note: this value will override several other flags" << std::endl;
 
 }

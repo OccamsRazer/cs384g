@@ -23,7 +23,7 @@ public:
 	TraceUI() : m_nDepth(0), m_nSize(512), m_displayDebuggingInfo(false), m_usingCubeMap(false),
                     m_shadows(true), m_smoothshade(true), raytracer(0), m_enableAcceleration(true), 
                     m_nFilterWidth(1), m_nAASamples(1), m_nThreads(std::thread::hardware_concurrency()),
-                    m_nTreeDepth(15), m_nLeafMax(10)
+                    m_nTreeDepth(15), m_nLeafMax(10), m_enableStereogram(false)
                     {}
 
 	virtual int	run() = 0;
@@ -72,6 +72,7 @@ protected:
 	bool m_gotCubeMap;  // cubemap defined
 	bool m_enableAcceleration; // enable kd tree preprocessing
 	int m_nFilterWidth;  // width of cubemap filter
+	bool m_enableStereogram;
 };
 
 #endif
