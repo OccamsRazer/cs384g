@@ -108,6 +108,7 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
 
     // project to xy (default)
     double max = abs(n[2]);
+    int cordToDrop = 2;
     Mat3d mat(a[0], b[0], c[0],
               a[1], b[1], c[1],
                 1,    1,    1);
@@ -115,6 +116,7 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
     
     // project to xz
     if ( max < abs(n[1]) ) {
+        cordToDrop = 1;
         mat = Mat3d(a[0], b[0], c[0],
                       1,    1,    1,
                     a[2], b[2], c[2]);
@@ -123,6 +125,7 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
     }
     // project to yz
     if ( max < abs(n[0]) ) {
+        cordToDrop = 0;
         mat = Mat3d(  1,    1,    1,
                     a[1], b[1], c[1],
                     a[2], b[2], c[2]);
