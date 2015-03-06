@@ -107,14 +107,18 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 
 		Vec3d Ci = ( (-1 * r.getDirection()) * i.N ) * i.N;
 		Vec3d Si = Ci + r.getDirection();
-		Vec3d reflectedDir = Ci + Si;
-		reflectedDir.normalize();
 
-		ray reflected(r.at(i.t), reflectedDir, ray::REFLECTION);
+		// reflect iff kr is nonzero
+		if (!m.kr(i).iszero()){
+			Vec3d reflectedDir = Ci + Si;
+			reflectedDir.normalize();
 
-		Vec3d Ireflect = m.kr(i) % traceRay( reflected, depth - 1);
+			ray reflected(r.at(i.t), reflectedDir, ray::REFLECTION);
 
-		colorC += Ireflect;
+			Vec3d Ireflect = m.kr(i) % traceRay( reflected, depth - 1);
+
+			colorC += Ireflect;
+		}
 
 		double Thetai = i.N * r.getDirection();
 		bool tir = 1.0 - m.index(i) * m.index(i) * ( 1.0 - Thetai * Thetai) < 0;

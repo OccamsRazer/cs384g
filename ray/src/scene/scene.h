@@ -114,20 +114,54 @@ class Node {
 
     bool intersect(ray& r, isect& i) {
       Node<Obj>* node = this;
+      bool leftHit, rightHit;
+      leftHit = rightHit = false;
       double tMin, tMax;
       if (node->bb.intersect(r, tMin, tMax)){
-        if( node->left != NULL && node->left->bb.intersect(r, tMin, tMax) ){
-          return node->left->intersect(r, i);
-        }
-        else if ( node->right != NULL && node->right->bb.intersect(r, tMin, tMax) ){
-          return node->right->intersect(r, i); 
-        }
-        else { // leaf
+        isect leftI;
+        isect rightI;
+
+        if ( node->left == NULL && node->right == NULL ) { // leaf
+          bool foundOne = false;
+          isect tmpI;
           for( int x = 0; x < node->shapes.size(); x++) {
-            if (node->shapes[x]->intersect(r, i)) 
-              return true;
+            if (node->shapes[x]->intersect(r, tmpI)){
+              if(foundOne){
+                if (tmpI.t < i.t)
+                  i = tmpI;
+              }
+              else{
+                foundOne = true;
+                i = tmpI;
+              }
+            } 
           }
+          return foundOne;
         }
+        if( node->left != NULL ){
+          leftHit = node->left->intersect(r, leftI);
+        }
+        if ( node->right != NULL ){
+          rightHit = node->right->intersect(r, rightI); 
+        }
+
+        if (leftHit && !rightHit){
+          i = leftI;
+          return true;
+        }
+        if (rightHit && !leftHit){
+          i = rightI;
+          return true;
+        }
+        if (leftHit && rightHit){
+          // i = closest intersect
+          if (leftI.t > rightI.t)
+            i = rightI;
+          else 
+            i = leftI;
+          return true;
+        }
+
       }
       return false;
     }
