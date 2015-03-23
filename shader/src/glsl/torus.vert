@@ -14,13 +14,18 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  normalMapTexCoord = vec2(0);  // XXX fix me
-  gl_Position = gl_ModelViewProjectionMatrix * vec4(parametric, 0, 1);  // XXX fix me
-  eyeDirection = vec3(0);  // XXX fix me
-  lightDirection = vec3(0);  // XXX fix me
-  halfAngle = vec3(0);  // XXX fix me
-  c0 = vec3(0);  // XXX fix me
-  c1 = vec3(0);  // XXX fix me
-  c2 = vec3(0);  // XXX fix me
+    normalMapTexCoord = vec2(0);  // XXX fix me
+
+    vec2 uvRadians = radians(360.0 * parametric);
+    gl_Position = gl_ModelViewProjectionMatrix * vec4(  (torusInfo.x + torusInfo.y * cos(uvRadians.y))*cos(uvRadians.x),
+                                                        (torusInfo.x + torusInfo.y * cos(uvRadians.y))*sin(uvRadians.x),
+                                                        torusInfo.y * sin(uvRadians.y),
+                                                        1);
+    eyeDirection = vec3(0);  // XXX fix me
+    lightDirection = vec3(0);  // XXX fix me
+    halfAngle = vec3(0);  // XXX fix me
+    c0 = vec3(0);  // XXX fix me
+    c1 = vec3(0);  // XXX fix me
+    c2 = vec3(0);  // XXX fix me
 }
 
