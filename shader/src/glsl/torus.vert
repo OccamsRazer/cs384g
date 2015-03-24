@@ -14,15 +14,36 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-    normalMapTexCoord = parametric*vec2(-6,2);
+    normalMapTexCoord = parametric*vec2(-6.0,2.0);
 
     vec2 uvRadians = radians(360.0 * parametric);
-    gl_Position = gl_ModelViewProjectionMatrix * vec4(  (torusInfo.x + torusInfo.y * cos(uvRadians.y))*cos(uvRadians.x),
-                                                        (torusInfo.x + torusInfo.y * cos(uvRadians.y))*sin(uvRadians.x),
-                                                        torusInfo.y * sin(uvRadians.y),
+    vec3 posSS = vec3( (torusInfo.x + torusInfo.y * cos(uvRadians.y))*cos(uvRadians.x),
+                        (torusInfo.x + torusInfo.y * cos(uvRadians.y))*sin(uvRadians.x),
+                        torusInfo.y * sin(uvRadians.y));
+    gl_Position = gl_ModelViewProjectionMatrix * vec4(  posSS.x,
+                                                        posSS.y,
+                                                        posSS.z,
                                                         1);
+    vec3 tangent = vec3 (   -1.0*(torusInfo.x + torusInfo.y * cos(uvRadians.y))*sin(uvRadians.x),
+                            (torusInfo.x + torusInfo.y * cos(uvRadians.y))*cos(uvRadians.x),
+                            0);
+    tangent = normalize(tangent);
+
+    vec3 gradient = vec3 (  -1.0*torusInfo.y *cos(uvRadians.x)*sin(torusInfo.y),
+                            -1.0*torusInfo.y *sin(uvRadians.x)*sin(torusInfo.y),
+                            torusInfo.y * cos(uvRadians.y));
+    gradient = normalize(gradient);
+
+    vec3 normal = cross(tangent, gradient);
+    vec3 binormal = cross(normal, tangent);
+
+    mat3 M = mat3(tangent,binormal,normal);
+    mat3 Mt = transpose(M);
+
+    vec3 posOS = M*posSS;
+
     eyeDirection = vec3(0);  // XXX fix me
-    lightDirection = vec3(0);  // XXX fix me
+    lightDirection = Mt*(lightPosition - posOS);
     halfAngle = vec3(0);  // XXX fix me
     c0 = vec3(0);  // XXX fix me
     c1 = vec3(0);  // XXX fix me
