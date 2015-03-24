@@ -42,9 +42,9 @@ void main()
 
     vec3 posOS = M*posSS;
 
-    eyeDirection = vec3(0);  // XXX fix me
+    eyeDirection = Mt*(eyePosition - posOS);
     lightDirection = Mt*(lightPosition - posOS);
-    halfAngle = vec3(0);  // XXX fix me
+    halfAngle = (lightDirection+eyeDirection)/2.0;
     c0 = vec3(0);  // XXX fix me
     c1 = vec3(0);  // XXX fix me
     c2 = vec3(0);  // XXX fix me
