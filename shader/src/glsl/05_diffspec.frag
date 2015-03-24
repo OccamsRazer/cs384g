@@ -19,5 +19,7 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+    float diffuseWeight = max(normalize(lightDirection).z, 0);
+    float specWeight = max(normalize(halfAngle).z, 0);
+    gl_FragColor = LMa + LMd * diffuseWeight + LMs * pow(specWeight, shininess);
 }
