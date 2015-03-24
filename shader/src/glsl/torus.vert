@@ -14,7 +14,7 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-    normalMapTexCoord = vec2(0);  // XXX fix me
+    normalMapTexCoord = parametric*vec2(-6,2);
 
     vec2 uvRadians = radians(360.0 * parametric);
     gl_Position = gl_ModelViewProjectionMatrix * vec4(  (torusInfo.x + torusInfo.y * cos(uvRadians.y))*cos(uvRadians.x),
