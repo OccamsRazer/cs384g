@@ -1,4 +1,4 @@
-
+#version 130
 attribute vec2 parametric;
 
 uniform vec3 lightPosition;  // Object-space
