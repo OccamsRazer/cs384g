@@ -19,5 +19,11 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+    vec3 normalLight = normalize(lightDirection);
+
+    vec3 bumpVec = normalize(texture2D(normalMap, normalMapTexCoord).rgb *2.0 - 1.0);
+    float diffuseWeight = max(dot(bumpVec, normalLight), 0);
+
+    float specWeight = max(normalize(halfAngle).z, 0);
+    gl_FragColor = 0.75*texture2D(decal, normalMapTexCoord) + 0.25*(LMa + LMd * diffuseWeight) + 0.25*LMs * pow(specWeight, shininess);
 }
