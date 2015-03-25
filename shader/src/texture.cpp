@@ -161,7 +161,20 @@ PackedNormal::PackedNormal(float3 normal)
 
 float3 NormalMap::computeNormal(int i, int j, float scale)
 {
-    float3 normal = float3(0,0,1);  // XXX fix me
+    int rPos = i + 1;
+    if( rPos >= width )
+        rPos -= width;
+    rPos += j*width;
+    float rVal = image[ rPos] / 255.0;
+
+    int downPos = j - 1;
+    if( downPos < 0 )
+        downPos += height;
+    downPos = i + downPos*width;
+    float downVal = image[ downPos ] / 255.0;
+
+    float val = image[i + j * width] / 255.0;
+    float3 normal = normalize(float3((rVal - val)*scale, (downVal - val)*scale, 1.0));
     return normal;
 }
 
