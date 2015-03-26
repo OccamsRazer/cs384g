@@ -45,10 +45,8 @@ Added environment reflection
 Added bumped environment reflection
 Added a shader that combines all of the required and bells and whistle shaders.
 
-=====
-Notes
-=====
-For bump mapping I refered to
-    http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/
-For environment reflection I refered to
-    http://en.wikibooks.org/wiki/GLSL_Programming/Blender/Reflecting_Surfaces
+==========
+References
+==========
+* http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/ for bump mapping
+* http://en.wikibooks.org/wiki/GLSL_Programming/Blender/Reflecting_Surfaces for cube map reflection
