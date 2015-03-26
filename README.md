@@ -39,11 +39,11 @@ FEATURES
 --- BELLS AND WHISTLES ---
 --------------------------
 
-Added bump diffuse shader
-Added bumped and lit shader
-Added environment reflection
-Added bumped environment reflection
-Added a shader that combines all of the required and bells and whistle shaders.
+* Added bump diffuse shader
+* Added bumped and lit shader
+* Added environment reflection
+* Added bumped environment reflection
+* Added a shader that combines all of the required and bells and whistle shaders.
 
 ==========
 References
