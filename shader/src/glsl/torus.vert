@@ -45,8 +45,8 @@ void main()
     eyeDirection = Mt*(eyePosition - posOS);
     lightDirection = Mt*(lightPosition - posOS);
     halfAngle = (lightDirection+eyeDirection)/2.0;
-    c0 = vec3(0);  // XXX fix me
-    c1 = vec3(0);  // XXX fix me
-    c2 = vec3(0);  // XXX fix me
+    c0 = tangent;
+    c1 = binormal;
+    c2 = normal;
 }
 
