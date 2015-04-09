@@ -40,7 +40,8 @@ enum TransformerControls
 
 void ground(float h);
 void base(float h);
-void rotation_base(float h);
+void body(float h);
+void head(float h);
 void lower_arm(float h);
 void upper_arm(float h);
 void claw(float h);
@@ -122,27 +123,28 @@ void Transformer::draw()
 
 	ground(-0.2);
 
-	base(0.8);
-
-    glTranslatef( 0.0, 0.8, 0.0 );			// move to the top of the base
     glRotatef( theta, 0.0, 1.0, 0.0 );		// turn the whole assembly around the y-axis. 
-	rotation_base(h1);						// draw the rotation base
+    base(0.0);
 
-    glTranslatef( 0.0, h1, 0.0 );			// move to the top of the base
-	glPushMatrix();
-			glTranslatef( 0.5, h1, 0.6 );	
-	glPopMatrix();
-    glRotatef( phi, 0.0, 0.0, 1.0 );		// rotate around the z-axis for the lower arm
-	glTranslatef( -0.1, 0.0, 0.4 );
-	lower_arm(h2);							// draw the lower arm
+    glTranslatef( 0.0, 0.75, 0.0 );         // move to the top of the base
+    body(0.0);                              // draw the body
+    // head(0.0);
 
-    glTranslatef( 0.0, h2, 0.0 );			// move to the top of the lower arm
-    glRotatef( psi, 0.0, 0.0, 1.0 );		// rotate  around z-axis for the upper arm
-	upper_arm(h3);							// draw the upper arm
+ //    glTranslatef( 0.0, h1, 0.0 );			// move to the top of the base
+	// glPushMatrix();
+	// 		glTranslatef( 0.5, h1, 0.6 );	
+	// glPopMatrix();
+ //    glRotatef( phi, 0.0, 0.0, 1.0 );		// rotate around the z-axis for the lower arm
+	// glTranslatef( -0.1, 0.0, 0.4 );
+	// lower_arm(h2);							// draw the lower arm
 
-	glTranslatef( 0.0, h3, 0.0 );
-	glRotatef( cr, 0.0, 0.0, 1.0 );
-	claw(1.0);
+ //    glTranslatef( 0.0, h2, 0.0 );			// move to the top of the lower arm
+ //    glRotatef( psi, 0.0, 0.0, 1.0 );		// rotate  around z-axis for the upper arm
+	// upper_arm(h3);							// draw the upper arm
+
+	// glTranslatef( 0.0, h3, 0.0 );
+	// glRotatef( cr, 0.0, 0.0, 1.0 );
+	// claw(1.0);
 
 
 
@@ -156,7 +158,7 @@ void ground(float h)
 	glDisable(GL_LIGHTING);
 	glColor3f(0.65,0.45,0.2);
 	glPushMatrix();
-	glScalef(30,0,30);
+	glScalef(50,0,50);
 	y_box(h);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
@@ -166,50 +168,90 @@ void base(float h) {
 	setDiffuseColor( 0.25, 0.25, 0.25 );
 	setAmbientColor( 0.25, 0.25, 0.25 );
 	glPushMatrix();
-		glPushMatrix();
-			glTranslatef(1.0, h / 2.0, 0.75);
-			drawCylinder(0.25, h / 2.0, h / 2.0);
+        // top left
+        glPushMatrix();
+			glTranslatef(1.5, 0.5, 1.25);
+            glRotatef( 0.0, 0.0, 0.0, 1.0 );
+            drawCylinder(0.25, 0.5, 0.5);
+        glPopMatrix();
+        // bottom left
+        glPushMatrix();
+            glTranslatef(1.5, 0.5, -1.0);
+            glRotatef( 0.0, 0.0, 0.0, 1.0 );
+            drawCylinder(0.25, 0.5, 0.5);
+        glPopMatrix();
+        // top right
+        glPushMatrix();
+            glTranslatef(-1.5, 0.5, 1.25);
+            glRotatef( 0.0, 0.0, 0.0, 1.0 );
+            drawCylinder(0.25, 0.5, 0.5);
+        glPopMatrix();
+        // bottom right
+        glPushMatrix();
+            glTranslatef(-1.5, 0.5, -1.0);
+            glRotatef( 0.0, 0.0, 0.0, 1.0 );
+			drawCylinder(0.25, 0.5, 0.5);
 		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(1.0, h / 2.0, -1.0);
-			drawCylinder(0.25, h / 2.0, h / 2.0);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(-1.0, h / 2.0, 0.75);
-			drawCylinder(0.25, h / 2.0, h / 2.0);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(-1.0, h / 2.0, -1.0);
-			drawCylinder(0.25, h / 2.0, h / 2.0);
-		glPopMatrix();
-	glScalef(4.0f, h, 4.0f);
-	y_box(1.0f);
+    glTranslatef(-2, 0.5, -0.75);
+	drawBox(4.0,0.25,2.0);
 	glPopMatrix();
 }
 
-void rotation_base(float h) {
-	setDiffuseColor( 0.85, 0.75, 0.25 );
-	setAmbientColor( 0.95, 0.75, 0.25 );
-	glPushMatrix();
-		glPushMatrix();
-			glScalef(4.0, h, 4.0);
-			y_box(1.0f); // the rotation base
-		glPopMatrix();
-		setDiffuseColor( 0.15, 0.15, 0.65 );
-		setAmbientColor( 0.15, 0.15, 0.65 );
-		glPushMatrix();
-			glTranslatef(-0.5, h, -0.6);
-			glScalef(2.0, h, 1.6);
-			y_box(1.0f); // the console
-		glPopMatrix();
-		setDiffuseColor( 0.65, 0.65, 0.65 );
-		setAmbientColor( 0.65, 0.65, 0.65 );
-		glPushMatrix();
-			glTranslatef( 0.5, h, 0.6 );
-			glRotatef( -90.0, 1.0, 0.0, 0.0 );
-			drawCylinder( h, 0.05, 0.05 ); // the pipe
-		glPopMatrix();
-	glPopMatrix();
+void body(float h) {
+    glPushMatrix();
+        // head
+        setDiffuseColor( 0.5, 0.5, 0.5 );
+        setAmbientColor( 0.5, 0.5, 0.5 );
+        glPushMatrix();
+            // glRotatef(45.0, 1.0, 0.0, 0.0);
+            glTranslatef(1.0, 0.0, 0.0);
+            drawBox(0.5,0.8,0.5);
+        glPopMatrix();
+        // torso
+        setDiffuseColor( 0.4, 0.4, 0.4 );
+        setAmbientColor( 0.4, 0.4, 0.4 );
+        glPushMatrix();
+            glTranslatef(-1.0, 0.0, -0.25);
+            drawBox(2.0,0.75,1.0);
+        glPopMatrix();
+        setDiffuseColor( 0.1, 0.0, 1.0 );
+        setAmbientColor( 0.1, 0.0, 1.0 );
+        // left arm
+        glPushMatrix();
+            glTranslatef(-1.0, 0.0, -0.75);
+            drawBox(2.0,0.75,0.5);
+        glPopMatrix();
+        // right arm
+        glPushMatrix();
+            glTranslatef(-1.0, 0.0, 0.75);
+            drawBox(2.0,0.75,0.5);
+        glPopMatrix();
+        // cab
+        glPushMatrix();
+            glTranslatef(-1.0, 0.75, -0.75);
+            drawBox(2.0,0.75,2.0);
+        glPopMatrix();
+        // front
+        glPushMatrix();
+            glTranslatef(1.0, 0.0, -0.75);
+            drawBox(1.0,0.75,2.0);
+        glPopMatrix();
+        // trunk
+        glPushMatrix();
+            glTranslatef(-2.0, 0.0, -0.75);
+            drawBox(1.0,0.75,2.0);
+        glPopMatrix();
+    glPopMatrix();
+}
+
+void head( float h ){
+    setDiffuseColor( 0.5, 0.5, 0.5 );
+    setAmbientColor( 0.5, 0.5, 0.5 );
+    glPushMatrix();
+        // glRotatef(45.0, 1.0, 0.0, 0.0);
+        glTranslatef(1.0, 0.0, 0.0);
+        drawBox(0.5,0.6,0.5);
+    glPopMatrix();
 }
 
 void lower_arm(float h) {					// draw the lower arm
