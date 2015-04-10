@@ -34,15 +34,16 @@ using namespace std;
 // of the controls from the user interface.
 enum TransformerControls
 { 
-    BASE_ROTATION=0, TIRE_ROTATION, LEFT_ARM_ROTATION, RIGHT_ARM_ROTATION, LOWER_TILT, UPPER_TILT, CLAW_ROTATION,
-        EXTEND_ARMS, LOWER_LENGTH, UPPER_LENGTH, PARTICLE_COUNT, NUMCONTROLS, 
+    BASE_ROTATION=0, TIRE_ROTATION, LEFT_ARM_ROTATION, RIGHT_ARM_ROTATION, BODY_ROTATION,
+        EXTEND_ARMS, TURN_HEAD, PARTICLE_COUNT, NUMCONTROLS,
 };
 
 void ground(float h);
-void base(float h);
+void base(float h, float length);
 void trunk();
 void body(float arms_position);
-void head(float h);
+void head(float h, float rotation);
+void hood(float h);
 void arm(float position, float rotation);
 void lower_arm(float h);
 void upper_arm(float h);
@@ -99,14 +100,13 @@ void Transformer::draw()
 
     float theta = VAL( BASE_ROTATION );
 	float theta_tires = -5.0 * VAL( TIRE_ROTATION );
-	float phi = VAL( LOWER_TILT );
+	float phi = VAL( BODY_ROTATION );
     float phi_l = VAL ( LEFT_ARM_ROTATION );
     float phi_r = VAL ( RIGHT_ARM_ROTATION );
-	float psi = VAL( UPPER_TILT );
-	float cr = VAL( CLAW_ROTATION );
-	float h1 = VAL( EXTEND_ARMS );
-	float h2 = VAL( LOWER_LENGTH );
-	float h3 = VAL( UPPER_LENGTH );
+	float psi = -2.0 * phi;
+    float frame_len = 1.5 * phi / 90.0;
+    float turn_head = VAL ( TURN_HEAD );
+	float e_arms = VAL( EXTEND_ARMS );
 	float pc = VAL( PARTICLE_COUNT );
 
     // This call takes care of a lot of the nasty projection 
@@ -137,7 +137,7 @@ void Transformer::draw()
     glPopMatrix();
 
     glRotatef( theta, 0.0, 1.0, 0.0 );		// turn the whole assembly around the y-axis. 
-    base(theta_tires);
+    base(theta_tires, frame_len);
 
     glTranslatef( 0.0, 0.75, 0.0 );         // move to the top of the base
     trunk();
@@ -146,12 +146,19 @@ void Transformer::draw()
     glRotatef(phi, 0.0, 0.0, 1.0);
     
     glTranslatef(1.0, -0.75, 0.0);
-    body(h1);                              // draw the body
+    body(e_arms);                              // draw the body
+    hood(psi);
+    head(0.0, turn_head);
+
+    // left arm
+    arm(-(e_arms + 1.0), phi_l);
+    // right arm
+    arm(e_arms + 0.5, phi_r);
     // head(0.0);
 
- //    glTranslatef( 0.0, h1, 0.0 );			// move to the top of the base
+ //    glTranslatef( 0.0, e_arms, 0.0 );			// move to the top of the base
 	// glPushMatrix();
-	// 		glTranslatef( 0.5, h1, 0.6 );	
+	// 		glTranslatef( 0.5, e_arms, 0.6 );	
 	// glPopMatrix();
  //    glRotatef( phi, 0.0, 0.0, 1.0 );		// rotate around the z-axis for the lower arm
 	// glTranslatef( -0.1, 0.0, 0.4 );
@@ -183,20 +190,20 @@ void ground(float h)
 	glEnable(GL_LIGHTING);
 }
 
-void base(float theta) {
+void base(float theta, float length) {
 	setDiffuseColor( 0.25, 0.25, 0.25 );
 	setAmbientColor( 0.25, 0.25, 0.25 );
     glPushMatrix();
         // trunk
         // top left
         glPushMatrix();
-            glTranslatef(1.5, 0.5, 1.0);
+            glTranslatef(1.5 - length, 0.5, 1.0);
             glRotatef( theta, 0.0, 0.0, 1.0 );
             drawCylinder(0.25, 0.5, 0.5);
         glPopMatrix();
         // bottom left
         glPushMatrix();
-            glTranslatef(1.5, 0.5, -1.25);
+            glTranslatef(1.5 - length, 0.5, -1.25);
             glRotatef( theta, 0.0, 0.0, 1.0 );
             drawCylinder(0.25, 0.5, 0.5);
         glPopMatrix();
@@ -213,7 +220,7 @@ void base(float theta) {
             drawCylinder(0.25, 0.5, 0.5);
         glPopMatrix();
     glTranslatef(-2, 0.5, -1.0);
-    drawBox(4.0,0.25,2.0);
+    drawBox(4.0 - length,0.25,2.0);
     glPopMatrix();
 }
 
@@ -228,14 +235,6 @@ void trunk(){
 
 void body(float arms_position) {
     glPushMatrix();
-        // head
-        setDiffuseColor( 0.5, 0.5, 0.5 );
-        setAmbientColor( 0.5, 0.5, 0.5 );
-        glPushMatrix();
-            // glRotatef(45.0, 1.0, 0.0, 0.0);
-            glTranslatef(1.0, 0.0, -0.25);
-            drawBox(0.5,0.8,0.5);
-        glPopMatrix();
         // torso
         setDiffuseColor( 0.4, 0.4, 0.4 );
         setAmbientColor( 0.4, 0.4, 0.4 );
@@ -245,19 +244,10 @@ void body(float arms_position) {
         glPopMatrix();
         setDiffuseColor( 0.1, 0.0, 1.0 );
         setAmbientColor( 0.1, 0.0, 1.0 );
-        // left arm
-        arm(-(arms_position + 1.0), 0.0);
-        // right arm
-        arm(arms_position + 0.5, 0.0);
         // cab
         glPushMatrix();
             glTranslatef(-1.0, 0.75, -1.0);
             drawBox(2.0,0.75,2.0);
-        glPopMatrix();
-        // front
-        glPushMatrix();
-            glTranslatef(1.0, 0.0, -1.0);
-            drawBox(1.0,0.75,2.0);
         glPopMatrix();
         // extra stuff
         glPushMatrix();
@@ -274,20 +264,42 @@ void body(float arms_position) {
     glPopMatrix();
 }
 
-void head( float h ){
+void head( float h , float rotation){
+    // head
     setDiffuseColor( 0.5, 0.5, 0.5 );
     setAmbientColor( 0.5, 0.5, 0.5 );
     glPushMatrix();
-        // glRotatef(45.0, 1.0, 0.0, 0.0);
-        glTranslatef(1.0, 0.0, 0.0);
-        drawBox(0.5,0.6,0.5);
+        glTranslatef(0.0, 0.4, 0.0);
+        glRotatef(rotation, 1.0, 0.0, 0.0);
+        glTranslatef(0.0, -0.4, 0.0);
+        glPushMatrix();
+            glTranslatef(1.0, 0.0, -0.25);
+            drawBox(0.5,0.8,0.5);
+        glPopMatrix();
+    glPopMatrix();
+}
+
+void hood( float h ){
+    setDiffuseColor( 0.1, 0.0, 1.0 );
+    setAmbientColor( 0.1, 0.0, 1.0 );
+    glPushMatrix();
+        glTranslatef(1.0, 0.0, -1.0);
+        glRotatef(h, 0.0, 0.0, 1.0);
+        drawBox(1.0,0.75,2.0);
     glPopMatrix();
 }
 
 void arm( float position, float rotation){
+    setDiffuseColor( 0.1, 0.0, 1.0 );
+    setAmbientColor( 0.1, 0.0, 1.0 );
     glPushMatrix();
-        glTranslatef(-1.0, 0.0, position );
-        drawBox(2.0,0.75,0.5);
+        glTranslatef(0.75, 0.375, 0.0 );
+        glRotatef(rotation, 0.0, 0.0, 1.0);
+        glTranslatef(-0.75, -0.375, 0.0 );
+        glPushMatrix();
+            glTranslatef(-1.0, 0.0, position );
+            drawBox(2.0,0.75,0.5);
+        glPopMatrix();
     glPopMatrix();
 }
 
@@ -388,16 +400,13 @@ int main()
 {
     ModelerControl controls[NUMCONTROLS ];
 
-    controls[BASE_ROTATION] = ModelerControl("base rotation (theta)", -180.0, 180.0, 0.1, 0.0 );
 	controls[TIRE_ROTATION] = ModelerControl("tire rotation (tires_theta)", 0.0, 360.0, 0.1, 0.0 );
-    controls[LOWER_TILT] = ModelerControl("main torso (phi)", 0.0, 90.0, 0.1, 0.0 );
-    controls[UPPER_TILT] = ModelerControl("upper arm tilt (psi)", 0.0, 135.0, 0.1, 30.0 );
-    controls[CLAW_ROTATION] = ModelerControl("claw rotation (cr)", -30.0, 180.0, 0.1, 0.0 );
-    controls[EXTEND_ARMS] = ModelerControl("extend arms (h1)", 0.0, 0.7, 0.05, 0.0 );
+    controls[BASE_ROTATION] = ModelerControl("base rotation (theta)", -180.0, 180.0, 0.1, 0.0 );
+    controls[BODY_ROTATION] = ModelerControl("main torso (phi)", 0.0, 90.0, 0.1, 0.0 );
+    controls[EXTEND_ARMS] = ModelerControl("extend arms (e_arms)", 0.0, 0.7, 0.05, 0.0 );
     controls[LEFT_ARM_ROTATION] = ModelerControl("left arm rotation (phi_l)", -180.0, 180.0, 0.1, 0.0 );
     controls[RIGHT_ARM_ROTATION] = ModelerControl("right arm rotation (phi_r)", -180.0, 180.0, 0.1, 0.0 );
-    controls[LOWER_LENGTH] = ModelerControl("lower arm length (h2)", 1, 10.0, 0.1, 3.0 );
-    controls[UPPER_LENGTH] = ModelerControl("upper arm length (h3)", 1, 10.0, 0.1, 2.5 );
+    controls[TURN_HEAD] = ModelerControl("head rotation (turn_head)", -90.0, 90.0, 0.1, 0.0 );
     controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 5.0 );
     
 
