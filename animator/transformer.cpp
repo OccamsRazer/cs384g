@@ -34,15 +34,15 @@ using namespace std;
 // of the controls from the user interface.
 enum TransformerControls
 { 
-    BASE_ROTATION=0, TIRE_ROTATION, LEFT_ARM_ROTATION, RIGHT_ARM_ROTATION, BODY_ROTATION,
-        EXTEND_ARMS, TURN_HEAD, PARTICLE_COUNT, NUMCONTROLS,
+    BASE_ROTATION=0, X_POSITION, Z_POSITION, TIRE_ROTATION, BODY_ROTATION, EXTEND_ARMS, LEFT_ARM_ROTATION, RIGHT_ARM_ROTATION,
+        TURN_HEAD, PARTICLE_COUNT, NUMCONTROLS,
 };
 
 void ground(float h);
 void base(float h, float length);
 void trunk();
 void body(float arms_position);
-void head(float h, float rotation);
+void head(float rotation);
 void hood(float h);
 void arm(float position, float rotation);
 void lower_arm(float h);
@@ -80,9 +80,9 @@ Mat4f glGetMatrix(GLenum pname)
     GLfloat m[16];
     glGetFloatv(pname, m);
     Mat4f matCam(m[0],  m[1],  m[2],  m[3],
-                            m[4],  m[5],  m[6],  m[7],
-                            m[8],  m[9],  m[10], m[11],
-                            m[12], m[13], m[14], m[15] );
+                 m[4],  m[5],  m[6],  m[7],
+                 m[8],  m[9],  m[10], m[11],
+                 m[12], m[13], m[14], m[15] );
 
     // because the matrix GL returns is column major...
     return matCam.transpose();
@@ -99,8 +99,10 @@ void Transformer::draw()
 	/* pick up the slider values */
 
     float theta = VAL( BASE_ROTATION );
+    float x = VAL( X_POSITION );
+    float z = VAL( Z_POSITION );
 	float theta_tires = -5.0 * VAL( TIRE_ROTATION );
-	float phi = VAL( BODY_ROTATION );
+	float phi = 90.0 * VAL( BODY_ROTATION ) / 100.0;
     float phi_l = VAL ( LEFT_ARM_ROTATION );
     float phi_r = VAL ( RIGHT_ARM_ROTATION );
 	float psi = -2.0 * phi;
@@ -128,13 +130,15 @@ void Transformer::draw()
 
 	ground(-0.2);
 
+    glTranslatef(x, 0.0, z);
+
     // center rod
-    setDiffuseColor( 1.0, 0.0, 0.0 );
-    setAmbientColor( 1.0, 0.0, 0.0 );
-    glPushMatrix();
-        glRotatef(-90.0, 1.0, 0.0, 0.0);
-        drawCylinder(5.0, 0.1, 0.1);
-    glPopMatrix();
+    // setDiffuseColor( 1.0, 0.0, 0.0 );
+    // setAmbientColor( 1.0, 0.0, 0.0 );
+    // glPushMatrix();
+    //     glRotatef(-90.0, 1.0, 0.0, 0.0);
+    //     drawCylinder(5.0, 0.1, 0.1);
+    // glPopMatrix();
 
     glRotatef( theta, 0.0, 1.0, 0.0 );		// turn the whole assembly around the y-axis. 
     base(theta_tires, frame_len);
@@ -148,32 +152,12 @@ void Transformer::draw()
     glTranslatef(1.0, -0.75, 0.0);
     body(e_arms);                              // draw the body
     hood(psi);
-    head(0.0, turn_head);
+    head(turn_head);
 
     // left arm
     arm(-(e_arms + 1.0), phi_l);
     // right arm
     arm(e_arms + 0.5, phi_r);
-    // head(0.0);
-
- //    glTranslatef( 0.0, e_arms, 0.0 );			// move to the top of the base
-	// glPushMatrix();
-	// 		glTranslatef( 0.5, e_arms, 0.6 );	
-	// glPopMatrix();
- //    glRotatef( phi, 0.0, 0.0, 1.0 );		// rotate around the z-axis for the lower arm
-	// glTranslatef( -0.1, 0.0, 0.4 );
-	// lower_arm(h2);							// draw the lower arm
-
- //    glTranslatef( 0.0, h2, 0.0 );			// move to the top of the lower arm
- //    glRotatef( psi, 0.0, 0.0, 1.0 );		// rotate  around z-axis for the upper arm
-	// upper_arm(h3);							// draw the upper arm
-
-	// glTranslatef( 0.0, h3, 0.0 );
-	// glRotatef( cr, 0.0, 0.0, 1.0 );
-	// claw(1.0);
-
-
-
 
 	//*** DON'T FORGET TO PUT THIS IN YOUR OWN CODE **/
 	endDraw();
@@ -184,7 +168,7 @@ void ground(float h)
 	glDisable(GL_LIGHTING);
 	glColor3f(0.65,0.45,0.2);
 	glPushMatrix();
-	glScalef(50,0,50);
+	glScalef(80,0,80);
 	y_box(h);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
@@ -264,7 +248,7 @@ void body(float arms_position) {
     glPopMatrix();
 }
 
-void head( float h , float rotation){
+void head( float rotation){
     // head
     setDiffuseColor( 0.5, 0.5, 0.5 );
     setAmbientColor( 0.5, 0.5, 0.5 );
@@ -400,9 +384,11 @@ int main()
 {
     ModelerControl controls[NUMCONTROLS ];
 
-	controls[TIRE_ROTATION] = ModelerControl("tire rotation (tires_theta)", 0.0, 360.0, 0.1, 0.0 );
     controls[BASE_ROTATION] = ModelerControl("base rotation (theta)", -180.0, 180.0, 0.1, 0.0 );
-    controls[BODY_ROTATION] = ModelerControl("main torso (phi)", 0.0, 90.0, 0.1, 0.0 );
+    controls[X_POSITION] = ModelerControl("x position (x)", -20.0, 20.0, 0.1, 0.0 );
+    controls[Z_POSITION] = ModelerControl("z position (z)", -20.0, 20.0, 0.1, 0.0 );
+    controls[TIRE_ROTATION] = ModelerControl("tire rotation (tires_theta)", 0.0, 360.0, 0.1, 0.0 );
+    controls[BODY_ROTATION] = ModelerControl("transform (phi)", 0.0, 100.0, 0.1, 0.0 );
     controls[EXTEND_ARMS] = ModelerControl("extend arms (e_arms)", 0.0, 0.7, 0.05, 0.0 );
     controls[LEFT_ARM_ROTATION] = ModelerControl("left arm rotation (phi_l)", -180.0, 180.0, 0.1, 0.0 );
     controls[RIGHT_ARM_ROTATION] = ModelerControl("right arm rotation (phi_r)", -180.0, 180.0, 0.1, 0.0 );
