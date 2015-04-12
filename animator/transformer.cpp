@@ -35,7 +35,7 @@ using namespace std;
 enum TransformerControls
 { 
     BASE_ROTATION=0, X_POSITION, Z_POSITION, TIRE_ROTATION, BODY_ROTATION, EXTEND_ARMS, LEFT_ARM_ROTATION, RIGHT_ARM_ROTATION,
-        TURN_HEAD, PARTICLE_COUNT, NUMCONTROLS,
+        LOWER_LEFT_ARM_ROTATION, LOWER_RIGHT_ARM_ROTATION, TURN_HEAD, PARTICLE_COUNT, NUMCONTROLS,
 };
 
 void ground(float h);
@@ -44,7 +44,7 @@ void trunk();
 void body(float arms_position);
 void head(float rotation);
 void hood(float h);
-void arm(float position, float rotation);
+void arm(float position, float rotation, float lower_rotation);
 void lower_arm(float h);
 void upper_arm(float h);
 void claw(float h);
@@ -102,13 +102,16 @@ void Transformer::draw()
     float x = VAL( X_POSITION );
     float z = VAL( Z_POSITION );
 	float theta_tires = -5.0 * VAL( TIRE_ROTATION );
-	float phi = 90.0 * VAL( BODY_ROTATION ) / 100.0;
-    float phi_l = VAL ( LEFT_ARM_ROTATION );
-    float phi_r = VAL ( RIGHT_ARM_ROTATION );
+    float progress = VAL( BODY_ROTATION ) / 100.0;
+	float phi = 90.0 * progress;
+    float phi_l = VAL ( LEFT_ARM_ROTATION ) * progress;
+    float phi_r = VAL ( RIGHT_ARM_ROTATION ) * progress;
+    float phi_ll = VAL ( LOWER_LEFT_ARM_ROTATION ) * progress;
+    float phi_lr = VAL ( LOWER_RIGHT_ARM_ROTATION ) * progress;
 	float psi = -2.0 * phi;
-    float frame_len = 1.5 * phi / 90.0;
-    float turn_head = VAL ( TURN_HEAD );
-	float e_arms = VAL( EXTEND_ARMS );
+    float frame_len = 1.5 * progress;
+    float turn_head = VAL ( TURN_HEAD ) * progress;
+	float e_arms = 0.7 * progress;
 	float pc = VAL( PARTICLE_COUNT );
 
     // This call takes care of a lot of the nasty projection 
@@ -155,9 +158,9 @@ void Transformer::draw()
     head(turn_head);
 
     // left arm
-    arm(-(e_arms + 1.0), phi_l);
+    arm(-(e_arms + 1.0), phi_l, phi_ll);
     // right arm
-    arm(e_arms + 0.5, phi_r);
+    arm(e_arms + 0.5, phi_r, phi_lr);
 
 	//*** DON'T FORGET TO PUT THIS IN YOUR OWN CODE **/
 	endDraw();
@@ -273,7 +276,7 @@ void hood( float h ){
     glPopMatrix();
 }
 
-void arm( float position, float rotation){
+void arm( float position, float rotation, float lower_rotation){
     setDiffuseColor( 0.1, 0.0, 1.0 );
     setAmbientColor( 0.1, 0.0, 1.0 );
     glPushMatrix();
@@ -281,8 +284,14 @@ void arm( float position, float rotation){
         glRotatef(rotation, 0.0, 0.0, 1.0);
         glTranslatef(-0.75, -0.375, 0.0 );
         glPushMatrix();
+            glTranslatef(0.0, 0.0, position );
+            drawBox(1.0,0.75,0.5);
+        glPopMatrix();
+
+        glRotatef(lower_rotation, 0.0, 0.0, 1.0);
+        glPushMatrix();
             glTranslatef(-1.0, 0.0, position );
-            drawBox(2.0,0.75,0.5);
+            drawBox(1.0,0.75,0.5);
         glPopMatrix();
     glPopMatrix();
 }
@@ -392,6 +401,8 @@ int main()
     controls[EXTEND_ARMS] = ModelerControl("extend arms (e_arms)", 0.0, 0.7, 0.05, 0.0 );
     controls[LEFT_ARM_ROTATION] = ModelerControl("left arm rotation (phi_l)", -180.0, 180.0, 0.1, 0.0 );
     controls[RIGHT_ARM_ROTATION] = ModelerControl("right arm rotation (phi_r)", -180.0, 180.0, 0.1, 0.0 );
+    controls[LOWER_LEFT_ARM_ROTATION] = ModelerControl("lower left arm rotation (phi_ll)", 0.0, 180.0, 0.1, 0.0 );
+    controls[LOWER_RIGHT_ARM_ROTATION] = ModelerControl("lower right arm rotation (phi_lr)", 0.0, 180.0, 0.1, 0.0 );
     controls[TURN_HEAD] = ModelerControl("head rotation (turn_head)", -90.0, 90.0, 0.1, 0.0 );
     controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 5.0 );
     
