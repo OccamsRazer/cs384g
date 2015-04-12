@@ -35,7 +35,7 @@ using namespace std;
 enum TransformerControls
 { 
     BASE_ROTATION=0, X_POSITION, Z_POSITION, TIRE_ROTATION, BODY_ROTATION, EXTEND_ARMS, LEFT_ARM_ROTATION, RIGHT_ARM_ROTATION,
-        LOWER_LEFT_ARM_ROTATION, LOWER_RIGHT_ARM_ROTATION, TURN_HEAD, PARTICLE_COUNT, NUMCONTROLS,
+        LOWER_LEFT_ARM_ROTATION, LOWER_RIGHT_ARM_ROTATION, TURN_HEAD, SCALE, PARTICLE_COUNT, NUMCONTROLS,
 };
 
 void ground(float h);
@@ -112,6 +112,7 @@ void Transformer::draw()
     float frame_len = 1.5 * progress;
     float turn_head = VAL ( TURN_HEAD ) * progress;
 	float e_arms = 0.7 * progress;
+    float scale = VAL ( SCALE );
 	float pc = VAL( PARTICLE_COUNT );
 
     // This call takes care of a lot of the nasty projection 
@@ -133,6 +134,7 @@ void Transformer::draw()
 
 	ground(-0.2);
 
+    glScalef(scale, scale, scale);
     glTranslatef(x, 0.0, z);
 
     // center rod
@@ -404,6 +406,7 @@ int main()
     controls[LOWER_LEFT_ARM_ROTATION] = ModelerControl("lower left arm rotation (phi_ll)", 0.0, 180.0, 0.1, 0.0 );
     controls[LOWER_RIGHT_ARM_ROTATION] = ModelerControl("lower right arm rotation (phi_lr)", 0.0, 180.0, 0.1, 0.0 );
     controls[TURN_HEAD] = ModelerControl("head rotation (turn_head)", -90.0, 90.0, 0.1, 0.0 );
+    controls[SCALE] = ModelerControl("change size (scale)", 0.25, 4.0, 0.1, 1.0 );
     controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 5.0 );
     
 
