@@ -17,7 +17,7 @@ static float prevT;
 
 ParticleSystem::ParticleSystem() 
 {
-	// TODO
+    // TODO
 }
 
 
@@ -29,7 +29,7 @@ ParticleSystem::ParticleSystem()
 
 ParticleSystem::~ParticleSystem() 
 {
-	// TODO
+    // TODO
 }
 
 
@@ -40,74 +40,77 @@ ParticleSystem::~ParticleSystem()
 /** Start the simulation */
 void ParticleSystem::startSimulation(float t)
 {
-	// TODO
+    // TODO
 
-	// These values are used by the UI ...
-	// negative bake_end_time indicates that simulation
-	// is still progressing, and allows the
-	// indicator window above the time slider
-	// to correctly show the "baked" region
-	// in grey.
-	bake_end_time = -1;
-	simulate = true;
-	dirty = true;
+    // These values are used by the UI ...
+    // negative bake_end_time indicates that simulation
+    // is still progressing, and allows the
+    // indicator window above the time slider
+    // to correctly show the "baked" region
+    // in grey.
+    bake_end_time = -1;
+    simulate = true;
+    dirty = true;
 
 }
 
 /** Stop the simulation */
 void ParticleSystem::stopSimulation(float t)
 {
-	// TODO
+    // TODO
 
-	// These values are used by the UI
-	simulate = false;
-	dirty = true;
+    // These values are used by the UI
+    simulate = false;
+    dirty = true;
 
 }
 
 /** Reset the simulation */
 void ParticleSystem::resetSimulation(float t)
 {
-	// TODO
+    // TODO
 
-	// These values are used by the UI
-	simulate = false;
-	dirty = true;
+    // These values are used by the UI
+    simulate = false;
+    dirty = true;
 
 }
 
 /** Compute forces and update particles **/
 void ParticleSystem::computeForcesAndUpdateParticles(float t)
 {
-	// TODO
+    // TODO
 
-	// Debugging info
-	if( t - prevT > .04 )
-		printf("(!!) Dropped Frame %lf (!!)\n", t-prevT);
-	prevT = t;
+    // Debugging info
+    if( t - prevT > .04 )
+        printf("(!!) Dropped Frame %lf (!!)\n", t-prevT);
+    prevT = t;
 }
 
 
 /** Render particles */
 void ParticleSystem::drawParticles(float t)
 {
-	// TODO
+    // TODO
 }
 
-
+/** Create particles */
+void ParticleSystem::createParticles(int number, Vec3d origin) {
+    // TODO
+}
 
 
 /** Adds the current configuration of particles to
   * your data structure for storing baked particles **/
 void ParticleSystem::bakeParticles(float t) 
 {
-	// TODO
+    // TODO
 }
 
 /** Clears out your data structure of baked particles */
 void ParticleSystem::clearBaked()
 {
-	// TODO
+    // TODO
 }
 
 
