@@ -27,7 +27,9 @@ struct Particle {
     Vec3d velocity;
     Vec3d force;
     float mass;
-    Particle(Vec3d position, Vec3d velocity, Vec3d force, float mass): position(position), velocity(velocity), force(force), mass(mass) {
+    float ttl;
+    float createdAt;
+    Particle(Vec3d position, Vec3d velocity, Vec3d force, float mass, float ttl): position(position), velocity(velocity), force(force), mass(mass), ttl(ttl), createdAt(-1.0) {
     }
 };
 class ParticleSystem {
@@ -47,7 +49,7 @@ public:
     virtual void drawParticles(float t);
 
     // create number of particles originating from origin
-    virtual void createParticles(int number, Vec3d origin);
+    virtual void createParticles(int number, Vec3d origin, Vec3d direction);
 
     // This fxn should save the configuration of all particles
     // at current time t.
@@ -79,6 +81,7 @@ public:
     float getBakeEndTime() { return bake_end_time; }
     float getBakeFps() { return bake_fps; }
     bool isSimulate() { return simulate; }
+    void setSimulate(bool s) { simulate = s;}
     bool isDirty() { return dirty; }
     void setDirty(bool d) { dirty = d; }
 

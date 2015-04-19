@@ -40,8 +40,6 @@ ParticleSystem::~ParticleSystem()
 /** Start the simulation */
 void ParticleSystem::startSimulation(float t)
 {
-    // TODO
-
     // These values are used by the UI ...
     // negative bake_end_time indicates that simulation
     // is still progressing, and allows the
@@ -87,16 +85,27 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
         return;
 
     bakeParticles(t);
+
     
     int numParticles =  particles.size();
+    
+    std::vector<Particle> newParticles;
     for (int i = 0; i <  numParticles; i++){
         Particle p = particles[i];
+        // remove 'dead' particles
+        if (p.createdAt == -1)
+            p.createdAt = t;
+        if (p.createdAt + p.ttl < t)
+            continue;
         // gravity and drag
         p.force = Vec3d(0.0, -9.8*p.mass, 0.0) - 0.47*p.velocity;
 
-        p.position = p.position + (t - prevT)*(p.velocity);
-        p.velocity = p.velocity + (t - prevT) * ((p.force)/(p.mass));
+        p.position += (t - prevT) * (p.velocity);
+        p.velocity += (t - prevT) * ((p.force)/(p.mass));
+
+        newParticles.push_back(p);
     }
+    particles = newParticles;
     
     // Debugging info
     if( t - prevT > .04 )
@@ -108,7 +117,7 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 /** Render particles */
 void ParticleSystem::drawParticles(float t)
 {
-    if(bakedParticles.empty())
+    if(bakedParticles.empty() || t > bake_end_time)
         return;
     int numParticles =  bakedParticles[t].size();
 
@@ -116,21 +125,23 @@ void ParticleSystem::drawParticles(float t)
         glPushMatrix();
             Particle p = bakedParticles[t][i];
             glTranslatef(p.position[0], p.position[1], p.position[2]);
-            setDiffuseColor(1.0,1.0,1.0);
-            glScalef(0.5, 0.5, 0.5);
-            drawSphere(1);
+            setDiffuseColor(1.0,0.0,0.0);
+            drawSphere(0.1);
         glPopMatrix();
     }
 }
 
 /** Create particles */
-void ParticleSystem::createParticles(int number, Vec3d origin) {
+void ParticleSystem::createParticles(int number, Vec3d origin, Vec3d direction) {
     if(!simulate)
         return;
-    for(int i = 0; i< number; i++){
+    for(int i = 0; i < number; i++){
         // chose a semi random direction
-        Vec3d v(1.0, (rand()/double(RAND_MAX))*5.0, ((2.0*rand())/double(RAND_MAX) - 1.0)*5.0);
-        particles.push_back(Particle(origin, v, Vec3d(0.0,0.0,0.0), 1.0));
+        float vX = (rand() % 5 + 10) * direction[0];
+        float vY = (rand() % 5 + 5) * direction[1];
+        float vZ = (rand() % 5 + 10) * direction[2];
+        Vec3d v(vX, vY, vZ);
+        particles.push_back(Particle(origin, v, Vec3d(0.0,0.0,0.0), 0.5, 3.0));
     }
 }
 
@@ -140,12 +151,14 @@ void ParticleSystem::createParticles(int number, Vec3d origin) {
 void ParticleSystem::bakeParticles(float t) 
 {
     bakedParticles[t] = particles;
+    bake_end_time = t;
 }
 
 /** Clears out your data structure of baked particles */
 void ParticleSystem::clearBaked()
 {
     bakedParticles.clear();
+    bake_end_time = -1;
 }
 
 

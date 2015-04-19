@@ -24,6 +24,7 @@ using namespace std;
 #define P_OFFSET 0.3f
 #define MAX_VEL 200
 #define MIN_STEP 0.1
+#define PI 3.1415927
 
 
 
@@ -34,7 +35,7 @@ using namespace std;
 // of the controls from the user interface.
 enum TransformerControls
 { 
-    BASE_ROTATION=0, X_POSITION, Z_POSITION, TIRE_ROTATION, BODY_ROTATION, EXTEND_ARMS, LEFT_ARM_ROTATION, RIGHT_ARM_ROTATION,
+    BASE_ROTATION=0, X_POSITION, Z_POSITION, TIRE_ROTATION, TRANSFORM, EXTEND_ARMS, LEFT_ARM_ROTATION, RIGHT_ARM_ROTATION,
         LOWER_LEFT_ARM_ROTATION, LOWER_RIGHT_ARM_ROTATION, TURN_HEAD, SCALE, PARTICLE_COUNT, NUMCONTROLS,
 };
 
@@ -44,7 +45,7 @@ void trunk();
 void body(float arms_position);
 void head(float rotation);
 void hood(float h);
-void arm(float position, float rotation, float lower_rotation);
+void arm(float position, float rotation, float lower_rotation, bool shoot, float pc, Vec3d facing, Mat4f matCamInverse);
 void lower_arm(float h);
 void upper_arm(float h);
 void claw(float h);
@@ -105,7 +106,7 @@ void Transformer::draw()
     float z = VAL( Z_POSITION );
     float len = sqrt(x*x + z*z);
     float theta_tires = VAL( TIRE_ROTATION )*-30.0;
-    float progress = VAL( BODY_ROTATION ) / 100.0;
+    float progress = VAL( TRANSFORM ) / 100.0;
     float phi = 90.0 * progress;
     float phi_l = VAL ( LEFT_ARM_ROTATION ) * progress;
     float phi_r = VAL ( RIGHT_ARM_ROTATION ) * progress;
@@ -116,7 +117,8 @@ void Transformer::draw()
     float turn_head = VAL ( TURN_HEAD ) * progress;
     float e_arms = 0.7 * progress;
     float scale = VAL ( SCALE );
-    float pc = VAL( PARTICLE_COUNT );
+    // only render particles when fully transformed
+    float pc = (progress == 1.0) ? VAL( PARTICLE_COUNT ) : 0;
 
     // This call takes care of a lot of the nasty projection 
     // matrix stuff
@@ -128,8 +130,6 @@ void Transformer::draw()
     // need it later.
     Mat4f matCam = glGetMatrix( GL_MODELVIEW_MATRIX );
     Mat4f matCamInverse = matCam.inverse();
-
-
 
     static GLfloat lmodel_ambient[] = {0.4,0.4,0.4,1.0};
 
@@ -150,14 +150,12 @@ void Transformer::draw()
 
     glRotatef( theta, 0.0, 1.0, 0.0 );      // turn the whole assembly around the y-axis. 
     base(theta_tires, frame_len);
+    // std::cout << "sin: " << sin(theta*PI/180.0) << ", cos:" << cos(theta*PI/180.0) << std::endl;
+    float xFace = cos(theta*PI/180.0);
+    float zFace = -sin(theta*PI/180.0);
+    Vec3d facing(xFace, 1.0, zFace);
 
-    glPushMatrix();
-        glTranslatef(0.0, 5.0, 0.0);
-        Mat4f modelView = glGetMatrix( GL_MODELVIEW_MATRIX );
-        Mat4f originMat = matCamInverse * modelView;
-        Vec4f originVec = originMat * Vec4f(0.0, 0.0, 0.0, 1.0);
-        ps.createParticles(pc, Vec3d(originVec[0], originVec[1], originVec[2]));
-    glPopMatrix();
+
 
     glTranslatef( 0.0, 0.75, 0.0 );         // move to the top of the base
     trunk();
@@ -171,9 +169,9 @@ void Transformer::draw()
     head(turn_head);
 
     // left arm
-    arm(-(e_arms + 1.0), phi_l, phi_ll);
+    arm(-(e_arms + 1.0), phi_l, phi_ll, false, pc, facing, matCamInverse);
     // right arm
-    arm(e_arms + 0.5, phi_r, phi_lr);
+    arm(e_arms + 0.5, phi_r, phi_lr, true, pc, facing, matCamInverse);
 
     //*** DON'T FORGET TO PUT THIS IN YOUR OWN CODE **/
     endDraw();
@@ -311,7 +309,7 @@ void hood( float h ){
     glPopMatrix();
 }
 
-void arm( float position, float rotation, float lower_rotation){
+void arm( float position, float rotation, float lower_rotation, bool shoot, float pc, Vec3d facing, Mat4f matCamInverse){
     setDiffuseColor( 0.1, 0.0, 1.0 );
     setAmbientColor( 0.1, 0.0, 1.0 );
     glPushMatrix();
@@ -327,6 +325,19 @@ void arm( float position, float rotation, float lower_rotation){
         glPushMatrix();
             glTranslatef(-1.0, 0.0, position );
             drawBox(1.0,0.75,0.5);
+            if (shoot) {
+                glPushMatrix();
+                    glTranslatef(0.0, 0.375, 0.25);
+                    Mat4f modelView = glGetMatrix( GL_MODELVIEW_MATRIX );
+                    Mat4f originMat = matCamInverse * modelView;
+                    Vec4f pVec = originMat * Vec4f(0.0, 0.0, 0.0, 1.0);
+                    double xFace = -cos((270.0 - lower_rotation - rotation)*PI/180.0) * facing[0];
+                    double yFace = sin((270.0 - lower_rotation -rotation)*PI/180.0) * facing[1];
+                    double zFace = facing[2];
+                    Vec3d dVec(xFace, yFace, zFace);
+                    ps.createParticles(pc, Vec3d(pVec[0], pVec[1], pVec[2]), dVec);
+                glPopMatrix();
+            }
         glPopMatrix();
     glPopMatrix();
 }
@@ -432,7 +443,7 @@ int main()
     controls[X_POSITION] = ModelerControl("x position (x)", -20.0, 20.0, 0.1, 0.0 );
     controls[Z_POSITION] = ModelerControl("z position (z)", -20.0, 20.0, 0.1, 0.0 );
     controls[TIRE_ROTATION] = ModelerControl("tire rotation (tires_theta)", 0.0, 1000.0, 0.1, 0.0 );
-    controls[BODY_ROTATION] = ModelerControl("transform (phi)", 0.0, 100.0, 0.1, 0.0 );
+    controls[TRANSFORM] = ModelerControl("transform (phi)", 0.0, 100.0, 0.1, 100.0 );
     controls[EXTEND_ARMS] = ModelerControl("extend arms (e_arms)", 0.0, 0.7, 0.05, 0.0 );
     controls[LEFT_ARM_ROTATION] = ModelerControl("left arm rotation (phi_l)", -180.0, 180.0, 0.1, 0.0 );
     controls[RIGHT_ARM_ROTATION] = ModelerControl("right arm rotation (phi_r)", -180.0, 180.0, 0.1, 0.0 );
@@ -440,7 +451,7 @@ int main()
     controls[LOWER_RIGHT_ARM_ROTATION] = ModelerControl("lower right arm rotation (phi_lr)", 0.0, 180.0, 0.1, 0.0 );
     controls[TURN_HEAD] = ModelerControl("head rotation (turn_head)", -90.0, 90.0, 0.1, 0.0 );
     controls[SCALE] = ModelerControl("change size (scale)", 0.25, 4.0, 0.1, 1.0 );
-    controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 0.0 );
+    controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 2.0 );
     
 
     // You should create a ParticleSystem object ps here and then
