@@ -19,14 +19,15 @@
 #include <map>
 #include <vector>
 #include "vec.h"
+#include "modelerdraw.h"
 
 
 struct Particle {
     Vec3d position;
     Vec3d velocity;
-    Vec3d forces;
+    Vec3d force;
     float mass;
-    Particle(Vec3d position, Vec3d velocity, Vec3d forces, float mass): position(position), velocity(velocity), forces(forces), mass(mass) {
+    Particle(Vec3d position, Vec3d velocity, Vec3d force, float mass): position(position), velocity(velocity), force(force), mass(mass) {
     }
 };
 class ParticleSystem {

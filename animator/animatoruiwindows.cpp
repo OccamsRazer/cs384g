@@ -282,11 +282,11 @@ ModelerUIWindows::ModelerUIWindows() {
     }
     o->end();
   }
-  { Fl_Window* o = m_pwndModelerWnd = new Fl_Window(340, 296, "Model");
+  { Fl_Window* o = m_pwndModelerWnd = new Fl_Window(510, 444, "Model");
     w = o;
     o->user_data((void*)(this));
     o->when(FL_WHEN_NEVER);
-    { ModelerView* o = m_pwndModelerView = new ModelerView(0, 0, 340, 295, (char *)"ModelerView");
+    { ModelerView* o = m_pwndModelerView = new ModelerView(0, 0, 510, 444, (char *)"ModelerView");
       Fl_Group::current()->resizable(o);
     }
     o->end();

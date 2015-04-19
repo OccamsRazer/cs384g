@@ -68,7 +68,9 @@ void ParticleSystem::stopSimulation(float t)
 /** Reset the simulation */
 void ParticleSystem::resetSimulation(float t)
 {
-    // TODO
+    particles.clear();
+    bakedParticles.clear();
+    prevT = -1;
 
     // These values are used by the UI
     simulate = false;
@@ -79,8 +81,23 @@ void ParticleSystem::resetSimulation(float t)
 /** Compute forces and update particles **/
 void ParticleSystem::computeForcesAndUpdateParticles(float t)
 {
-    // TODO
+    if (!simulate)
+        return;
+    if(t - prevT < 0.01)
+        return;
 
+    bakeParticles(t);
+    
+    int numParticles =  particles.size();
+    for (int i = 0; i <  numParticles; i++){
+        Particle p = particles[i];
+        // gravity and drag
+        p.force = Vec3d(0.0, -9.8*p.mass, 0.0) - 0.47*p.velocity;
+
+        p.position = p.position + (t - prevT)*(p.velocity);
+        p.velocity = p.velocity + (t - prevT) * ((p.force)/(p.mass));
+    }
+    
     // Debugging info
     if( t - prevT > .04 )
         printf("(!!) Dropped Frame %lf (!!)\n", t-prevT);
@@ -91,12 +108,30 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 /** Render particles */
 void ParticleSystem::drawParticles(float t)
 {
-    // TODO
+    if(bakedParticles.empty())
+        return;
+    int numParticles =  bakedParticles[t].size();
+
+    for(int i = 0; i < numParticles; i++){
+        glPushMatrix();
+            Particle p = bakedParticles[t][i];
+            glTranslatef(p.position[0], p.position[1], p.position[2]);
+            setDiffuseColor(1.0,1.0,1.0);
+            glScalef(0.5, 0.5, 0.5);
+            drawSphere(1);
+        glPopMatrix();
+    }
 }
 
 /** Create particles */
 void ParticleSystem::createParticles(int number, Vec3d origin) {
-    // TODO
+    if(!simulate)
+        return;
+    for(int i = 0; i< number; i++){
+        // chose a semi random direction
+        Vec3d v(1.0, (rand()/double(RAND_MAX))*5.0, ((2.0*rand())/double(RAND_MAX) - 1.0)*5.0);
+        particles.push_back(Particle(origin, v, Vec3d(0.0,0.0,0.0), 1.0));
+    }
 }
 
 
@@ -104,13 +139,13 @@ void ParticleSystem::createParticles(int number, Vec3d origin) {
   * your data structure for storing baked particles **/
 void ParticleSystem::bakeParticles(float t) 
 {
-    // TODO
+    bakedParticles[t] = particles;
 }
 
 /** Clears out your data structure of baked particles */
 void ParticleSystem::clearBaked()
 {
-    // TODO
+    bakedParticles.clear();
 }
 
 
