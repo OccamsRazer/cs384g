@@ -26,11 +26,31 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
             ptvEvaluatedCurvePts.push_back(ptvCtrlPts[i]);
     }
     else {
+
         for (int i = 0; i < iCtrlPtCount; i++)
             interpolatedCtrlPts.push_back(ptvCtrlPts[i]);
-        int interCtrlPtsCount = interpolatedCtrlPts.size();
 
-        for (int i = 0; i < interCtrlPtsCount - 3; i++) {
+        int i = 0;
+        if(bWrap && iCtrlPtCount % 3 == 0){
+            // add copy of first to end
+            interpolatedCtrlPts.push_back(Point(ptvCtrlPts[0].x + fAniLength, ptvCtrlPts[0].y));
+
+            // add copy of last 3 ctrlpoint to beginning
+            interpolatedCtrlPts.insert(interpolatedCtrlPts.begin(), Point(ptvCtrlPts[iCtrlPtCount - 1].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 1].y));
+            interpolatedCtrlPts.insert(interpolatedCtrlPts.begin(), Point(ptvCtrlPts[iCtrlPtCount - 2].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 2].y));
+            interpolatedCtrlPts.insert(interpolatedCtrlPts.begin(), Point(ptvCtrlPts[iCtrlPtCount - 3].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 3].y));
+        }
+        else if( bWrap && iCtrlPtCount % 3 != 0){
+            // // add copy of first to end
+            interpolatedCtrlPts.push_back(Point(ptvCtrlPts[0].x + fAniLength, ptvCtrlPts[0].y));
+
+            ptvEvaluatedCurvePts.push_back(Point(ptvCtrlPts[iCtrlPtCount - 1].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 1].y));
+            // // add copy of last to beginning
+            // interpolatedCtrlPts.insert(interpolatedCtrlPts.begin(), Point(ptvCtrlPts[iCtrlPtCount - 1].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 1].y));
+        }
+        int interCtrlPtsCount = interpolatedCtrlPts.size();
+        // curve for multiple of 3
+        for (; i + 3 < interCtrlPtsCount; i+=3) {
             Point p0 = interpolatedCtrlPts[i];
             Point p1 = interpolatedCtrlPts[i+1];
             Point p2 = interpolatedCtrlPts[i+2];
@@ -49,6 +69,11 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
                 ptvEvaluatedCurvePts.push_back(Point(x, y));
             }
         }
+        // linear for remainder
+        for( ; i < interCtrlPtsCount; i++){
+            ptvEvaluatedCurvePts.push_back(interpolatedCtrlPts[i]);
+        }
+
     }
 
     if (bWrap) {
@@ -59,9 +84,9 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
         // the curve horizontal.
 
         y1 = ptvCtrlPts[0].y;
+        ptvEvaluatedCurvePts.push_back(Point(x, y1));
     }
 
-    ptvEvaluatedCurvePts.push_back(Point(x, y1));
 
     /// set the endpoint based on the wrap flag.
     float y2;
@@ -71,7 +96,7 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
     }
     else{
         y2 = ptvCtrlPts[iCtrlPtCount - 1].y;
+        ptvEvaluatedCurvePts.push_back(Point(x, y2));
     }
 
-    ptvEvaluatedCurvePts.push_back(Point(x, y2));
 }
