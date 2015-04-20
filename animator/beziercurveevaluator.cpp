@@ -30,7 +30,6 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
         for (int i = 0; i < iCtrlPtCount; i++)
             interpolatedCtrlPts.push_back(ptvCtrlPts[i]);
 
-        int i = 0;
         if(bWrap && iCtrlPtCount % 3 == 0){
             // add copy of first to end
             interpolatedCtrlPts.push_back(Point(ptvCtrlPts[0].x + fAniLength, ptvCtrlPts[0].y));
@@ -44,10 +43,10 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
             // // add copy of first to end
             interpolatedCtrlPts.push_back(Point(ptvCtrlPts[0].x + fAniLength, ptvCtrlPts[0].y));
 
+            // initialize list with last element already in it
             ptvEvaluatedCurvePts.push_back(Point(ptvCtrlPts[iCtrlPtCount - 1].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 1].y));
-            // // add copy of last to beginning
-            // interpolatedCtrlPts.insert(interpolatedCtrlPts.begin(), Point(ptvCtrlPts[iCtrlPtCount - 1].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 1].y));
         }
+        int i = 0;
         int interCtrlPtsCount = interpolatedCtrlPts.size();
         // curve for multiple of 3
         for (; i + 3 < interCtrlPtsCount; i+=3) {

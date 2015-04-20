@@ -26,14 +26,29 @@ void BSplineCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
             ptvEvaluatedCurvePts.push_back(ptvCtrlPts[i]);
     }
     else {
-        // add duplicates of first control point
-        interpolatedCtrlPts.push_back(ptvCtrlPts[0]);
-        interpolatedCtrlPts.push_back(ptvCtrlPts[0]);
+        if (bWrap) {
+            // add duplicates of last point
+            interpolatedCtrlPts.push_back(Point(ptvCtrlPts[iCtrlPtCount - 1].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 1].y));
+            interpolatedCtrlPts.push_back(Point(ptvCtrlPts[iCtrlPtCount - 1].x - fAniLength, ptvCtrlPts[iCtrlPtCount - 1].y));
+        }
+        else {
+            // add duplicates of first control point
+            interpolatedCtrlPts.push_back(ptvCtrlPts[0]);
+            interpolatedCtrlPts.push_back(ptvCtrlPts[0]);
+        }
         for (int i = 0; i < iCtrlPtCount; i++)
             interpolatedCtrlPts.push_back(ptvCtrlPts[i]);
-        // add duplicates of last control point
-        interpolatedCtrlPts.push_back(ptvCtrlPts[iCtrlPtCount - 1]);
-        interpolatedCtrlPts.push_back(ptvCtrlPts[iCtrlPtCount - 1]);
+        if (bWrap) {
+            // add copies of first 3 points
+            interpolatedCtrlPts.push_back(Point(ptvCtrlPts[0].x + fAniLength, ptvCtrlPts[0].y));
+            interpolatedCtrlPts.push_back(Point(ptvCtrlPts[1].x + fAniLength, ptvCtrlPts[1].y));
+            interpolatedCtrlPts.push_back(Point(ptvCtrlPts[2].x + fAniLength, ptvCtrlPts[2].y));
+        }
+        else {
+            // add duplicates of last control point
+            interpolatedCtrlPts.push_back(ptvCtrlPts[iCtrlPtCount - 1]);
+            interpolatedCtrlPts.push_back(ptvCtrlPts[iCtrlPtCount - 1]);
+        }
         int interCtrlPtsCount = interpolatedCtrlPts.size();
 
         for (int i = 0; i < interCtrlPtsCount - 3; i ++) {
@@ -62,9 +77,9 @@ void BSplineCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
         // the curve horizontal.
 
         y1 = ptvCtrlPts[0].y;
+        ptvEvaluatedCurvePts.push_back(Point(x, y1));
     }
 
-    ptvEvaluatedCurvePts.push_back(Point(x, y1));
 
     /// set the endpoint based on the wrap flag.
     float y2;
@@ -74,7 +89,7 @@ void BSplineCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
     }
     else{
         y2 = ptvCtrlPts[iCtrlPtCount - 1].y;
+        ptvEvaluatedCurvePts.push_back(Point(x, y2));
     }
 
-    ptvEvaluatedCurvePts.push_back(Point(x, y2));
 }
