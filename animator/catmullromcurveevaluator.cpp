@@ -27,14 +27,28 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
             ptvEvaluatedCurvePts.push_back(ptvCtrlPts[i]);
     }
     else {
-        // add fake first control point
-        Point phantom0(2*ptvCtrlPts[0].x - ptvCtrlPts[1].x, 2*ptvCtrlPts[0].y-ptvCtrlPts[1].y);
-        interpolatedCtrlPts.push_back(phantom0);
+        if(bWrap) {
+            Point p(ptvCtrlPts[iCtrlPtCount-1].x - fAniLength, ptvCtrlPts[iCtrlPtCount-1].y);
+            interpolatedCtrlPts.push_back(p);
+            interpolatedCtrlPts.push_back(Point(2*p.x - ptvCtrlPts[0].x, 2*p.y-ptvCtrlPts[0].y));
+        }
+        else {
+            // add fake first control point
+            interpolatedCtrlPts.push_back(Point(2*ptvCtrlPts[0].x - ptvCtrlPts[1].x, 2*ptvCtrlPts[0].y-ptvCtrlPts[1].y));
+        }
+
         for (int i = 0; i < iCtrlPtCount; i++)
             interpolatedCtrlPts.push_back(ptvCtrlPts[i]);
-        // add fake last control point
-        Point phantom1(2*ptvCtrlPts[iCtrlPtCount-1].x - ptvCtrlPts[iCtrlPtCount-2].x, 2*ptvCtrlPts[iCtrlPtCount-1].y-ptvCtrlPts[iCtrlPtCount-2].y);
-        interpolatedCtrlPts.push_back(phantom1);
+
+        if(bWrap) {
+            Point p(ptvCtrlPts[0].x + fAniLength, ptvCtrlPts[0].y);
+            interpolatedCtrlPts.push_back(p);
+            interpolatedCtrlPts.push_back(Point(2*p.x - ptvCtrlPts[iCtrlPtCount-1].x, 2*p.y-ptvCtrlPts[iCtrlPtCount-1].y));
+        }
+        else {
+            // add fake last control point
+            interpolatedCtrlPts.push_back(Point(2*ptvCtrlPts[iCtrlPtCount-1].x - ptvCtrlPts[iCtrlPtCount-2].x, 2*ptvCtrlPts[iCtrlPtCount-1].y-ptvCtrlPts[iCtrlPtCount-2].y));
+        }
         int interCtrlPtsCount = interpolatedCtrlPts.size();
 
         for (int i = 0; i < interCtrlPtsCount - 3; i++) {
@@ -66,9 +80,9 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
         // the curve horizontal.
 
         y1 = ptvCtrlPts[0].y;
+        ptvEvaluatedCurvePts.push_back(Point(x, y1));
     }
 
-    ptvEvaluatedCurvePts.push_back(Point(x, y1));
 
     /// set the endpoint based on the wrap flag.
     float y2;
@@ -78,7 +92,7 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
     }
     else{
         y2 = ptvCtrlPts[iCtrlPtCount - 1].y;
+        ptvEvaluatedCurvePts.push_back(Point(x, y2));
     }
 
-    ptvEvaluatedCurvePts.push_back(Point(x, y2));
 }
