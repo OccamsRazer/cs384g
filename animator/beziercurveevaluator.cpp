@@ -1,46 +1,57 @@
 #include "beziercurveevaluator.h"
+#include "vec.h"
+#include "mat.h"
 #include <cassert>
 
 void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts, 
-                                         std::vector<Point>& ptvEvaluatedCurvePts,
-                                         const float& fAniLength,
+                                         std::vector<Point>& ptvEvaluatedCurvePts, 
+                                         const float& fAniLength, 
                                          const bool& bWrap) const
 {
     int iCtrlPtCount = ptvCtrlPts.size();
     float stepSize = 1.0/100.0;
     ptvEvaluatedCurvePts.clear();
 
-    int i;
-    // curve when there are enough points
-    for (i=0; i+3<iCtrlPtCount; i+=3) {
-        for (float u=0; u <= 1; u += stepSize) {
-            float u_2   = u*u;
-            float u1    = 1-u;
-            float u1_2  = u1*u1;
-
-            float u1_3 = u1*u1*u1;
-            float u_u1_2_3 = u*u1_2*3;
-            float u_2_u1_3 = u_2*u1*3;
-            float u_3 = u*u*u;
-
-
-            // x = (1-u)^3*p0 + 3*u*(1-u)^2*p1 + 3*u^2*(1-u)*p2 + u^3*p3
-            float x = u1_3 * ptvCtrlPts[i].x + u_u1_2_3 * ptvCtrlPts[i+1].x + u_2_u1_3 * ptvCtrlPts[i+2].x + u_3 * ptvCtrlPts[i+3].x;
-            float y = u1_3 * ptvCtrlPts[i].y + u_u1_2_3 * ptvCtrlPts[i+1].y + u_2_u1_3 * ptvCtrlPts[i+2].y + u_3 * ptvCtrlPts[i+3].y;
-
-            // if (x > 0 && x < fAniLength)
-            ptvEvaluatedCurvePts.push_back(Point(x, y));
-        }
-    }
-    // linear for remainder
-    for (; i < iCtrlPtCount; i++)
-        ptvEvaluatedCurvePts.push_back(ptvCtrlPts[i]);
-
-
-
     float x = 0.0;
     float y1;
-    if(bWrap){
+
+    // linear for less than 4 points
+    std::vector<Point> interpolatedCtrlPts;
+    Mat4d basis(-1.0,  3.0, -3.0,  1.0,
+                 3.0, -6.0,  3.0,  0.0,
+                -3.0,  3.0,  0.0,  0.0,
+                 1.0,  0.0,  0.0,  0.0);
+    if ( iCtrlPtCount < 4){
+        for (int i = 0; i < iCtrlPtCount; i++)
+            ptvEvaluatedCurvePts.push_back(ptvCtrlPts[i]);
+    }
+    else {
+        for (int i = 0; i < iCtrlPtCount; i++)
+            interpolatedCtrlPts.push_back(ptvCtrlPts[i]);
+        int interCtrlPtsCount = interpolatedCtrlPts.size();
+
+        for (int i = 0; i < interCtrlPtsCount - 3; i++) {
+            Point p0 = interpolatedCtrlPts[i];
+            Point p1 = interpolatedCtrlPts[i+1];
+            Point p2 = interpolatedCtrlPts[i+2];
+            Point p3 = interpolatedCtrlPts[i+3];
+
+            for (float u=0; u <= 1; u += stepSize){
+                Vec4d uVec( u*u*u, u*u, u, 1.0);
+                float u2 = u*u;
+                float u3 = u*u*u;
+
+                Vec4d ub = uVec * basis;
+
+                float x = ub[0] * p0.x + ub[1] * p1.x + ub[2] * p2.x + ub[3] * p3.x;
+                float y = ub[0] * p0.y + ub[1] * p1.y + ub[2] * p2.y + ub[3] * p3.y;
+
+                ptvEvaluatedCurvePts.push_back(Point(x, y));
+            }
+        }
+    }
+
+    if (bWrap) {
         // bell
     }
     else {
@@ -52,11 +63,11 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 
     ptvEvaluatedCurvePts.push_back(Point(x, y1));
 
-    // set the endpoint based on the wrap flag.
+    /// set the endpoint based on the wrap flag.
     float y2;
     x = fAniLength;
     if (bWrap){
-       // bell // y2 = y1;
+        // bell // y2 = y1;
     }
     else{
         y2 = ptvCtrlPts[iCtrlPtCount - 1].y;
