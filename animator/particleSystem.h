@@ -26,10 +26,12 @@ struct Particle {
     Vec3d position;
     Vec3d velocity;
     Vec3d force;
+    Vec3d color;
     float mass;
     float ttl;
     float createdAt;
-    Particle(Vec3d position, Vec3d velocity, Vec3d force, float mass, float ttl): position(position), velocity(velocity), force(force), mass(mass), ttl(ttl), createdAt(-1.0) {
+    Particle(Vec3d position, Vec3d velocity, Vec3d force, Vec3d color, float mass, float ttl):
+        position(position), velocity(velocity), force(force), color(color), mass(mass), ttl(ttl), createdAt(-1.0) {
     }
 };
 class ParticleSystem {

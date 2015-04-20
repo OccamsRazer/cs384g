@@ -125,7 +125,7 @@ void ParticleSystem::drawParticles(float t)
         glPushMatrix();
             Particle p = bakedParticles[t][i];
             glTranslatef(p.position[0], p.position[1], p.position[2]);
-            setDiffuseColor(1.0,0.0,0.0);
+            setDiffuseColor(p.color[0], p.color[1], p.color[2]);
             drawSphere(0.1);
         glPopMatrix();
     }
@@ -137,11 +137,15 @@ void ParticleSystem::createParticles(int number, Vec3d origin, Vec3d direction) 
         return;
     for(int i = 0; i < number; i++){
         // chose a semi random direction
-        float vX = (rand() % 5 + 10) * direction[0];
+        float vX = (rand() % 10 + 10) * direction[0];
         float vY = (rand() % 5 + 5) * direction[1];
-        float vZ = (rand() % 5 + 10) * direction[2];
+        float vZ = (rand() % 10 + 10) * direction[2];
         Vec3d v(vX, vY, vZ);
-        particles.push_back(Particle(origin, v, Vec3d(0.0,0.0,0.0), 0.5, 3.0));
+        double r = ((double) rand() / (RAND_MAX));
+        double g = ((double) rand() / (RAND_MAX));
+        double b = ((double) rand() / (RAND_MAX));
+        Vec3d color(r,g,b);
+        particles.push_back(Particle(origin, v, Vec3d(0.0,0.0,0.0), color, 0.5, 2.0));
     }
 }
 
