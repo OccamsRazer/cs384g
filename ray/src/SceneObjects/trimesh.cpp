@@ -152,8 +152,16 @@ bool TrimeshFace::intersectLocal(ray& r, isect& i) const
     i.setN(n);
     i.setT(t);
     i.setBary(bary);
-    i.setMaterial(getMaterial());
+    // i.setMaterial(getMaterial());
     // i.setUVCoordinates(Vec2d(bary[0],bary[1]));
+
+    if( parent->materials.size() )
+    {
+        Material* m = new Material();
+        for( int jj = 0; jj < 3; ++jj )
+            (*m) += bary[jj] * (*parent->materials[ ids[jj] ]);
+        i.setMaterial( *m );
+    }
 
     return true;
 }
