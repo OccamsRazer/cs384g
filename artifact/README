@@ -1,9 +1,0 @@
-Ray Tracing Artifact
-
-To render the gif:
-  1) Edit the included render.sh script, removing the echo and exit lines and
-     changing RAY_TRACER appropriately
-  2) Execute ./render.sh in the same directory as the *.ray and *.png files
-  3) This will generate output.gif and frames/*.bmp
-
-The source gif for the textures is original.gif
