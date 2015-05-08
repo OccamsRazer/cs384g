@@ -161,6 +161,11 @@ void GraphicalUI::cb_treeLeafSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_nLeafMax = int( ((Fl_Slider *)o)->value() );
 }
 
+void GraphicalUI::cb_photonSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_nPhotons = int( ((Fl_Slider *)o)->value() );
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	pUI=(GraphicalUI*)(o->user_data());
@@ -200,6 +205,18 @@ void GraphicalUI::cb_enableKdTree(Fl_Widget* o, void* v)
 	else {
 		pUI->m_kdDepthSlider->activate();
 		pUI->m_kdLeafSlider->activate();
+	}
+}
+
+void GraphicalUI::cb_photonCheckButton(Fl_Widget* o, void* v)
+{
+	pUI=(GraphicalUI*)(o->user_data());
+	pUI->m_enablePhotonMap = (((Fl_Check_Button*)o)->value() == 1);
+	if ( !pUI->m_enablePhotonMap) {
+		pUI->m_photonSlider->deactivate();
+	}
+	else {
+		pUI->m_photonSlider->activate();
 	}
 }
 
@@ -498,6 +515,23 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_kdLeafSlider->value(m_nLeafMax);
 	m_kdLeafSlider->align(FL_ALIGN_RIGHT);
 	m_kdLeafSlider->callback(cb_treeLeafSlides);
+
+	m_photonCheckButton = new Fl_Check_Button(10, 235, 140, 20, "Photon Map");
+	m_photonCheckButton->user_data((void*)(this));
+	m_photonCheckButton->callback(cb_photonCheckButton);
+	m_photonCheckButton->value(m_enablePhotonMap);
+	m_photonSlider = new Fl_Value_Slider(140, 235, 200, 20, "Num Photons");
+	m_photonSlider->user_data((void*)(this));	// record self to be used by static callback functions
+	m_photonSlider->type(FL_HOR_NICE_SLIDER);
+	m_photonSlider->labelfont(FL_COURIER);
+	m_photonSlider->labelsize(12);
+	m_photonSlider->minimum(500);
+	m_photonSlider->maximum(100000);
+	m_photonSlider->step(250);
+	m_photonSlider->value(m_nPhotons);
+	m_photonSlider->align(FL_ALIGN_RIGHT);
+	m_photonSlider->callback(cb_photonSlides);
+	m_photonSlider->deactivate();
 
 	// set up debugging display checkbox
 	m_debuggingDisplayCheckButton = new Fl_Check_Button(10, 429, 140, 20, "Debugging display");

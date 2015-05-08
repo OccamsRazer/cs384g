@@ -47,6 +47,7 @@ public:
 	Fl_Slider*			m_threadsSlider;
 	Fl_Slider*			m_kdDepthSlider;
 	Fl_Slider*			m_kdLeafSlider;
+	Fl_Slider*			m_photonSlider;
 
 	Fl_Check_Button*	m_debuggingDisplayCheckButton;
 	Fl_Check_Button*	m_aaCheckButton;
@@ -55,6 +56,7 @@ public:
 	Fl_Check_Button*	m_ssCheckButton;
 	Fl_Check_Button*	m_shCheckButton;
 	Fl_Check_Button*	m_bfCheckButton;
+	Fl_Check_Button*	m_photonCheckButton;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -100,6 +102,7 @@ private:
 	static void cb_aaSamplesSlides(Fl_Widget* o, void* v);
 	static void cb_threadsSlides(Fl_Widget* o, void* v);
 	static void cb_filterWidthSlides(Fl_Widget* o, void* v);
+	static void cb_photonSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);
@@ -109,6 +112,7 @@ private:
 	static void cb_ssCheckButton(Fl_Widget* o, void* v);
 	static void cb_shCheckButton(Fl_Widget* o, void* v);
 	static void cb_bfCheckButton(Fl_Widget* o, void* v);
+	static void cb_photonCheckButton(Fl_Widget* o, void* v);
 
 	static Vec3d threadedTracePixel(int x, int y);
 	static void threadedRender(int index, int width, int height, int size);
