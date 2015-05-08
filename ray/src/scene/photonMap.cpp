@@ -11,14 +11,26 @@ extern TraceUI* traceUI;
 #include <iostream>
 #include <fstream>
 
-PhotonMap::PhotonMap(Scene *scene, int size):
-  scene(scene), size(size) {
+using namespace std;
+
+PhotonMap::PhotonMap() {
 
 }
 
 PhotonMap::~PhotonMap() {}
 
-void PhotonMap::build() {}
+void PhotonMap::build(Scene *scene, int size, int depth) {
+  std::cout << "building photon map with " << size << " photons" << std::endl;
+
+
+  Light* pLight;
+  for ( vector<Light*>::const_iterator litr = scene->beginLights(); litr != scene->endLights(); ++litr ) {
+    pLight = *litr;
+  }
+  while(storedPhotons < size){
+
+  }
+}
 
 ray *PhotonMap::nearestPhoton(Vec3d p){
   ray *closest = NULL;

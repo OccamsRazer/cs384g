@@ -4,6 +4,9 @@
 #include "scene.h"
 #include "ray.h"
 #include "light.h"
+#include "../vecmath/vec.h"
+#include "../vecmath/mat.h"
+#include <string>
 
 #define PI 3.14159265359
 
@@ -13,10 +16,10 @@
 
 class PhotonMap {
 public:
-  PhotonMap(Scene *scene, int size);
+  PhotonMap();
   virtual ~PhotonMap();
 
-  void build();
+  void build(Scene *scene, int size, int depth);
   ray *nearestPhoton(Vec3d p);
   int get_size() { return storedPhotons; }
 private:
