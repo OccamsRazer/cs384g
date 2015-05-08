@@ -43,12 +43,14 @@ public:
 	int	getNumThreads() const { return m_nThreads; }
 	int	getFilterWidth() const { return m_nFilterWidth; }
 	int	getCubemapsEnabled() const { return m_usingCubeMap; }
+	int	getPhotonMappingEnabled() const { return m_enablePhotonMap; }
 
 	bool	shadowSw() const { return m_shadows; }
 	bool	smShadSw() const { return m_smoothshade; }
 	bool	acceleration() const { return m_enableAcceleration; }
 	int		getTreeDepth() const { return m_nTreeDepth; }
 	int		getLeafMax() const { return m_nLeafMax; }
+	int		getPhotons() const { return m_nPhotons; }
 
 	static bool m_debug;
 

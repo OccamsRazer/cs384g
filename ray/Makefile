@@ -18,7 +18,7 @@ ALL = $(addprefix lib/src/, main getopt RayTracer \
 	parser/Parser parser/ParserException \
 	scene/camera scene/light\
 	scene/material scene/ray scene/scene \
-	scene/cubeMap \
+	scene/cubeMap scene/photonMap \
 	SceneObjects/Box SceneObjects/Cone \
 	SceneObjects/Cylinder SceneObjects/trimesh \
 	SceneObjects/Sphere SceneObjects/Square \

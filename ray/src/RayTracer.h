@@ -5,6 +5,7 @@
 
 #include "scene/ray.h"
 #include "scene/cubeMap.h"
+#include "scene/photonMap.h"
 #include <time.h>
 #include <queue>
 
@@ -40,12 +41,20 @@ public:
         CubeMap *getCubeMap() {return cubemap;}
         bool haveCubeMap() { return cubemap != 0; }
 
+    void setPhotonMap(PhotonMap* p) {
+        if (photonmap) delete photonmap;
+        photonmap = p;
+    }
+    PhotonMap *getPhotonMap() {return photonmap;}
+    bool havePhotonMap() { return photonmap != 0; }
+
 public:
         unsigned char *buffer;
         int buffer_width, buffer_height;
         int bufferSize;
         Scene* scene;
         CubeMap* cubemap;
+        PhotonMap* photonmap;
 
         bool m_bBufferReady;
 };

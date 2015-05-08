@@ -27,7 +27,8 @@ public:
 		VISIBILITY,
 		REFLECTION,
 		REFRACTION,
-		SHADOW
+		SHADOW,
+        PHOTON
 	};
 
         ray(const Vec3d &pp, const Vec3d &dd, RayType tt = VISIBILITY)
