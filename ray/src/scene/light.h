@@ -18,6 +18,7 @@ public:
 	virtual double distanceAttenuation(const Vec3d& P) const = 0;
 	virtual Vec3d getColor() const = 0;
 	virtual Vec3d getDirection (const Vec3d& P) const = 0;
+	virtual Vec3d getPosition() const = 0;
 
 protected:
 	Light(Scene *scene, const Vec3d& col) : SceneElement(scene), color(col) {}
@@ -39,6 +40,7 @@ public:
 	virtual double distanceAttenuation(const Vec3d& P) const;
 	virtual Vec3d getColor() const;
 	virtual Vec3d getDirection(const Vec3d& P) const;
+	virtual Vec3d getPosition() const;
 
 protected:
 	Vec3d 		orientation;
@@ -65,6 +67,7 @@ public:
 	virtual double distanceAttenuation(const Vec3d& P) const;
 	virtual Vec3d getColor() const;
 	virtual Vec3d getDirection(const Vec3d& P) const;
+	virtual Vec3d getPosition() const;
 
 	void setAttenuationConstants(float a, float b, float c)
 	{

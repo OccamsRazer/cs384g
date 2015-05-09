@@ -28,6 +28,7 @@ private:
   int size;
   int storedPhotons;
   float get_rand();
+  float get_rand(float min, float max);
   int emit(ray r, Light* light, int depth);
 };
 

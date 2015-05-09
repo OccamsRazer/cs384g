@@ -36,10 +36,16 @@ Vec3d DirectionalLight::getColor() const
 	return color;
 }
 
+
 Vec3d DirectionalLight::getDirection(const Vec3d& P) const
 {
 	// for directional light, direction doesn't depend on P
 	return -orientation;
+}
+
+Vec3d DirectionalLight::getPosition() const
+{
+	return -orientation * 1000.0;
 }
 
 double PointLight::distanceAttenuation(const Vec3d& P) const
@@ -84,4 +90,9 @@ Vec3d PointLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 	}
 
 	return atten;
+}
+
+Vec3d PointLight::getPosition() const
+{
+	return position;
 }

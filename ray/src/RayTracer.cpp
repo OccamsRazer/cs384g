@@ -124,6 +124,13 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 		bool tir = 1.0 - m.index(i) * m.index(i) * ( 1.0 - Thetai * Thetai) < 0;
 		bool entering = Thetai < 0.0;
 
+		if ( debugMode ){
+			if ( entering )
+				std::cout << "entering object" << std::endl;
+			else if (!entering)
+				std::cout << "exiting object" << std::endl;
+		}
+
 		// refract iff kt is nonzero, ray is entering object, ray is exiting and not have tir
 		if ( !m.kt(i).iszero() && ( entering || ( !entering && !tir ) ) ) {
 			Vec3d refractedDir;
@@ -240,5 +247,10 @@ void RayTracer::traceSetup(int w, int h)
 	}
 	memset(buffer, 0, w*h*3);
 	m_bBufferReady = true;
+
+	if(traceUI->getPhotonMappingEnabled()){
+		setPhotonMap(new PhotonMap());
+		getPhotonMap()->build(scene, traceUI->getPhotons(), 1);
+	}
 }
 
