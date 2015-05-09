@@ -1,5 +1,6 @@
 #include "material.h"
 #include "ray.h"
+#include "photonMap.h"
 #include "light.h"
 #include "../ui/TraceUI.h"
 extern TraceUI* traceUI;
@@ -12,7 +13,7 @@ extern bool debugMode;
 
 // Apply the phong model to this point on the surface of the object, returning
 // the color of that point.
-Vec3d Material::shade(Scene *scene, const ray& r, const isect& i) const
+Vec3d Material::shade(Scene *scene, PhotonMap *pMap, const ray& r, const isect& i) const
 {
 	Vec3d total( 0.0, 0.0, 0.0);
 
@@ -37,7 +38,14 @@ Vec3d Material::shade(Scene *scene, const ray& r, const isect& i) const
 
 	total += ke(i) + ka(i) % scene->ambient();
 
-	return total;
+	Photon* p = pMap->nearestPhoton(r.at(i.t), 0.05);
+
+	Vec3d tmp(0,0,0);
+	if ( p != NULL )
+		tmp = p->getColor();
+
+
+	return tmp;
 }
 
 TextureMap::TextureMap( string filename ) {

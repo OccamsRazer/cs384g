@@ -55,7 +55,7 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
 
 Photon *PhotonMap::nearestPhoton(Vec3d p, double radius){
   Photon *closest = NULL;
-  double dist = DOUBLE_MAX;
+  double dist = radius;
 
   for (int i = 0; i < storedPhotons; i++) {
     if (std::abs((p - photons[i]->p).length()) < dist) {

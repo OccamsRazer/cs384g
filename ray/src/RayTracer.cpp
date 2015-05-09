@@ -101,7 +101,7 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 	if( hit ) {
 
 		const Material& m = i.getMaterial();
-		colorC = m.shade(scene, r, i);
+		colorC = m.shade(scene, photonmap, r, i);
 
 		if ( depth < 1) return colorC;
 
