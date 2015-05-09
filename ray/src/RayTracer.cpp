@@ -237,6 +237,7 @@ bool RayTracer::loadScene( char* fn ) {
 
 void RayTracer::traceSetup(int w, int h)
 {
+	std:cout << "in traceSetup" << std::endl;
 	if (buffer_width != w || buffer_height != h)
 	{
 		buffer_width = w;

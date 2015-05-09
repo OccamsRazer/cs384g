@@ -13,6 +13,21 @@
 #define DOUBLE_MIN std::numeric_limits<double>::min()
 #define DOUBLE_MAX std::numeric_limits<double>::max()
 
+class Photon : public ray {
+public:
+  Photon(const Vec3d &pp, const Vec3d &dd, const Vec3d &cc)
+    : ray(pp, dd, ray::PHOTON), c(cc) {}
+  Photon(const Photon& other) : ray(other), c(other.c) {}
+  ~Photon() {}
+
+  Photon& operator =( const Photon& other ) 
+  { p = other.p; d = other.d; c = other.c; return *this; }
+
+  Vec3d getColor() const { return c; }
+
+public:
+  Vec3d c; // color
+};
 
 class PhotonMap {
 public:
@@ -20,16 +35,16 @@ public:
   virtual ~PhotonMap();
 
   void build(Scene *scene, int size, int depth);
-  ray *nearestPhoton(Vec3d p);
+  Photon *nearestPhoton(Vec3d p, double radius);
   int get_size() { return storedPhotons; }
 private:
   Scene * scene;
-  std::vector<ray*> photons;
+  std::vector<Photon*> photons;
   int size;
   int storedPhotons;
   float get_rand();
   float get_rand(float min, float max);
-  int emit(ray r, Light* light, int depth);
+  int emit(Scene *scene, Photon r, Light* light, int depth);
 };
 
 #endif /* __PHOTON_MAP_H_ */

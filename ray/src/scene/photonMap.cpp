@@ -20,9 +20,10 @@ PhotonMap::PhotonMap() {
 PhotonMap::~PhotonMap() {}
 
 void PhotonMap::build(Scene *scene, int size, int depth) {
+  std::cout << "camera direction: " << scene->getCamera().getLook() << std::endl;
   std::cout << "building photon map with " << size << " photons" << std::endl;
-  std::cout << "bbox min: " << scene->bounds().getMin() << std::endl;
-  std::cout << "bbox max: " << scene->bounds().getMax() << std::endl;
+  std::cout << "scene bbox min: " << scene->bounds().getMin() << std::endl;
+  std::cout << "scene bbox max: " << scene->bounds().getMax() << std::endl;
 
   Vec3d minPoints = scene->bounds().getMin();
   Vec3d maxPoints = scene->bounds().getMax();
@@ -31,33 +32,29 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
   for ( vector<Light*>::const_iterator litr = scene->beginLights(); litr != scene->endLights(); ++litr ) {
     pLight = *litr;
   }
+  
   int displayInterval = 0;
   int i = 0;
   while(storedPhotons < size){
+  // for(int j = 0; j < 5; j++) {
     Vec3d tmp(get_rand(minPoints[0], maxPoints[0]),
               get_rand(minPoints[1], maxPoints[1]),
               get_rand(minPoints[2], maxPoints[2]));
 
-    Vec3d direction = pLight->getDirection(tmp);
+    Vec3d direction = -1.0*pLight->getDirection(tmp);
+    Photon r(pLight->getPosition(), direction, Vec3d(1.0,1.0,1.0));
 
     if (storedPhotons >= displayInterval) {
       std::cout << "mapped " << storedPhotons << " photons" << std::endl;
       displayInterval += size/10;
     }
-    ray r(pLight->getPosition(), direction, ray::PHOTON);
-    if ( i % (size/10) == 0){
-      std::cout << "rand point: " << tmp << std::endl;
-      std::cout << "origin: " << r.getPosition() << std::endl;
-      std::cout << "direction: " << r.getDirection() << std::endl;
-      i++;
-    }
 
-    int ret = emit(r, pLight, depth);
+    int ret = emit(scene, r, pLight, depth);
   }
 }
 
-ray *PhotonMap::nearestPhoton(Vec3d p){
-  ray *closest = NULL;
+Photon *PhotonMap::nearestPhoton(Vec3d p, double radius){
+  Photon *closest = NULL;
   double dist = DOUBLE_MAX;
 
   for (int i = 0; i < storedPhotons; i++) {
@@ -68,17 +65,20 @@ ray *PhotonMap::nearestPhoton(Vec3d p){
   return closest;
 }
 
-int PhotonMap::emit(ray r, Light* light, int depth){
+int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
   isect i;
   bool hit = false;
-  // if(traceUI->acceleration()){
-  //   hit = scene->kdIntersect(r, i);
-  // }
-  // else {
+  if(traceUI->acceleration()){
+    hit = scene->kdIntersect(r, i);
+  }
+  else {
     hit = scene->intersect(r,i);
-  // }
+  }
   if(hit){
-    photons.push_back(new ray(r.at(i.t), r.getDirection(), ray::PHOTON));
+    Vec3d newPos = r.at(i.t);
+    double dist = light->distanceAttenuation(newPos);
+
+    photons.push_back(new Photon(newPos, r.getDirection(), dist*r.getColor()));
     storedPhotons++;
   }
 
