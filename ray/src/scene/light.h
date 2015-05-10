@@ -16,6 +16,7 @@ class Light
 public:
 	virtual Vec3d shadowAttenuation(const ray& r, const Vec3d& pos) const = 0;
 	virtual double distanceAttenuation(const Vec3d& P) const = 0;
+	virtual double distanceAttenuation(const double d) const = 0;
 	virtual Vec3d getColor() const = 0;
 	virtual Vec3d getDirection (const Vec3d& P) const = 0;
 	virtual Vec3d getPosition() const = 0;
@@ -38,6 +39,7 @@ public:
 		: Light(scene, color), orientation(orien) { orientation.normalize(); }
 	virtual Vec3d shadowAttenuation(const ray& r, const Vec3d& pos) const;
 	virtual double distanceAttenuation(const Vec3d& P) const;
+	virtual double distanceAttenuation(const double d) const;
 	virtual Vec3d getColor() const;
 	virtual Vec3d getDirection(const Vec3d& P) const;
 	virtual Vec3d getPosition() const;
@@ -65,6 +67,7 @@ public:
 
 	virtual Vec3d shadowAttenuation(const ray& r, const Vec3d& pos) const;
 	virtual double distanceAttenuation(const Vec3d& P) const;
+	virtual double distanceAttenuation(const double d) const;
 	virtual Vec3d getColor() const;
 	virtual Vec3d getDirection(const Vec3d& P) const;
 	virtual Vec3d getPosition() const;

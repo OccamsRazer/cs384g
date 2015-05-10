@@ -15,18 +15,20 @@
 
 class Photon : public ray {
 public:
-  Photon(const Vec3d &pp, const Vec3d &dd, const Vec3d &cc)
-    : ray(pp, dd, ray::PHOTON), c(cc) {}
-  Photon(const Photon& other) : ray(other), c(other.c) {}
+  Photon(const Vec3d &pp, const Vec3d &dd, const Vec3d &cc, const double dist)
+    : ray(pp, dd, ray::PHOTON), c(cc), dist(dist) {}
+  Photon(const Photon& other) : ray(other), c(other.c), dist(other.dist) {}
   ~Photon() {}
 
   Photon& operator =( const Photon& other ) 
-  { p = other.p; d = other.d; c = other.c; return *this; }
+  { p = other.p; d = other.d; c = other.c; dist = other.dist; return *this; }
 
   Vec3d getColor() const { return c; }
+  double getDistance() const { return dist; }
 
 public:
   Vec3d c; // color
+  double dist; // distance traveled
 };
 
 class PhotonMap {

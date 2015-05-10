@@ -10,6 +10,12 @@ double DirectionalLight::distanceAttenuation(const Vec3d& P) const
 	return 1.0;
 }
 
+double DirectionalLight::distanceAttenuation(const double d) const
+{
+	// distance to light is infinite, so f(di) goes to 0.  Return 1.
+	return 1.0;
+}
+
 
 Vec3d DirectionalLight::shadowAttenuation(const ray& r, const Vec3d& p) const
 {
@@ -51,6 +57,11 @@ Vec3d DirectionalLight::getPosition() const
 double PointLight::distanceAttenuation(const Vec3d& P) const
 {
 	double d = (position - P).length();
+	return distanceAttenuation(d);
+}
+
+double PointLight::distanceAttenuation(const double d) const
+{
 	return min(1.0, 1.0/( constantTerm + linearTerm*d + quadraticTerm*d*d ));
 }
 

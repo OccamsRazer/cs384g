@@ -38,14 +38,16 @@ Vec3d Material::shade(Scene *scene, PhotonMap *pMap, const ray& r, const isect& 
 
 	total += ke(i) + ka(i) % scene->ambient();
 
-	Photon* p = pMap->nearestPhoton(r.at(i.t), 0.05);
+	if(traceUI->getPhotonMappingEnabled()) {
+		Photon* p = pMap->nearestPhoton(r.at(i.t), 0.025);
 
-	Vec3d tmp(0,0,0);
-	if ( p != NULL )
-		tmp = p->getColor();
+		Vec3d tmp(0,0,0);
+		if ( p != NULL )
+			tmp = p->getColor();
+		return tmp;
+	}
 
-
-	return tmp;
+	return total;
 }
 
 TextureMap::TextureMap( string filename ) {
