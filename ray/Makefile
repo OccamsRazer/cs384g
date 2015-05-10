@@ -4,7 +4,7 @@
 
 LIBS = -lfltk -lfltk_gl -lfltk_images -lGL -lGLU -ljpeg -lpng -lz
 
-CFLAGS = -g -std=c++11 -O3 -pthread -Wno-write-strings -Wno-deprecated-declarations -Wno-unused-result
+CFLAGS = -g -std=c++11 -pthread -Wno-write-strings -Wno-deprecated-declarations -Wno-unused-result
 
 CC = g++
 

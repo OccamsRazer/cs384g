@@ -99,6 +99,30 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
 
       emit(scene, reflected, light, depth - 1);
     }
+
+    double Thetai = i.N * r.getDirection();
+    bool tir = 1.0 - m.index(i) * m.index(i) * ( 1.0 - Thetai * Thetai) < 0;
+    bool entering = Thetai < 0.0;
+
+    if ( !m.kt(i).iszero() && ( entering || ( !entering && !tir ) ) ) {
+      Vec3d refractedDir;
+      if ( entering ) {
+        Vec3d St = ( 1.0/m.index(i) ) * Si;
+        double StdotSt = St * St;
+        Vec3d Ct =  -1.0 * i.N * sqrt(1.0 - StdotSt);
+        refractedDir = Ct + St;
+      }
+      else {
+        Vec3d St = m.index(i) * Si;
+        double StdotSt = St * St;
+        Vec3d Ct = i.N * sqrt(1.0 - StdotSt);
+        refractedDir = Ct + St;
+      }
+      refractedDir.normalize();
+
+      Photon refracted(r.at(i.t), refractedDir, Vec3d(0.0,0.0,1.0), dist, distAtten);
+      emit(scene, refracted, light, depth - 1);
+    }
   }
 
   return stored;

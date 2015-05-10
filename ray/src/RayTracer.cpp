@@ -251,7 +251,7 @@ void RayTracer::traceSetup(int w, int h)
 
 	if(traceUI->getPhotonMappingEnabled()){
 		setPhotonMap(new PhotonMap());
-		getPhotonMap()->build(scene, traceUI->getPhotons(), 2);
+		getPhotonMap()->build(scene, traceUI->getPhotons(), traceUI->getDepth());
 	}
 }
 
