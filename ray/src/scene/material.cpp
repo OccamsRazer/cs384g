@@ -43,7 +43,7 @@ Vec3d Material::shade(Scene *scene, PhotonMap *pMap, const ray& r, const isect& 
 
 		Vec3d tmp(0,0,0);
 		if ( p != NULL )
-			tmp = p->getColor();
+			tmp = p->getDistanceAttenuation() * p->getColor();
 		return tmp;
 	}
 

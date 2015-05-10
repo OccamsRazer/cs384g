@@ -42,7 +42,7 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
               get_rand(minPoints[2], maxPoints[2]));
 
     Vec3d direction = -1.0*pLight->getDirection(tmp);
-    Photon r(pLight->getPosition(), direction, Vec3d(1.0,1.0,1.0), 0.0);
+    Photon r(pLight->getPosition(), direction, Vec3d(1.0,1.0,1.0), 0.0, 1.0);
 
     if (storedPhotons >= displayInterval) {
       std::cout << "mapped " << storedPhotons << " photons" << std::endl;
@@ -82,7 +82,7 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
 
     double dist = (r.getPosition() - newPos).length() + r.getDistance();
     double distAtten = light->distanceAttenuation(dist);
-    photons.push_back(new Photon(newPos, r.getDirection(), distAtten*r.getColor(), dist));
+    photons.push_back(new Photon(newPos, r.getDirection(), r.getColor(), dist, distAtten));
     storedPhotons++;
     stored = 1;
 
@@ -94,8 +94,10 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
     if (!m.kr(i).iszero()){
       Vec3d reflectedDir = Ci + Si;
       reflectedDir.normalize();
+      // TODO change reflected color
+      Photon reflected(r.at(i.t), reflectedDir, Vec3d(1.0,1.0,0.0), dist, distAtten);
 
-      Photon reflected(r.at(i.t), reflectedDir, distAtten*r.getColor(), dist);
+      emit(scene, reflected, light, depth - 1);
     }
   }
 
