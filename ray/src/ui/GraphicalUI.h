@@ -57,6 +57,7 @@ public:
 	Fl_Check_Button*	m_shCheckButton;
 	Fl_Check_Button*	m_bfCheckButton;
 	Fl_Check_Button*	m_photonCheckButton;
+	Fl_Check_Button*	m_renderPhotonMapCheckButton;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -113,6 +114,7 @@ private:
 	static void cb_shCheckButton(Fl_Widget* o, void* v);
 	static void cb_bfCheckButton(Fl_Widget* o, void* v);
 	static void cb_photonCheckButton(Fl_Widget* o, void* v);
+	static void cb_renderPhotonMapCheckButton(Fl_Widget* o, void* v);
 
 	static Vec3d threadedTracePixel(int x, int y);
 	static void threadedRender(int index, int width, int height, int size);

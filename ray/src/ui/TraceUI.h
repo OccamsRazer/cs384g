@@ -23,7 +23,7 @@ public:
 	TraceUI() : m_nDepth(0), m_nSize(512), m_displayDebuggingInfo(false), m_usingCubeMap(false),
                     m_shadows(true), m_smoothshade(true), raytracer(0), m_enableAcceleration(true), 
                     m_nFilterWidth(1), m_nAASamples(1), m_nThreads(std::thread::hardware_concurrency()),
-                    m_nTreeDepth(15), m_nLeafMax(10), m_enablePhotonMap(false), m_nPhotons(500)
+                    m_nTreeDepth(15), m_nLeafMax(10), m_enablePhotonMap(false), m_nPhotons(500), m_renderPhotonMap(false)
                     {}
 
 	virtual int	run() = 0;
@@ -44,6 +44,7 @@ public:
 	int	getFilterWidth() const { return m_nFilterWidth; }
 	int	getCubemapsEnabled() const { return m_usingCubeMap; }
 	int	getPhotonMappingEnabled() const { return m_enablePhotonMap; }
+	int	renderPhotonMapEnabled() const { return m_renderPhotonMap; }
 
 	bool	shadowSw() const { return m_shadows; }
 	bool	smShadSw() const { return m_smoothshade; }
@@ -75,6 +76,7 @@ protected:
 	bool m_gotCubeMap;  // cubemap defined
 	bool m_enableAcceleration; // enable kd tree preprocessing
 	bool m_enablePhotonMap; // enable photon mapping
+	bool m_renderPhotonMap; // renders the photon map
 	int m_nFilterWidth;  // width of cubemap filter
 };
 

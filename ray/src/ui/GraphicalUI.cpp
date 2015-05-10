@@ -220,6 +220,12 @@ void GraphicalUI::cb_photonCheckButton(Fl_Widget* o, void* v)
 	}
 }
 
+void GraphicalUI::cb_renderPhotonMapCheckButton(Fl_Widget* o, void* v)
+{
+	pUI=(GraphicalUI*)(o->user_data());
+	pUI->m_renderPhotonMap = (((Fl_Check_Button*)o)->value() == 1);
+}
+
 void GraphicalUI::cb_render(Fl_Widget* o, void* v) {
 
 	char buffer[256];
@@ -533,11 +539,17 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_photonSlider->callback(cb_photonSlides);
 	m_photonSlider->deactivate();
 
+	m_renderPhotonMapCheckButton = new Fl_Check_Button(10, 260, 140, 20, "Render Photon Map");
+	m_renderPhotonMapCheckButton->user_data((void*)(this));
+	m_renderPhotonMapCheckButton->callback(cb_renderPhotonMapCheckButton);
+	m_renderPhotonMapCheckButton->value(m_renderPhotonMap);
+
 	// set up debugging display checkbox
 	m_debuggingDisplayCheckButton = new Fl_Check_Button(10, 429, 140, 20, "Debugging display");
 	m_debuggingDisplayCheckButton->user_data((void*)(this));
 	m_debuggingDisplayCheckButton->callback(cb_debuggingDisplayCheckButton);
 	m_debuggingDisplayCheckButton->value(m_displayDebuggingInfo);
+
 
 	m_mainWindow->callback(cb_exit2);
 	m_mainWindow->when(FL_HIDE);
