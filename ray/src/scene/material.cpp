@@ -13,7 +13,7 @@ extern bool debugMode;
 
 // Apply the phong model to this point on the surface of the object, returning
 // the color of that point.
-Vec3d Material::shade(Scene *scene, PhotonMap *pMap, const ray& r, const isect& i) const
+Vec3d Material::shade(Scene *scene, const ray& r, const isect& i) const
 {
 	Vec3d total( 0.0, 0.0, 0.0);
 
@@ -37,15 +37,6 @@ Vec3d Material::shade(Scene *scene, PhotonMap *pMap, const ray& r, const isect& 
 	}
 
 	total += ke(i) + ka(i) % scene->ambient();
-
-	if(traceUI->getPhotonMappingEnabled()) {
-		Photon* p = pMap->nearestPhoton(r.at(i.t), 0.025);
-
-		Vec3d tmp(0,0,0);
-		if ( p != NULL )
-			tmp = p->getDistanceAttenuation() * p->getColor();
-		return tmp;
-	}
 
 	return total;
 }

@@ -100,10 +100,20 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 
 	if( hit ) {
 
+		if(traceUI->getPhotonMappingEnabled()) {
+			Photon* p = photonmap->nearestPhoton(r.at(i.t), 0.025);
+
+			Vec3d tmp(0,0,0);
+			if ( p != NULL )
+				tmp = p->getDistanceAttenuation() * p->getColor();
+			return tmp;
+		}
+
 		const Material& m = i.getMaterial();
 		colorC = m.shade(scene, photonmap, r, i);
 
 		if ( depth < 1) return colorC;
+
 
 		Vec3d Ci = ( (-1 * r.getDirection()) * i.N ) * i.N;
 		Vec3d Si = Ci + r.getDirection();

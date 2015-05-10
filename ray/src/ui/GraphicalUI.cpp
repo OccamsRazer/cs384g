@@ -527,7 +527,7 @@ GraphicalUI::GraphicalUI() : refreshInterval(10) {
 	m_photonSlider->labelsize(12);
 	m_photonSlider->minimum(500);
 	m_photonSlider->maximum(100000);
-	m_photonSlider->step(250);
+	m_photonSlider->step(500);
 	m_photonSlider->value(m_nPhotons);
 	m_photonSlider->align(FL_ALIGN_RIGHT);
 	m_photonSlider->callback(cb_photonSlides);
