@@ -107,7 +107,7 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 			int k = 5;
 		    Photon* closest[k];
 			double radius = photonmap->kNearestPhotons(r.at(i.t), k, closest);
-			double inverseArea = 1.0/(PI*radius*radius);
+			double inverseArea = 1.0/(PI*radius*radius*k*2);
 
 			for(int i = 0; i < k; i++)
 				photonColor += closest[i]->getDistanceAttenuation() * closest[i]->getColor();

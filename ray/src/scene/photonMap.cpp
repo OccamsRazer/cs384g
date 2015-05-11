@@ -128,8 +128,8 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth, bool causti
 
     double dist = (r.getPosition() - newPos).length() + r.getDistance();
     double distAtten = light->distanceAttenuation(dist);
-    if(caustic){
-      photons.push_back(new Photon(newPos, r.getDirection(), m.shade(scene, r, i), dist, distAtten));
+    if(caustic && !m.kd(i).iszero()){
+      photons.push_back(new Photon(newPos, r.getDirection(), r.getColor(), dist, distAtten));
       storedPhotons++;
       stored = 1;
     }
