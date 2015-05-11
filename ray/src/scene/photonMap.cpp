@@ -31,25 +31,26 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
   Light* pLight;
   for ( vector<Light*>::const_iterator litr = scene->beginLights(); litr != scene->endLights(); ++litr ) {
     pLight = *litr;
-  }
   
-  int displayInterval = 0;
-  int i = 0;
-  while(storedPhotons < size){
-  // for(int j = 0; j < 5; j++) {
-    Vec3d tmp(get_rand(minPoints[0], maxPoints[0]),
-              get_rand(minPoints[1], maxPoints[1]),
-              get_rand(minPoints[2], maxPoints[2]));
+    int displayInterval = 0;
+    int i = 0;
+    storedPhotons = 0;
+    while(storedPhotons < size){
+    // for(int j = 0; j < 5; j++) {
+      Vec3d tmp(get_rand(minPoints[0], maxPoints[0]),
+                get_rand(minPoints[1], maxPoints[1]),
+                get_rand(minPoints[2], maxPoints[2]));
 
-    Vec3d direction = -1.0*pLight->getDirection(tmp);
-    Photon r(pLight->getPosition(), direction, 1.0/size * pLight->getColor(), 0.0, 1.0);
+      Vec3d direction = -1.0*pLight->getDirection(tmp);
+      Photon r(pLight->getPosition(), direction, 1.0/size * pLight->getColor(), 0.0, 1.0);
 
-    if (storedPhotons >= displayInterval) {
-      std::cout << "mapped " << storedPhotons << " photons" << std::endl;
-      displayInterval += size/10;
+      if (storedPhotons >= displayInterval) {
+        std::cout << "mapped " << storedPhotons << " photons" << std::endl;
+        displayInterval += size/10;
+      }
+
+      int ret = emit(scene, r, pLight, depth, false);
     }
-
-    int ret = emit(scene, r, pLight, depth, false);
   }
 }
 
