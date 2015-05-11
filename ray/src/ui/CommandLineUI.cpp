@@ -23,7 +23,7 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 	m_enableAcceleration = true;
 	m_nThreads = std::thread::hardware_concurrency();
 	m_nLeafMax = 10;
-	while( (i = getopt( argc, argv, "t:r:w:h:s:a:l:" )) != EOF )
+	while( (i = getopt( argc, argv, "t:r:w:h:s:a:l:p:" )) != EOF )
 	{
 		switch( i )
 		{
@@ -51,6 +51,10 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 				m_nThreads = atoi( optarg );
 				break;
 
+			case 'p':
+				m_nPhotons = atoi( optarg );
+				break;
+
 			default:
 			// Oops; unknown argument
 			std::cerr << "Invalid argument: '" << i << "'." << std::endl;
@@ -58,6 +62,8 @@ CommandLineUI::CommandLineUI( int argc, char* const* argv )
 			exit(1);
 		}
 	}
+
+	if( m_nPhotons > 0) m_enablePhotonMap = true;
 
 	if( optind >= argc-1 )
 	{
@@ -154,7 +160,8 @@ void CommandLineUI::usage()
 	std::cerr << "  -s <#>      set number of samples for anti-aliasing (default " << m_nAASamples << ")" << std::endl;
 	std::cerr << "              Note: this value will be squared, ie -aa 3 = 9 samples" << std::endl;
 	std::cerr << "  -a [0,1]    enable or disable kdtree acceleration (default " << m_enableAcceleration << ")" << std::endl;
-	std::cerr << "  -a <#>      set maximum number of object in a leaf of the kdtree (default " << m_nLeafMax << ")" << std::endl;
+	std::cerr << "  -l <#>      set maximum number of object in a leaf of the kdtree (default " << m_nLeafMax << ")" << std::endl;
 	std::cerr << "  -t <#>      set the number of threads to use for rendering (default: number of hardware threads)" << std::endl;
+	std::cerr << "  -p <#>      enable and set the number of photons to be used for photon mapping" << std::endl;
 
 }

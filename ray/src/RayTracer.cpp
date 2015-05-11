@@ -6,6 +6,7 @@
 #include "scene/light.h"
 #include "scene/material.h"
 #include "scene/ray.h"
+#include "scene/photonMap.h"
 
 #include "parser/Tokenizer.h"
 #include "parser/Parser.h"
