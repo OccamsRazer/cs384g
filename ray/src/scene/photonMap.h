@@ -41,7 +41,7 @@ public:
 
   void build(Scene *scene, int size, int depth);
   Photon *nearestPhoton(Vec3d p, double radius);
-  int kNearestPhotons(Vec3d p, double radius, int k, Photon* ret[]);
+  double kNearestPhotons(Vec3d p, int k, Photon* ret[]);
   int get_size() { return storedPhotons; }
 private:
   Scene * scene;
@@ -50,7 +50,7 @@ private:
   int storedPhotons;
   float get_rand();
   float get_rand(float min, float max);
-  int emit(Scene *scene, Photon r, Light* light, int depth);
+  int emit(Scene *scene, Photon r, Light* light, int depth, bool caustic);
 };
 
 #endif /* __PHOTON_MAP_H_ */

@@ -106,13 +106,13 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 		if(traceUI->getPhotonMappingEnabled()) {
 			int k = 5;
 		    Photon* closest[k];
-			int found = photonmap->kNearestPhotons(r.at(i.t), 500, k, closest);
-			double inverseDist = 1.0/found;
+			double radius = photonmap->kNearestPhotons(r.at(i.t), k, closest);
+			double inverseArea = 1.0/(PI*radius*radius);
 
-			for(int i = 0; i < found; i++)
+			for(int i = 0; i < k; i++)
 				photonColor += closest[i]->getDistanceAttenuation() * closest[i]->getColor();
 
-			photonColor *= inverseDist;
+			photonColor *= inverseArea;
 
 			if(traceUI->renderPhotonMapEnabled())
 				return photonColor;

@@ -49,7 +49,7 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
       displayInterval += size/10;
     }
 
-    int ret = emit(scene, r, pLight, depth);
+    int ret = emit(scene, r, pLight, depth, false);
   }
 }
 
@@ -66,18 +66,19 @@ Photon *PhotonMap::nearestPhoton(Vec3d p, double radius){
   return closest;
 }
 
-int PhotonMap::kNearestPhotons(Vec3d p, double radius, int k, Photon* ret[]){
+// returns radius of circle centered at p that contains k photons
+double PhotonMap::kNearestPhotons(Vec3d p, int k, Photon* ret[]){
   int stored = 0;
-  if (k <= 0) return stored;
+  if (k <= 0) return 0;
 
   for(vector<Photon*>::const_iterator pitr = photons.begin(); pitr != photons.end(); ++pitr){
     Photon* ptn = *pitr;
     // if array not filled add the current if within the radius
-    if(stored < k && std::abs((p - ptn->p).length()) < radius){
+    if(stored < k){
       ret[stored] = *pitr;
       stored++;
     }
-    else if (stored > 0 && std::abs((p - ptn->p).length()) < radius){
+    else if (stored > 0){
       // find the photon furthest from point
       double maxDist = std::abs((p - ret[0]->p).length());
       int maxIndex = 0;
@@ -97,11 +98,20 @@ int PhotonMap::kNearestPhotons(Vec3d p, double radius, int k, Photon* ret[]){
     }
   }
 
+  // find the radius of the circle
+  double dist = std::abs((p - ret[0]->p).length());
+  for(int i = 1; i < stored; i++){
+    double d = std::abs((p - ret[i]->p).length());
+    if ( d > dist ) {
+      dist = d;
+    }
+  }
+
   // return the number of found photons;
-  return stored;
+  return dist;
 }
 
-int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
+int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth, bool caustic){
   int stored = 0;
   isect i;
   bool hit = false;
@@ -118,9 +128,11 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
 
     double dist = (r.getPosition() - newPos).length() + r.getDistance();
     double distAtten = light->distanceAttenuation(dist);
-    photons.push_back(new Photon(newPos, r.getDirection(), m.shade(scene, r, i), dist, distAtten));
-    storedPhotons++;
-    stored = 1;
+    if(caustic){
+      photons.push_back(new Photon(newPos, r.getDirection(), m.shade(scene, r, i), dist, distAtten));
+      storedPhotons++;
+      stored = 1;
+    }
 
     if( depth < 1) return stored;
 
@@ -133,7 +145,7 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
       // TODO change reflected color
       Photon reflected(r.at(i.t), reflectedDir, m.shade(scene, r, i), dist, distAtten);
 
-      emit(scene, reflected, light, depth - 1);
+      emit(scene, reflected, light, depth - 1, true);
     }
 
     double Thetai = i.N * r.getDirection();
@@ -157,7 +169,7 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
       refractedDir.normalize();
 
       Photon refracted(r.at(i.t), refractedDir, m.shade(scene, r, i), dist, distAtten);
-      emit(scene, refracted, light, depth - 1);
+      emit(scene, refracted, light, depth - 1, true);
     }
   }
 
