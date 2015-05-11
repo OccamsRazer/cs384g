@@ -99,20 +99,27 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 	}
 
 	if( hit ) {
+		const Material& m = i.getMaterial();
+		colorC = m.shade(scene, r, i);
 
 		Vec3d photonColor(0,0,0);
 		if(traceUI->getPhotonMappingEnabled()) {
-			Photon* p = photonmap->nearestPhoton(r.at(i.t), 0.025);
+			int k = 5;
+		    Photon* closest[k];
+			int found = photonmap->kNearestPhotons(r.at(i.t), 500, k, closest);
+			double inverseDist = 1.0/found;
 
-			if ( p != NULL )
-				photonColor = p->getDistanceAttenuation() * p->getColor();
+			for(int i = 0; i < found; i++)
+				photonColor += closest[i]->getDistanceAttenuation() * closest[i]->getColor();
+
+			photonColor *= inverseDist;
 
 			if(traceUI->renderPhotonMapEnabled())
 				return photonColor;
+
+			colorC += photonColor;
 		}
 
-		const Material& m = i.getMaterial();
-		colorC = m.shade(scene, r, i);
 
 		if ( depth < 1) return colorC;
 

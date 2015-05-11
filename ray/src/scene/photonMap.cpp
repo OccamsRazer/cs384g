@@ -42,7 +42,7 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
               get_rand(minPoints[2], maxPoints[2]));
 
     Vec3d direction = -1.0*pLight->getDirection(tmp);
-    Photon r(pLight->getPosition(), direction, Vec3d(1.0,1.0,1.0), 0.0, 1.0);
+    Photon r(pLight->getPosition(), direction, pLight->getColor(), 0.0, 1.0);
 
     if (storedPhotons >= displayInterval) {
       std::cout << "mapped " << storedPhotons << " photons" << std::endl;
@@ -60,9 +60,45 @@ Photon *PhotonMap::nearestPhoton(Vec3d p, double radius){
   for (int i = 0; i < storedPhotons; i++) {
     if (std::abs((p - photons[i]->p).length()) < dist) {
       closest = photons[i];
+      dist = std::abs((p - photons[i]->p).length());
     }
   }
   return closest;
+}
+
+int PhotonMap::kNearestPhotons(Vec3d p, double radius, int k, Photon* ret[]){
+  int stored = 0;
+  if (k <= 0) return stored;
+
+  for(vector<Photon*>::const_iterator pitr = photons.begin(); pitr != photons.end(); ++pitr){
+    Photon* ptn = *pitr;
+    // if array not filled add the current if within the radius
+    if(stored < k && std::abs((p - ptn->p).length()) < radius){
+      ret[stored] = *pitr;
+      stored++;
+    }
+    else if (stored > 0 && std::abs((p - ptn->p).length()) < radius){
+      // find the photon furthest from point
+      double maxDist = std::abs((p - ret[0]->p).length());
+      int maxIndex = 0;
+      for(int i = 1; i < stored; i++){
+        double d = std::abs((p - ret[i]->p).length());
+        if ( d > maxDist ) {
+          maxDist = d;
+          maxIndex = i;
+        }
+      }
+
+      // if the current photon is closer than the furthest stored photon
+      // replace the furthest with the current
+      if ( std::abs((p - ptn->p).length()) < maxDist ) {
+        ret[maxIndex] = ptn;
+      }
+    }
+  }
+
+  // return the number of found photons;
+  return stored;
 }
 
 int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
@@ -82,7 +118,7 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
 
     double dist = (r.getPosition() - newPos).length() + r.getDistance();
     double distAtten = light->distanceAttenuation(dist);
-    photons.push_back(new Photon(newPos, r.getDirection(), r.getColor(), dist, distAtten));
+    photons.push_back(new Photon(newPos, r.getDirection(), m.shade(scene, r, i), dist, distAtten));
     storedPhotons++;
     stored = 1;
 
@@ -95,7 +131,7 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
       Vec3d reflectedDir = Ci + Si;
       reflectedDir.normalize();
       // TODO change reflected color
-      Photon reflected(r.at(i.t), reflectedDir, Vec3d(1.0,1.0,0.0), dist, distAtten);
+      Photon reflected(r.at(i.t), reflectedDir, m.shade(scene, r, i), dist, distAtten);
 
       emit(scene, reflected, light, depth - 1);
     }
@@ -120,7 +156,7 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth){
       }
       refractedDir.normalize();
 
-      Photon refracted(r.at(i.t), refractedDir, Vec3d(0.0,0.0,1.0), dist, distAtten);
+      Photon refracted(r.at(i.t), refractedDir, m.shade(scene, r, i), dist, distAtten);
       emit(scene, refracted, light, depth - 1);
     }
   }

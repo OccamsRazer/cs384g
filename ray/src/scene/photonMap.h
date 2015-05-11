@@ -15,6 +15,7 @@
 
 class Photon : public ray {
 public:
+  Photon(): ray(Vec3d(0,0,0), Vec3d(0,0,0), ray::PHOTON), c(Vec3d(0,0,0)), dist(0), distAtten(0) {}
   Photon(const Vec3d &pp, const Vec3d &dd, const Vec3d &cc, const double dist, const double distAtten)
     : ray(pp, dd, ray::PHOTON), c(cc), dist(dist), distAtten(distAtten) {}
   Photon(const Photon& other) : ray(other), c(other.c), dist(other.dist), distAtten(other.distAtten) {}
@@ -40,6 +41,7 @@ public:
 
   void build(Scene *scene, int size, int depth);
   Photon *nearestPhoton(Vec3d p, double radius);
+  int kNearestPhotons(Vec3d p, double radius, int k, Photon* ret[]);
   int get_size() { return storedPhotons; }
 private:
   Scene * scene;
