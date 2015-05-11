@@ -24,10 +24,10 @@ point_light
 //rotate ( 1,0,0, 0.785,
 scale(1.0, 2.5, 2.5, sphere {
 	material = {
-		transmissive = (0.7, 0.7, 0.7);
-		//reflective = (0.5, 0.5, 0.5);
-		specular = (0.1, 0.1, 0.1);
-		shininess = 0;
+		transmissive = (0.7, 0.0, 0.0);
+		//reflective = (0.5, 0.0, 0.0);
+		specular = (0.1, 0.0, 0.0);
+		shininess = 2;
 		index = 1.5;
 	}
 } ) //) //)
