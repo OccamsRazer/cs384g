@@ -20,6 +20,8 @@ PhotonMap::PhotonMap() {
 PhotonMap::~PhotonMap() {}
 
 void PhotonMap::build(Scene *scene, int size, int depth) {
+  if (depth <= 0) return;
+
   std::cout << "camera direction: " << scene->getCamera().getLook() << std::endl;
   std::cout << "building photon map with " << size << " photons" << std::endl;
   std::cout << "scene bbox min: " << scene->bounds().getMin() << std::endl;
@@ -35,8 +37,10 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
     int displayInterval = 0;
     int i = 0;
     storedPhotons = 0;
+    int photonsEmitted = 0;
     while(storedPhotons < size){
-    // for(int j = 0; j < 5; j++) {
+      if( photonsEmitted > size*size && storedPhotons < size/2 ) break;
+
       Vec3d tmp(get_rand(minPoints[0], maxPoints[0]),
                 get_rand(minPoints[1], maxPoints[1]),
                 get_rand(minPoints[2], maxPoints[2]));
@@ -50,7 +54,9 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
       }
 
       int ret = emit(scene, r, pLight, depth, false);
+      photonsEmitted++;
     }
+    std::cout << "mapped " << storedPhotons << " photons" << std::endl;
   }
 }
 
