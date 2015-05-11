@@ -41,7 +41,7 @@ public:
 
   void build(Scene *scene, int size, int depth);
   Photon *nearestPhoton(Vec3d p, double radius);
-  double kNearestPhotons(Vec3d p, int k, Photon* ret[]);
+  int kNearestPhotons(Vec3d p, double radius, std::vector<Photon*> &ret);
   int get_size() { return storedPhotons; }
 private:
   Scene * scene;

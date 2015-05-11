@@ -105,9 +105,9 @@ Vec3d RayTracer::traceRay(ray& r, int depth)
 
 		Vec3d photonColor(0,0,0);
 		if(traceUI->getPhotonMappingEnabled()) {
-			int k = 5;
-		    Photon* closest[k];
-			double radius = photonmap->kNearestPhotons(r.at(i.t), k, closest);
+			double radius = 0.1;
+		    std::vector<Photon*> closest;
+			int k = photonmap->kNearestPhotons(r.at(i.t), radius, closest);
 			double inverseArea = 1.0/(PI*radius*radius);
 
 			for(int i = 0; i < k; i++)

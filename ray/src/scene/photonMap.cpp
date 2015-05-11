@@ -68,48 +68,21 @@ Photon *PhotonMap::nearestPhoton(Vec3d p, double radius){
 }
 
 // returns radius of circle centered at p that contains k photons
-double PhotonMap::kNearestPhotons(Vec3d p, int k, Photon* ret[]){
+int PhotonMap::kNearestPhotons(Vec3d p, double radius, std::vector<Photon*> &ret){
   int stored = 0;
-  if (k <= 0) return 0;
+  if (radius <= 0) return 0;
 
   for(vector<Photon*>::const_iterator pitr = photons.begin(); pitr != photons.end(); ++pitr){
     Photon* ptn = *pitr;
     // if array not filled add the current if within the radius
-    if(stored < k){
-      ret[stored] = *pitr;
+    if ( std::abs((p - ptn->p).length()) < radius ) {
+      ret.push_back(ptn);
       stored++;
-    }
-    else if (stored > 0){
-      // find the photon furthest from point
-      double maxDist = std::abs((p - ret[0]->p).length());
-      int maxIndex = 0;
-      for(int i = 1; i < stored; i++){
-        double d = std::abs((p - ret[i]->p).length());
-        if ( d > maxDist ) {
-          maxDist = d;
-          maxIndex = i;
-        }
-      }
-
-      // if the current photon is closer than the furthest stored photon
-      // replace the furthest with the current
-      if ( std::abs((p - ptn->p).length()) < maxDist ) {
-        ret[maxIndex] = ptn;
-      }
-    }
-  }
-
-  // find the radius of the circle
-  double dist = std::abs((p - ret[0]->p).length());
-  for(int i = 1; i < stored; i++){
-    double d = std::abs((p - ret[i]->p).length());
-    if ( d > dist ) {
-      dist = d;
     }
   }
 
   // return the number of found photons;
-  return dist;
+  return stored;
 }
 
 int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth, bool caustic){
