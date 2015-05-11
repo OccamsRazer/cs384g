@@ -85,6 +85,7 @@ int CommandLineUI::run()
 		int width = m_nSize;
 		int height = (int)(width / raytracer->aspectRatio() + 0.5);
 
+		raytracer->photonmap = NULL;
 		raytracer->traceSetup( width, height );
 
 		clock_t start, end;
