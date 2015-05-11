@@ -48,7 +48,7 @@ translate(0,0,0, cone {
 	material = { 
 		//specular = (0.8, 0.8, 0);
         reflective = (0.9, 0.9, 0);
-        diffuse = (0.2, 0.2, 0);
+        diffuse = (0.9, 0.9, 0);
         shininess = 2;
 	}
 } ) ) )

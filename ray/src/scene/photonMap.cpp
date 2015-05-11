@@ -42,7 +42,7 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
               get_rand(minPoints[2], maxPoints[2]));
 
     Vec3d direction = -1.0*pLight->getDirection(tmp);
-    Photon r(pLight->getPosition(), direction, pLight->getColor(), 0.0, 1.0);
+    Photon r(pLight->getPosition(), direction, 0.5 * pLight->getColor(), 0.0, 1.0);
 
     if (storedPhotons >= displayInterval) {
       std::cout << "mapped " << storedPhotons << " photons" << std::endl;
@@ -143,7 +143,7 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth, bool causti
       Vec3d reflectedDir = Ci + Si;
       reflectedDir.normalize();
       // TODO change reflected color
-      Photon reflected(r.at(i.t), reflectedDir, m.shade(scene, r, i), dist, distAtten);
+      Photon reflected(r.at(i.t), reflectedDir, m.kr(i) % r.getColor(), dist, distAtten);
 
       emit(scene, reflected, light, depth - 1, true);
     }
@@ -168,7 +168,7 @@ int PhotonMap::emit(Scene *scene, Photon r, Light* light, int depth, bool causti
       }
       refractedDir.normalize();
 
-      Photon refracted(r.at(i.t), refractedDir, m.shade(scene, r, i), dist, distAtten);
+      Photon refracted(r.at(i.t), refractedDir, m.kt(i) % r.getColor(), dist, distAtten);
       emit(scene, refracted, light, depth - 1, true);
     }
   }
