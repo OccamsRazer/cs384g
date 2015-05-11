@@ -57,6 +57,7 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
       photonsEmitted++;
     }
     std::cout << "mapped " << storedPhotons << " photons" << std::endl;
+    std::cout << "emitted " << photonsEmitted << " photons" << std::endl;
   }
 }
 
