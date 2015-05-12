@@ -39,7 +39,7 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
     storedPhotons = 0;
     int photonsEmitted = 0;
     while(storedPhotons < size){
-      if( photonsEmitted > size*size && storedPhotons < size/2 ) break;
+      // if( photonsEmitted > size*size*size && storedPhotons < size/2 ) break;
 
       Vec3d tmp(get_rand(minPoints[0], maxPoints[0]),
                 get_rand(minPoints[1], maxPoints[1]),
