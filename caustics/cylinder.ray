@@ -1,0 +1,43 @@
+SBT-raytracer 1.0
+
+// texture_map.ray
+// Test texture mapping
+// Don't forget to increase the trace depth to >= 2!
+
+camera
+{
+	position = (0, 10, 0);
+	viewdir = (0, -1, 0);
+	updir = (0, 0, 1);
+}
+
+point_light
+{
+	position = (-10, 0, 10);
+	color = (1, 1, 1);
+	constant_attenuation_coeff= 0.25;
+	linear_attenuation_coeff = 0.003372407;
+	quadratic_attenuation_coeff = 0.000045492;	
+}
+
+
+scale( 20, 20, 0.5, 
+box {
+	material = { 
+		diffuse = map( "wood.png" ); 
+	}
+} )
+
+translate(0.0,0.0,0, cone {
+	capped = true;
+	height = 5;
+	bottom_radius = 1;
+	top_radius = 1;
+	material = {
+		diffuse=(1.0,0,0) ;
+		transmissive = (0.9, 0.9, 0.9);
+		specular = (0.9, 0.9, 0.9);
+		shininess = 256.0;
+		index = 1.5;
+	}
+})
