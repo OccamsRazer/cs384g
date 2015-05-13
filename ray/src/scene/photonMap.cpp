@@ -33,6 +33,8 @@ void PhotonMap::build(Scene *scene, int size, int depth) {
   Light* pLight;
   for ( vector<Light*>::const_iterator litr = scene->beginLights(); litr != scene->endLights(); ++litr ) {
     pLight = *litr;
+
+    std::cout << "light position: " << pLight->getPosition() << std::endl;
   
     int displayInterval = 0;
     int i = 0;
